@@ -50,7 +50,7 @@
         }
         
         .logo-container img {
-            height: 80px;
+            height: 200px;
             margin-right: 1rem;
         }
         
@@ -218,7 +218,7 @@
 <body class="antialiased">
     <header class="header">
         <div class="logo-container">
-            <img src="{{ asset('images/logo.png') }}" alt="IMA Logo" onerror="this.src='https://via.placeholder.com/80x80?text=IMA'">
+            <img src="{{ asset('logo-icorp-white.png') }}" alt="IMA Logo" onerror="this.src='https://via.placeholder.com/80x80?text=IMA'">
             <span class="logo-text">IMA-ICORP</span>
         </div>
         
