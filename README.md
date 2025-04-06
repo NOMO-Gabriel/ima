@@ -63,7 +63,10 @@ npm run dev  # Pour le développement
 # ou
 npm run build  # Pour la production
 ```
-
+### Création du lien symbolique pour le stockage
+```bash
+php artisan storage:link
+```
 ### Lancer l'application
 ```bash
 php artisan serve
