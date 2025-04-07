@@ -259,7 +259,7 @@
                     <i class="fas fa-users"></i>
                     <span>Utilisateurs</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('academies.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.academies.index') }}" class="menu-item {{ request()->routeIs('academies.*') ? 'active' : '' }}">
                     <i class="fas fa-university"></i>
                     <span>Académies & Départements</span>
                 </a>

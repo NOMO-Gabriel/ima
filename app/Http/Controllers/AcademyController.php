@@ -42,7 +42,7 @@ class AcademyController extends Controller
         // Récupération des académies paginées
         $academies = $query->with(['director', 'departments'])->latest()->paginate(10);
         
-        return view('academies.index', compact('academies'));
+        return view('admin.academies.index', compact('academies'));
     }
 
     /**
@@ -60,7 +60,7 @@ class AcademyController extends Controller
             $query->whereIn('name', ['DA', 'DG-PREPAS', 'SG', 'PCA']);
         })->get();
         
-        return view('academies.create', compact('directors'));
+        return view('admin.academies.create', compact('directors'));
     }
 
     /**
@@ -92,7 +92,7 @@ class AcademyController extends Controller
         // Créer l'académie
         $academy = Academy::create($validated);
         
-        return redirect()->route('academies.index')
+        return redirect()->route('admin.academies.index')
             ->with('success', 'Académie créée avec succès.');
     }
 
@@ -109,7 +109,7 @@ class AcademyController extends Controller
         // Charger les relations
         $academy->load(['director', 'departments', 'centers']);
         
-        return view('academies.show', compact('academy'));
+        return view('admin.academies.show', compact('academy'));
     }
 
     /**
@@ -127,7 +127,7 @@ class AcademyController extends Controller
             $query->whereIn('name', ['DA', 'DG-PREPAS', 'SG', 'PCA']);
         })->get();
         
-        return view('academies.edit', compact('academy', 'directors'));
+        return view('admin.academies.edit', compact('academy', 'directors'));
     }
 
     /**
@@ -158,7 +158,7 @@ class AcademyController extends Controller
         // Mettre à jour l'académie
         $academy->update($validated);
         
-        return redirect()->route('academies.index')
+        return redirect()->route('admin.academies.index')
             ->with('success', 'Académie mise à jour avec succès.');
     }
 
@@ -180,7 +180,7 @@ class AcademyController extends Controller
         // Supprimer l'académie
         $academy->delete();
         
-        return redirect()->route('academies.index')
+        return redirect()->route('admin.academies.index')
             ->with('success', 'Académie supprimée avec succès.');
     }
 }

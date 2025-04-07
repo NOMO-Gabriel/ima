@@ -52,7 +52,7 @@ class UserController extends Controller
         // Récupération des rôles pour le filtre
         $roles = Role::all();
         
-        return view('dashboard.users.index', compact('users', 'roles'));
+        return view('admin.users.index', compact('users', 'roles'));
     }
 
     /**
@@ -66,7 +66,7 @@ class UserController extends Controller
         }
         
         $roles = Role::all();
-        return view('dashboard.users.create', compact('roles'));
+        return view('admin.users.create', compact('roles'));
     }
 
     /**
@@ -107,7 +107,7 @@ class UserController extends Controller
         // Assignation des rôles
         $user->syncRoles($request->roles);
         
-        return redirect()->route('dashboard.users.index')
+        return redirect()->route('admin.users.index')
             ->with('success', 'Utilisateur créé avec succès.');
     }
 
@@ -121,7 +121,7 @@ class UserController extends Controller
             abort(403, 'Non autorisé');
         }
         
-        return view('dashboard.users.show', compact('user'));
+        return view('admin.users.show', compact('user'));
     }
 
     /**
@@ -135,7 +135,7 @@ class UserController extends Controller
         }
         
         $roles = Role::all();
-        return view('dashboard.users.edit', compact('user', 'roles'));
+        return view('admin.users.edit', compact('user', 'roles'));
     }
 
     /**
@@ -200,7 +200,7 @@ class UserController extends Controller
         
         $user->save();
         
-        return redirect()->route('dashboard.users.index')
+        return redirect()->route('admin.users.index')
             ->with('success', 'Utilisateur mis à jour avec succès.');
     }
 
@@ -221,7 +221,7 @@ class UserController extends Controller
         
         $user->delete();
         
-        return redirect()->route('dashboard.users.index')
+        return redirect()->route('admin.users.index')
             ->with('success', 'Utilisateur supprimé avec succès.');
     }
 }
