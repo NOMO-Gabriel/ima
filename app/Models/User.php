@@ -52,4 +52,29 @@ class User extends Authenticatable
         $hash = md5(strtolower(trim($this->email)));
         return "https://www.gravatar.com/avatar/{$hash}?s=200&d=mp";
     }
+
+    /**
+     * Get the academies directed by the user.
+     */
+    public function directedAcademies()
+    {
+        return $this->hasMany(Academy::class, 'director_id');
+    }
+
+    /**
+     * Get the departments headed by the user.
+     */
+    public function headedDepartments()
+    {
+        return $this->hasMany(Department::class, 'head_id');
+    }
+
+    /**
+     * Get the centers directed by the user.
+     */
+    public function directedCenters()
+    {
+        return $this->hasMany(Center::class, 'director_id');
+    }
 }
+

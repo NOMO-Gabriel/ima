@@ -263,14 +263,62 @@
                     <i class="fas fa-university"></i>
                     <span>Académies & Départements</span>
                 </a>
-                
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('formations.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Formations</span>
+                </a>
 
-            <div class="menu-category">Système</div>
+                <div class="menu-category">Gestion</div>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Enseignants</span>
+                </a>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('students.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Élèves</span>
+                </a>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Classes & Groupes</span>
+                </a>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Planification</span>
+                </a>
+
+                <div class="menu-category">Finance</div>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('payments.*') ? 'active' : '' }}">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Paiements</span>
+                </a>
+
+                <div class="menu-category">Ressources</div>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Documents</span>
+                </a>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('contests.*') ? 'active' : '' }}">
+                    <i class="fas fa-medal"></i>
+                    <span>Concours</span>
+                </a>
+
+                <div class="menu-category">Système</div>
                 <a href="{{ route('profile.edit') }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <i class="fas fa-user-cog"></i>
                     <span>Mon profil</span>
                 </a>
-                
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                    <i class="fas fa-cog"></i>
+                    <span>Paramètres</span>
+                </a>
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('logs.*') ? 'active' : '' }}">
+                    <i class="fas fa-history"></i>
+                    <span>Historique</span>
+                </a>
                 <form method="POST" action="{{ route('logout') }}" class="menu-item">
                     @csrf
                     <i class="fas fa-sign-out-alt"></i>

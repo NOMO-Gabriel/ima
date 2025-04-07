@@ -2,31 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Department;
 use App\Models\Academy;
+use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class DepartmentController extends Controller
 {
     /**
-     * Affiche la liste des départements
+     * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Vérifier les permissions
         if (!auth()->user()->can('department.view')) {
             abort(403, 'Non autorisé');
         }
 
-        // Récupération des départements avec pagination
-        $departments = Department::with('academy', 'head')->latest()->paginate(10);
+        // Filtrage des départements
+        $query = Department::query();
         
-        return view('departments.index', compact('departments'));
+        // Filtrer par académie
+        if ($request->filled('academy_id')) {
+            $query->where('academy_id', $request->academy_id);
+        }
+        
+        // Recherche par texte
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+        
+        // Filtrer par statut
+        if ($request->filled('status')) {
+            $status = $request->status === 'active' ? true : false;
+            $query->where('is_active', $status);
+        }
+        
+        // Récupération des départements paginés
+        $departments = $query->with(['academy', 'head'])->latest()->paginate(10);
+        
+        // Récupérer toutes les académies pour le filtre
+        $academies = Academy::where('is_active', true)->get();
+        
+        return view('departments.index', compact('departments', 'academies'));
     }
 
     /**
-     * Affiche le formulaire de création d'un département
+     * Show the form for creating a new resource.
      */
     public function create()
     {
@@ -35,19 +64,19 @@ class DepartmentController extends Controller
             abort(403, 'Non autorisé');
         }
         
-        // Récupération des académies
-        $academies = Academy::all();
+        // Récupérer les académies actives
+        $academies = Academy::where('is_active', true)->get();
         
-        // Récupération des utilisateurs qui peuvent être chefs de département
-        $users = User::whereHas('roles', function($query) {
+        // Récupérer les utilisateurs qui peuvent être chefs de département
+        $heads = User::whereHas('roles', function($query) {
             $query->where('name', 'Chef-Departement');
         })->get();
         
-        return view('departments.create', compact('academies', 'users'));
+        return view('departments.create', compact('academies', 'heads'));
     }
 
     /**
-     * Enregistre un nouveau département
+     * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
@@ -57,38 +86,28 @@ class DepartmentController extends Controller
         }
         
         // Validation des données
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:50', 'unique:departments'],
             'description' => ['nullable', 'string'],
             'academy_id' => ['required', 'exists:academies,id'],
             'head_id' => ['nullable', 'exists:users,id'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
         
-        // Vérifier l'unicité du nom dans l'académie
-        $exists = Department::where('name', $request->name)
-            ->where('academy_id', $request->academy_id)
-            ->exists();
-            
-        if ($exists) {
-            return back()->withErrors(['name' => 'Un département avec ce nom existe déjà dans cette académie.'])
-                ->withInput();
-        }
+        // Ajouter les champs de traçabilité
+        $validated['created_by'] = Auth::id();
+        $validated['updated_by'] = Auth::id();
         
-        // Création du département
-        $department = Department::create([
-            'name' => $request->name,
-            'description' => $request->description,
-            'academy_id' => $request->academy_id,
-            'head_id' => $request->head_id,
-            'created_by' => auth()->id(),
-        ]);
+        // Créer le département
+        $department = Department::create($validated);
         
         return redirect()->route('departments.index')
             ->with('success', 'Département créé avec succès.');
     }
 
     /**
-     * Affiche les détails d'un département
+     * Display the specified resource.
      */
     public function show(Department $department)
     {
@@ -97,17 +116,14 @@ class DepartmentController extends Controller
             abort(403, 'Non autorisé');
         }
         
-        // Récupération des formations associées à ce département
-        $formations = $department->formations()->paginate(10);
+        // Charger les relations
+        $department->load(['academy', 'head']);
         
-        // Récupération des enseignants associés à ce département
-        $teachers = $department->teachers()->paginate(10);
-        
-        return view('departments.show', compact('department', 'formations', 'teachers'));
+        return view('departments.show', compact('department'));
     }
 
     /**
-     * Affiche le formulaire de modification d'un département
+     * Show the form for editing the specified resource.
      */
     public function edit(Department $department)
     {
@@ -116,19 +132,19 @@ class DepartmentController extends Controller
             abort(403, 'Non autorisé');
         }
         
-        // Récupération des académies
-        $academies = Academy::all();
+        // Récupérer les académies actives
+        $academies = Academy::where('is_active', true)->get();
         
-        // Récupération des utilisateurs qui peuvent être chefs de département
-        $users = User::whereHas('roles', function($query) {
+        // Récupérer les utilisateurs qui peuvent être chefs de département
+        $heads = User::whereHas('roles', function($query) {
             $query->where('name', 'Chef-Departement');
         })->get();
         
-        return view('departments.edit', compact('department', 'academies', 'users'));
+        return view('departments.edit', compact('department', 'academies', 'heads'));
     }
 
     /**
-     * Met à jour un département
+     * Update the specified resource in storage.
      */
     public function update(Request $request, Department $department)
     {
@@ -138,39 +154,27 @@ class DepartmentController extends Controller
         }
         
         // Validation des données
-        $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'code' => ['nullable', 'string', 'max:50', Rule::unique('departments')->ignore($department->id)],
             'description' => ['nullable', 'string'],
             'academy_id' => ['required', 'exists:academies,id'],
             'head_id' => ['nullable', 'exists:users,id'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
         
-        // Vérifier l'unicité du nom dans l'académie (sauf pour le département actuel)
-        $exists = Department::where('name', $request->name)
-            ->where('academy_id', $request->academy_id)
-            ->where('id', '!=', $department->id)
-            ->exists();
-            
-        if ($exists) {
-            return back()->withErrors(['name' => 'Un département avec ce nom existe déjà dans cette académie.'])
-                ->withInput();
-        }
+        // Ajouter le champ de traçabilité
+        $validated['updated_by'] = Auth::id();
         
-        // Mise à jour du département
-        $department->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'academy_id' => $request->academy_id,
-            'head_id' => $request->head_id,
-            'updated_by' => auth()->id(),
-        ]);
+        // Mettre à jour le département
+        $department->update($validated);
         
         return redirect()->route('departments.index')
             ->with('success', 'Département mis à jour avec succès.');
     }
 
     /**
-     * Supprime un département
+     * Remove the specified resource from storage.
      */
     public function destroy(Department $department)
     {
@@ -179,79 +183,10 @@ class DepartmentController extends Controller
             abort(403, 'Non autorisé');
         }
         
-        // Vérifier si le département a des formations
-        if ($department->formations()->count() > 0) {
-            return back()->with('error', 'Impossible de supprimer ce département car il contient des formations.');
-        }
-        
-        // Vérifier si le département a des enseignants assignés
-        if ($department->teachers()->count() > 0) {
-            return back()->with('error', 'Impossible de supprimer ce département car il a des enseignants assignés.');
-        }
-        
-        // Suppression du département
+        // Supprimer le département
         $department->delete();
         
         return redirect()->route('departments.index')
             ->with('success', 'Département supprimé avec succès.');
-    }
-
-    /**
-     * Affiche le formulaire pour assigner des enseignants à un département
-     */
-    public function assignTeachersForm(Department $department)
-    {
-        // Vérifier les permissions
-        if (!auth()->user()->can('teacher.assign')) {
-            abort(403, 'Non autorisé');
-        }
-        
-        // Récupération des enseignants non assignés à ce département
-        $available_teachers = User::role('Enseignant')
-            ->whereDoesntHave('departments', function($query) use ($department) {
-                $query->where('department_id', $department->id);
-            })->get();
-        
-        return view('departments.assign_teachers', compact('department', 'available_teachers'));
-    }
-
-    /**
-     * Assigne des enseignants à un département
-     */
-    public function assignTeachers(Request $request, Department $department)
-    {
-        // Vérifier les permissions
-        if (!auth()->user()->can('teacher.assign')) {
-            abort(403, 'Non autorisé');
-        }
-        
-        // Validation des données
-        $request->validate([
-            'teachers' => ['required', 'array'],
-            'teachers.*' => ['exists:users,id'],
-        ]);
-        
-        // Assignation des enseignants au département
-        $department->teachers()->attach($request->teachers);
-        
-        return redirect()->route('departments.show', $department)
-            ->with('success', 'Enseignants assignés avec succès au département.');
-    }
-
-    /**
-     * Retire un enseignant d'un département
-     */
-    public function removeTeacher(Request $request, Department $department, User $user)
-    {
-        // Vérifier les permissions
-        if (!auth()->user()->can('teacher.assign')) {
-            abort(403, 'Non autorisé');
-        }
-        
-        // Retirer l'enseignant du département
-        $department->teachers()->detach($user->id);
-        
-        return redirect()->route('departments.show', $department)
-            ->with('success', 'Enseignant retiré avec succès du département.');
     }
 }
