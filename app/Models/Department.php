@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Academy extends Model
+class Department extends Model
 {
     use HasFactory;
     
@@ -20,10 +20,8 @@ class Academy extends Model
         'name',
         'code',
         'description',
-        'location',
-        'contact_email',
-        'contact_phone',
-        'director_id',
+        'academy_id',
+        'head_id',
         'is_active',
         'created_by',
         'updated_by'
@@ -39,31 +37,23 @@ class Academy extends Model
     ];
     
     /**
-     * Get the director of the academy.
+     * Get the academy of the department.
      */
-    public function director(): BelongsTo
+    public function academy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'director_id');
+        return $this->belongsTo(Academy::class);
     }
     
     /**
-     * Get the departments of the academy.
+     * Get the head of the department.
      */
-    public function departments(): HasMany
+    public function head(): BelongsTo
     {
-        return $this->hasMany(Department::class);
+        return $this->belongsTo(User::class, 'head_id');
     }
     
     /**
-     * Get the centers of the academy.
-     */
-    public function centers(): HasMany
-    {
-        return $this->hasMany(Center::class);
-    }
-    
-    /**
-     * Get the user who created the academy.
+     * Get the user who created the department.
      */
     public function creator(): BelongsTo
     {
@@ -71,7 +61,7 @@ class Academy extends Model
     }
     
     /**
-     * Get the user who last updated the academy.
+     * Get the user who last updated the department.
      */
     public function updater(): BelongsTo
     {
