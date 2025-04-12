@@ -19,6 +19,7 @@ class User extends Authenticatable
         'phone_number',
         'city',
         'address',
+        'account_type',
         'profile_photo_path',
         'status',
     ];

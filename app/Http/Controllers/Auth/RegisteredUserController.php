@@ -35,7 +35,9 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'phone_number' => ['required', 'string', 'max:20', 'unique:'.User::class],
             'city' => ['nullable', 'string', 'max:100'],
+            'account_type' => ['required', 'string', 'in:Eleve,Enseignant,Parent'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'terms' => ['required', 'accepted'],
         ]);
 
         $user = User::create([
@@ -44,15 +46,15 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'phone_number' => $request->phone_number,
             'city' => $request->city,
+            'account_type' => $request->account_type,
             'password' => Hash::make($request->password),
             'status' => 'pending_validation', // Par défaut, les utilisateurs sont en attente de validation
         ]);
 
         event(new Registered($user));
 
-        // Assigner le rôle "Elève" par défaut pour les nouveaux inscrits
-        // Cela peut être personnalisé selon vos besoins
-        $user->assignRole('Eleve');
+        // Assigner le rôle en fonction du type de compte sélectionné
+        $user->assignRole($request->account_type);
 
         Auth::login($user);
 

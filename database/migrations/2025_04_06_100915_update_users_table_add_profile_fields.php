@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('profile_photo_path')->nullable();
             $table->string('city')->nullable();
             $table->string('address')->nullable();
+            $table->enum('account_type', ['Eleve', 'Enseignant', 'Parent'])->default('Eleve')->after('address');
             $table->enum('status', [
                 'pending_validation',
                 'pending_finalization',
