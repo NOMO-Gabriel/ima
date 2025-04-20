@@ -254,22 +254,144 @@
                     <span>Tableau de bord</span>
                 </a>
 
+                @canany(['user.view.any', 'user.create', 'user.update.any', 'user.delete.any', 'academy.view', 'academy.create', 'academy.update', 'academy.delete', 'department.view', 'department.create', 'department.update', 'department.delete', 'center.view', 'center.create', 'center.update', 'center.delete'])
                 <div class="menu-category">Administration</div>
+                @endcanany
+                
+                @canany(['user.view.any', 'user.create', 'user.update.any', 'user.delete.any'])
                 <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i>
                     <span>Utilisateurs</span>
                 </a>
-                <a href="{{ route('admin.academies.index') }}" class="menu-item {{ request()->routeIs('academies.*') ? 'active' : '' }}">
+                @endcanany
+                
+                @canany(['academy.view', 'academy.create', 'academy.update', 'academy.delete', 'department.view', 'department.create', 'department.update', 'department.delete'])
+                <a href="{{ route('admin.academies.index') }}" class="menu-item {{ request()->routeIs('academies.*', 'departments.*') ? 'active' : '' }}">
                     <i class="fas fa-university"></i>
                     <span>Académies & Départements</span>
                 </a>
+                @endcanany
                 
+                @canany(['center.view', 'center.create', 'center.update', 'center.delete'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('centers.*') ? 'active' : '' }}">
+                    <i class="fas fa-building"></i>
+                    <span>Centres</span>
+                </a>
+                @endcanany
+                
+                @canany(['formation.view', 'formation.create', 'formation.update', 'formation.delete'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('formations.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Formations</span>
+                </a>
+                @endcanany
 
-            <div class="menu-category">Système</div>
+                @canany(['teacher.register.validate', 'teacher.contract.create', 'teacher.contract.view', 'student.view', 'student.register', 'course.view', 'course.create', 'schedule.view', 'schedule.create'])
+                <div class="menu-category">Gestion</div>
+                @endcanany
+                
+                @canany(['teacher.register.validate', 'teacher.contract.create', 'teacher.contract.view', 'teacher.contract.update', 'teacher.assign'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Enseignants</span>
+                </a>
+                @endcanany
+                
+                @canany(['student.view', 'student.register', 'student.update', 'student.delete', 'student.contract.create'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('students.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Élèves</span>
+                </a>
+                @endcanany
+                
+                @canany(['course.view', 'course.create', 'course.update', 'course.teacher.assign'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Classes & Groupes</span>
+                </a>
+                
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Planification</span>
+                </a>
+                @endcanany
+                
+                @canany(['finance.transaction.view', 'finance.balance.view', 'finance.payment.student.view', 'finance.payment.student.create', 'finance.payment.teacher.calculate', 'finance.payment.teacher.validate', 'finance.expense.create', 'finance.receipt.generate', 'finance.report.view', 'finance.report.generate'])
+                <div class="menu-category">Finance</div>
+                
+                @canany(['finance.transaction.view', 'finance.balance.view'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Transactions</span>
+                </a>
+                @endcanany
+                
+                @canany(['finance.payment.student.view', 'finance.payment.student.create', 'finance.payment.teacher.calculate', 'finance.payment.teacher.validate'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('payments.*') ? 'active' : '' }}">
+                    <i class="fas fa-credit-card"></i>
+                    <span>Paiements</span>
+                </a>
+                @endcanany
+                
+                @canany(['finance.expense.create'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('expenses.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                    <span>Dépenses</span>
+                </a>
+                @endcanany
+                
+                @canany(['finance.report.view', 'finance.report.generate'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('reports.*') ? 'active' : '' }}">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Rapports</span>
+                </a>
+                @endcanany
+                @endcanany
+                
+                @canany(['logistics.order.create', 'logistics.order.view', 'logistics.inventory.view', 'book.catalog.view', 'book.catalog.add', 'document.view', 'document.create'])
+                <div class="menu-category">Ressources</div>
+                
+                @canany(['document.view', 'document.create', 'document.update', 'document.delete'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
+                    <i class="fas fa-file-alt"></i>
+                    <span>Documents</span>
+                </a>
+                @endcanany
+                
+                @canany(['book.catalog.view', 'book.catalog.add', 'book.catalog.update', 'book.catalog.remove'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('books.*') ? 'active' : '' }}">
+                    <i class="fas fa-book"></i>
+                    <span>Livres</span>
+                </a>
+                @endcanany
+                
+                @canany(['logistics.inventory.view', 'logistics.inventory.update'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('inventory.*') ? 'active' : '' }}">
+                    <i class="fas fa-boxes"></i>
+                    <span>Inventaire</span>
+                </a>
+                @endcanany
+                @endcanany
+                
+                @canany(['competition.view', 'competition.create', 'competition.update', 'competition.supervise', 'competition.grade.record', 'competition.results.publish'])
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('contests.*') ? 'active' : '' }}">
+                    <i class="fas fa-medal"></i>
+                    <span>Concours</span>
+                </a>
+                @endcanany
+
+                <div class="menu-category">Système</div>
                 <a href="{{ route('profile.edit') }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <i class="fas fa-user-cog"></i>
                     <span>Mon profil</span>
                 </a>
+                
+                @can('history.view.own')
+                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('history.*') ? 'active' : '' }}">
+                    <i class="fas fa-history"></i>
+                    <span>Historique</span>
+                </a>
+                @endcan
                 
                 <form method="POST" action="{{ route('logout') }}" class="menu-item">
                     @csrf

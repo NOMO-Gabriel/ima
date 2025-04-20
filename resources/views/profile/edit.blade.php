@@ -92,21 +92,32 @@
 
                     <!-- Ville -->
                     <div>
-                        <label for="city" class="block text-sm font-medium text-gray-700">Ville</label>
-                        <input type="text" name="city" id="city" value="{{ old('city', auth()->user()->city) }}" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                        @error('city')
-                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
-                        @enderror
+                    <x-input-label for="city_id" :value="__('Ville')" class="block text-sm font-medium text-gray-700" />
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-city text-gray-400"></i>
+                                </div>
+                                <select id="city_id" name="city_id" class="block w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">-- Sélectionnez une ville --</option>
+                                    @foreach($cities as $city)
+                                        <option value="{{ $city->id }}" {{ old('city_id') == $city->id ? 'selected' : '' }}>
+                                            {{ $city->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <x-input-error :messages="$errors->get('city_id')" class="mt-2 text-sm text-red-600" />
                     </div>
+                    
 
-                    <!-- Adresse -->
+                    <!-- Adresse
                     <div class="col-span-1 md:col-span-2">
                         <label for="address" class="block text-sm font-medium text-gray-700">Adresse</label>
                         <textarea name="address" id="address" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ old('address', auth()->user()->address) }}</textarea>
                         @error('address')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> -->
                 </div>
 
                 <!-- Boutons de soumission -->

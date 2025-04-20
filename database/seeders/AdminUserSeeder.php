@@ -95,7 +95,7 @@ class AdminUserSeeder extends Seeder
      */
     private function createNationalUsers(): void
     {
-        $nationalRoles = ['PCA', 'DG-PREPAS', 'SG', 'DA', 'DF-Nationale', 'DLN'];
+        $nationalRoles = ['pca', 'dg-prepas', 'sg', 'da', 'df-national', 'dln'];
         
         foreach ($nationalRoles as $role) {
             $user = User::create([
@@ -120,7 +120,7 @@ class AdminUserSeeder extends Seeder
     private function createCityUsers(): void
     {
         $cities = City::all();
-        $cityRoles = ['DF-Ville', 'Agent-Financier', 'DL-Ville', 'Chef-Departement'];
+        $cityRoles = ['df-ville', 'agent-financier', 'dl-ville', 'chef-departement'];
         
         foreach ($cities as $city) {
             foreach ($cityRoles as $role) {
@@ -171,7 +171,7 @@ class AdminUserSeeder extends Seeder
     private function createCenterUsers(): void
     {
         $centers = Center::all();
-        $centerRoles = ['Chef-Centre', 'Resp-Academique', 'Resp-Financier', 'Resp-Logistique', 'Personnel-Centre'];
+        $centerRoles = ['chef-centre', 'resp-academique', 'aesp-financier', 'resp-logistique', 'personnel-centre'];
         
         foreach ($centers as $center) {
             foreach ($centerRoles as $role) {

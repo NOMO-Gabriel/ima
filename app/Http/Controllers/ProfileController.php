@@ -16,8 +16,12 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+        // Charger la liste des villes pour le formulaire
+        $cities = \App\Models\City::where('is_active', true)->orderBy('name')->get();
+        
         return view('profile.edit', [
             'user' => $request->user(),
+            'cities' => $cities,
         ]);
     }
 
