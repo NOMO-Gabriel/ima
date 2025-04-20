@@ -21,13 +21,13 @@ class AdminUserSeeder extends Seeder
         $academieFrancophone = Academy::create([
             'name' => 'Académie Francophone',
             'description' => 'Académie des programmes francophones',
-            'status' => 'active'
+            'is_active' => true 
         ]);
         
         $academieAnglophone = Academy::create([
             'name' => 'Académie Anglophone',
             'description' => 'Académie des programmes anglophones',
-            'status' => 'active'
+            'is_active' => true 
         ]);
         
         // Création des départements
@@ -43,14 +43,14 @@ class AdminUserSeeder extends Seeder
                 'name' => $nom,
                 'description' => $description,
                 'academy_id' => $academieFrancophone->id,
-                'status' => 'active'
+                'is_active' => true 
             ]);
             
             Department::create([
                 'name' => $nom,
                 'description' => $description . ' (Anglophone)',
                 'academy_id' => $academieAnglophone->id,
-                'status' => 'active'
+                'is_active' => true 
             ]);
         }
         
@@ -69,7 +69,7 @@ class AdminUserSeeder extends Seeder
                 'description' => 'Centre de formation ' . $nom,
                 'city_id' => $data['city_id'],
                 'academy_id' => $data['academy_id'],
-                'status' => 'active',
+                'is_active' => true ,
                 'address' => 'Adresse de ' . $nom
             ]);
         }
@@ -107,7 +107,7 @@ class AdminUserSeeder extends Seeder
                 'email_verified_at' => now(),
                 'validated_at' => now(),
                 'finalized_at' => now(),
-                'phone' => '237' . rand(600000000, 699999999),
+               'phone_number' => '237' . rand(600000000, 699999999),
             ]);
             
             $user->assignRole($role);
@@ -133,7 +133,7 @@ class AdminUserSeeder extends Seeder
                     'email_verified_at' => now(),
                     'validated_at' => now(),
                     'finalized_at' => now(),
-                    'phone' => '237' . rand(600000000, 699999999),
+                   'phone_number' => '237' . rand(600000000, 699999999),
                     'city_id' => $city->id
                 ]);
                 
@@ -145,16 +145,18 @@ class AdminUserSeeder extends Seeder
         $departments = Department::all();
         foreach ($departments as $department) {
             $academy = Academy::find($department->academy_id);
+            // Créer un identifiant unique basé sur l'académie
+             $academySuffix = $academy->name === 'Académie Francophone' ? 'fr' : 'en';
             $user = User::create([
                 'first_name' => 'Chef',
                 'last_name' => $department->name,
-                'email' => 'chef.' . strtolower(str_replace(' ', '', $department->name)) . '@ima-icorp.com',
+                'email' => 'chef.' . strtolower(str_replace(' ', '', $department->name)) . '.' . $academySuffix . '@ima-icorp.com',
                 'password' => Hash::make('password123'),
                 'status' => 'active',
                 'email_verified_at' => now(),
                 'validated_at' => now(),
                 'finalized_at' => now(),
-                'phone' => '237' . rand(600000000, 699999999),
+               'phone_number' => '237' . rand(600000000, 699999999),
                 'academy_id' => $department->academy_id,
                 'department_id' => $department->id
             ]);
@@ -182,7 +184,7 @@ class AdminUserSeeder extends Seeder
                     'email_verified_at' => now(),
                     'validated_at' => now(),
                     'finalized_at' => now(),
-                    'phone' => '237' . rand(600000000, 699999999),
+                   'phone_number' => '237' . rand(600000000, 699999999),
                     'city_id' => $center->city_id,
                     'academy_id' => $center->academy_id,
                     'center_id' => $center->id
@@ -201,19 +203,23 @@ class AdminUserSeeder extends Seeder
         $centers = Center::all();
         $departments = Department::all();
         
+        
         // Créer 2 enseignants par département
         foreach ($departments as $department) {
+            // Déterminer le suffixe de l'académie
+        $academy = Academy::find($department->academy_id);
+        $academySuffix = $academy->name === 'Académie Francophone' ? 'fr' : 'en';
             for ($i = 1; $i <= 2; $i++) {
                 $user = User::create([
                     'first_name' => 'Enseignant' . $i,
                     'last_name' => $department->name,
-                    'email' => 'enseignant' . $i . '.' . strtolower(str_replace(' ', '', $department->name)) . '@ima-icorp.com',
+                    'email' => 'enseignant' . $i . '.' . strtolower(str_replace(' ', '', $department->name)) . '.' . $academySuffix . '@ima-icorp.com',
                     'password' => Hash::make('password123'),
                     'status' => 'active',
                     'email_verified_at' => now(),
                     'validated_at' => now(),
                     'finalized_at' => now(),
-                    'phone' => '237' . rand(600000000, 699999999),
+                   'phone_number' => '237' . rand(600000000, 699999999),
                     'academy_id' => $department->academy_id,
                     'department_id' => $department->id
                 ]);
@@ -234,7 +240,7 @@ class AdminUserSeeder extends Seeder
                     'email_verified_at' => now(),
                     'validated_at' => now(),
                     'finalized_at' => now(),
-                    'phone' => '237' . rand(600000000, 699999999),
+                   'phone_number' => '237' . rand(600000000, 699999999),
                     'city_id' => $center->city_id,
                     'academy_id' => $center->academy_id,
                     'center_id' => $center->id
@@ -264,7 +270,7 @@ class AdminUserSeeder extends Seeder
                     'email_verified_at' => now(),
                     'validated_at' => now(),
                     'finalized_at' => now(),
-                    'phone' => '237' . rand(600000000, 699999999),
+                   'phone_number' => '237' . rand(600000000, 699999999),
                     'city_id' => $eleve->city_id
                 ]);
                 
@@ -282,7 +288,7 @@ class AdminUserSeeder extends Seeder
             'email_verified_at' => now(),
             'validated_at' => now(),
             'finalized_at' => now(),
-            'phone' => '237600000000',
+           'phone_number' => '237600000000',
         ]);
         
         $user->assignRole('Service-Notification');
