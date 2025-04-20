@@ -17,7 +17,7 @@ class User extends Authenticatable
         'email',
         'password',
         'phone_number',
-        'city',
+        'city_id',
         'address',
         'account_type',
         'profile_photo_path',

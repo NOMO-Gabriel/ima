@@ -19,7 +19,12 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        // Charger la liste des villes pour le formulaire
+        $cities = \App\Models\City::where('is_active', true)->orderBy('name')->get();
+        
+        return view('auth.register', [
+            'cities' => $cities
+        ]);
     }
 
     /**
@@ -34,7 +39,7 @@ class RegisteredUserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'phone_number' => ['required', 'string', 'max:20', 'unique:'.User::class],
-            'city' => ['nullable', 'string', 'max:100'],
+            'city_id' => ['nullable', 'exists:cities,id'],
             'account_type' => ['required', 'string', 'in:Eleve,Enseignant,Parent'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['required', 'accepted'],
@@ -45,7 +50,7 @@ class RegisteredUserController extends Controller
             'last_name' => $request->last_name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
-            'city' => $request->city,
+            'city_id' => $request->city_id, 
             'account_type' => $request->account_type,
             'password' => Hash::make($request->password),
             'status' => 'pending_validation', // Par défaut, les utilisateurs sont en attente de validation

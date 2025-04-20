@@ -78,16 +78,23 @@
                         </div>
 
                         <!-- Ville -->
+                      
                         <div>
-                            <x-input-label for="city" :value="__('Ville')" class="block text-sm font-medium text-gray-700" />
+                            <x-input-label for="city_id" :value="__('Ville')" class="block text-sm font-medium text-gray-700" />
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-city text-gray-400"></i>
                                 </div>
-                                <x-text-input id="city" class="block w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500" 
-                                    type="text" name="city" :value="old('city')" />
+                                <select id="city_id" name="city_id" class="block w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">-- Sélectionnez une ville --</option>
+                                    @foreach($cities as $city)
+                                        <option value="{{ $city->id }}" {{ old('city_id') == $city->id ? 'selected' : '' }}>
+                                            {{ $city->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
-                            <x-input-error :messages="$errors->get('city')" class="mt-2 text-sm text-red-600" />
+                            <x-input-error :messages="$errors->get('city_id')" class="mt-2 text-sm text-red-600" />
                         </div>
                         
                         <!-- Type de compte -->
