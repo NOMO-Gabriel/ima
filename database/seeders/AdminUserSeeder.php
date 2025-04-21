@@ -161,7 +161,7 @@ class AdminUserSeeder extends Seeder
                 'department_id' => $department->id
             ]);
             
-            $user->assignRole('Chef-Departement');
+            $user->assignRole('chef-departement');
         }
     }
     
@@ -171,7 +171,7 @@ class AdminUserSeeder extends Seeder
     private function createCenterUsers(): void
     {
         $centers = Center::all();
-        $centerRoles = ['chef-centre', 'resp-academique', 'aesp-financier', 'resp-logistique', 'personnel-centre'];
+        $centerRoles = ['chef-centre', 'resp-academique', 'resp-financier', 'resp-logistique', 'personnel-centre'];
         
         foreach ($centers as $center) {
             foreach ($centerRoles as $role) {
@@ -224,7 +224,7 @@ class AdminUserSeeder extends Seeder
                     'department_id' => $department->id
                 ]);
                 
-                $user->assignRole('Enseignant');
+                $user->assignRole('enseignant');
             }
         }
         
@@ -246,7 +246,7 @@ class AdminUserSeeder extends Seeder
                     'center_id' => $center->id
                 ]);
                 
-                $user->assignRole('Eleve');
+                $user->assignRole('eleve');
             }
         }
     }
@@ -257,7 +257,7 @@ class AdminUserSeeder extends Seeder
     private function createExternalUsers(): void
     {
         // Créer quelques parents
-        $eleves = User::role('Eleve')->get();
+        $eleves = User::role('eleve')->get();
         
         foreach ($eleves as $index => $eleve) {
             if ($index % 2 == 0) { // Créer un parent pour un élève sur deux
@@ -274,7 +274,7 @@ class AdminUserSeeder extends Seeder
                     'city_id' => $eleve->city_id
                 ]);
                 
-                $user->assignRole('Parent');
+                $user->assignRole('parent');
             }
         }
         
@@ -291,6 +291,6 @@ class AdminUserSeeder extends Seeder
            'phone_number' => '237600000000',
         ]);
         
-        $user->assignRole('Service-Notification');
+        $user->assignRole('service-notification');
     }
 }

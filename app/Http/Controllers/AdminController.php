@@ -16,10 +16,10 @@ class AdminController extends Controller
         // Récupération de statistiques pour le dashboard
         $stats = [
             'users_count' => User::count(),
-            'teachers_count' => User::role('Enseignant')->count(),
-            'students_count' => User::role('Eleve')->count(),
+            'teachers_count' => User::role('enseignant')->count(),
+            'students_count' => User::role('eleve')->count(),
             'staff_count' => User::whereHas('roles', function($q) {
-                $q->whereNotIn('name', ['Enseignant', 'Eleve', 'Parent']);
+                $q->whereNotIn('name', ['enseignant', 'eleve', 'parent']);
             })->count(),
         ];
         
