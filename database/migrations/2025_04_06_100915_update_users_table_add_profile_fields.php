@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('phone_number')->nullable()->unique();
             $table->string('profile_photo_path')->nullable();
             $table->string('city')->nullable();
-            $table->string('address')->nullable();
+            $table->string('address')->nullable()->default('cradat');
             $table->string('account_type', 30)->default('eleve')->after('address');
             $table->enum('status', [
                 'pending_validation',

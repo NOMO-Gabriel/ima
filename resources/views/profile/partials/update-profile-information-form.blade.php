@@ -66,11 +66,18 @@
 
         <!-- Ville -->
         <div>
-            <x-input-label for="city" :value="__('Ville')" />
-            <x-text-input id="city" name="city" type="text" class="mt-1 block w-full" :value="old('city', $user->city)" autocomplete="address-level2" />
-            <x-input-error class="mt-2" :messages="$errors->get('city')" />
+            <x-input-label for="city_id" :value="__('Ville')" />
+            <select id="city_id" name="city_id" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                <option value="">-- Sélectionnez une ville --</option>
+                @foreach($cities as $city)
+                    <option value="{{ $city->id }}"
+                        {{ (old('city_id', $user->city_id) == $city->id) ? 'selected' : '' }}>
+                        {{ $city->name }}
+                    </option>
+                @endforeach
+            </select>
+            <x-input-error class="mt-2" :messages="$errors->get('city_id')" />
         </div>
-
         <!-- Adresse -->
         <div>
             <x-input-label for="address" :value="__('Adresse')" />
