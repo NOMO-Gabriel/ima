@@ -282,7 +282,7 @@
                 <div class="menu-category" data-category="administration">
                     Administration <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="menu-group" id="group-administration">
+                <div class="menu-group collapsed" id="group-administration">
                     @canany(['user.view.any', 'user.create', 'user.update.any', 'user.delete.any'])
                     <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
                         <i class="fas fa-users"></i>
@@ -317,7 +317,7 @@
                 <div class="menu-category" data-category="gestion">
                     Gestion <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="menu-group" id="group-gestion">
+                <div class="menu-group collapsed" id="group-gestion">
                     @canany(['teacher.register.validate', 'teacher.contract.create', 'teacher.contract.view', 'teacher.contract.update', 'teacher.assign'])
                     <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
                         <i class="fas fa-chalkboard-teacher"></i>
@@ -350,7 +350,7 @@
                 <div class="menu-category" data-category="finance">
                     Finance <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="menu-group" id="group-finance">
+                <div class="menu-group collapsed" id="group-finance">
                     @canany(['finance.transaction.view', 'finance.balance.view'])
                     <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
                         <i class="fas fa-money-bill-wave"></i>
@@ -385,7 +385,7 @@
                 <div class="menu-category" data-category="ressources">
                     Ressources <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="menu-group" id="group-ressources">
+                <div class="menu-group collapsed" id="group-ressources">
                     @canany(['document.view', 'document.create', 'document.update', 'document.delete'])
                     <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
                         <i class="fas fa-file-alt"></i>
@@ -419,7 +419,7 @@
                 <div class="menu-category" data-category="systeme">
                     Système <i class="fas fa-chevron-down"></i>
                 </div>
-                <div class="menu-group" id="group-systeme">
+                <div class="menu-group collapsed" id="group-systeme">
                     <a href="{{ route('profile.edit') }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                         <i class="fas fa-user-cog"></i>
                         <span>Mon profil</span>
