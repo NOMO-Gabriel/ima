@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Validation\Rules;
+use Spatie\Permission\Models\Permission;
 
 class UserController extends Controller
 {
@@ -114,16 +115,78 @@ class UserController extends Controller
     /**
      * Affiche les détails d'un utilisateur
      */
-    public function show(User $user)
-    {
-        // Vérifier les permissions
-        if (!auth()->user()->can('user.view.any') && auth()->id() !== $user->id) {
-            abort(403, 'Non autorisé');
-        }
+    // public function show(User $user)
+    // {
+    //     // Vérifier les permissions
+    //     if (!auth()->user()->can('user.view.any') && auth()->id() !== $user->id) {
+    //         abort(403, 'Non autorisé');
+    //     }
         
-        return view('admin.users.show', compact('user'));
-    }
+    //     return view('admin.users.show', compact('user'));
+    // }
 
+
+    public function show(User $user)
+{
+    // Vérification supplémentaire
+    if (!auth()->user()->can('user.view.any')) {
+        abort(403, 'Non autorisé');
+    }
+    
+    // Récupérer les rôles si l'utilisateur peut les modifier
+    $roles = auth()->user()->can('user.role.assign') 
+           ? Role::all() 
+           : collect();
+    
+    // Les permissions regroupées par module
+    $permissionsByModule = [];
+    if (auth()->user()->can('user.role.assign')) {
+        $permissionsByModule = Permission::all()->groupBy('module');
+    }
+    
+    return view('admin.users.show', compact('user', 'roles', 'permissionsByModule'));
+}
+
+public function updateRoles(Request $request, User $user)
+{
+    // Vérifier les permissions
+    if (!auth()->user()->can('user.role.assign')) {
+        abort(403, 'Non autorisé');
+    }
+    
+    // Validation des données
+    $validated = $request->validate([
+        'roles' => 'nullable|array',
+        'roles.*' => 'exists:roles,id',
+        'permissions' => 'nullable|array',
+        'permissions.*' => 'exists:permissions,id',
+        'status' => 'required|in:pending_validation,pending_finalization,active,suspended,rejected,archived',
+    ]);
+    
+    // Mise à jour du statut
+    $user->status = $validated['status'];
+    
+    // Gestion de la validation/finalisation automatique si passage à actif
+    if ($validated['status'] === 'active' && !$user->validated_at) {
+        $user->validated_by = auth()->id();
+        $user->validated_at = now();
+        $user->finalized_by = auth()->id();
+        $user->finalized_at = now();
+    }
+    
+    $user->save();
+    
+    // Mise à jour des rôles
+    $roles = isset($validated['roles']) ? $validated['roles'] : [];
+    $user->syncRoles($roles);
+    
+    // Mise à jour des permissions directes
+    $permissions = isset($validated['permissions']) ? $validated['permissions'] : [];
+    $user->syncPermissions($permissions);
+    
+    return redirect()->route('admin.users.show', $user)
+        ->with('success', 'Rôles et permissions mis à jour avec succès');
+}
     /**
      * Affiche le formulaire de modification d'un utilisateur
      */

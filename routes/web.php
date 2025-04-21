@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
     // Routes pour l'administration (protégées par middleware de permission)
-    Route::prefix('admin')->name('admin.')->middleware(['role:PCA|DG-PREPAS|SG|DA|DF-Nationale|DLN'])->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
         // Gestion des utilisateurs
         Route::resource('users', UserController::class);
         
@@ -37,6 +37,18 @@ Route::middleware('auth')->group(function () {
         // Gestion des départements
         Route::resource('departments', DepartmentController::class);
     });
+
+    // Routes pour la gestion des utilisateurs
+    Route::prefix('admin/users')->name('admin.users.')->middleware('permission:user.view.any')->group(function () {
+        Route::get('/', [UserController::class, 'index'])->name('index');
+        Route::get('/{user}', [UserController::class, 'show'])->name('show');
+        Route::put('/{user}/roles', [UserController::class, 'updateRoles'])
+             ->middleware('permission:user.role.assign')
+             ->name('update-roles');
+    });
+    Route::put('/admin/users/{user}/roles', [UserController::class, 'updateRoles'])
+     ->middleware('permission:user.role.assign')
+     ->name('admin.users.update-roles');
 });
 
 require __DIR__.'/auth.php';
