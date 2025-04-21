@@ -78,6 +78,46 @@
             <x-input-error class="mt-2" :messages="$errors->get('address')" />
         </div>
 
+        <!-- Rôles (uniquement visible pour les utilisateurs ayant la permission de modifier les rôles) -->
+        @if($canEditRoles)
+        <div class="mt-4">
+            <x-input-label :value="__('Type de compte / Rôles')" />
+            <div class="mt-2 max-h-60 overflow-y-auto p-2 border border-gray-300 rounded-md">
+                @foreach($roles as $role)
+                    <div class="flex items-center space-x-2 mb-2">
+                        <input type="checkbox" id="role_{{ $role->id }}" name="roles[]" value="{{ $role->name }}"
+                               class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                               {{ in_array($role->name, $userRoles) ? 'checked' : '' }}>
+                        <label for="role_{{ $role->id }}" class="text-sm font-medium text-gray-700">
+                            {{ $role->name }} 
+                            @if($role->description)
+                                <span class="text-xs text-gray-500">({{ $role->description }})</span>
+                            @endif
+                        </label>
+                    </div>
+                @endforeach
+            </div>
+            <x-input-error class="mt-2" :messages="$errors->get('roles')" />
+        </div>
+        @else
+        <div class="mt-4">
+            <x-input-label :value="__('Type de compte / Rôles')" />
+            <div class="mt-2 p-2 border border-gray-300 rounded-md bg-gray-100">
+                @foreach($user->roles as $role)
+                    <div class="mb-1 text-sm text-gray-700">
+                        {{ $role->name }} 
+                        @if($role->description)
+                            <span class="text-xs text-gray-500">({{ $role->description }})</span>
+                        @endif
+                    </div>
+                @endforeach
+                <p class="mt-2 text-xs text-gray-500 italic">
+                    {{ __('Vous n\'avez pas la permission de modifier les rôles. Contactez un administrateur si nécessaire.') }}
+                </p>
+            </div>
+        </div>
+        @endif
+
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Enregistrer') }}</x-primary-button>
 

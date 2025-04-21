@@ -77,5 +77,31 @@ class User extends Authenticatable
     {
         return $this->hasMany(Center::class, 'director_id');
     }
+
+    /**
+     * Override de la méthode assignRole pour mettre à jour le account_type
+     */
+   /**
+ * Assigne un rôle à l'utilisateur et met à jour son account_type
+ */
+public function myAssignRole($roles)
+{
+    // Appel à la méthode du trait
+    $this->assignRole($roles);
+    
+    // Mettre à jour le account_type
+    if (is_array($roles) || $roles instanceof \Illuminate\Support\Collection) {
+        $this->account_type = $roles[0];
+    } else {
+        $this->account_type = $roles;
+    }
+    
+    // Sauvegarder sans déclencher les events pour éviter les boucles
+    $this->saveQuietly();
+    
+    return $this;
 }
+
+}
+
 

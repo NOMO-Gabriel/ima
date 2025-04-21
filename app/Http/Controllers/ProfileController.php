@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Spatie\Permission\Models\Role;
 
 class ProfileController extends Controller
 {
@@ -16,11 +17,18 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        // Charger la liste des villes pour le formulaire
-        $cities = \App\Models\City::where('is_active', true)->orderBy('name')->get();
+        $user = $request->user();
+        $roles = Role::all(); // Récupère tous les rôles disponibles
+        $userRoles = $user->roles->pluck('name')->toArray(); // Récupère les rôles de l'utilisateur
+        $canEditRoles = $user->can('user.role.assign'); // Vérifie si l'utilisateur a la permission de modifier les rôles
+        $cities = \App\Models\City::where('is_active', true)->orderBy('name')->get();// Charger la liste des villes pour le formulaire
+        
         
         return view('profile.edit', [
-            'user' => $request->user(),
+            'user' => $user,
+            'roles' => $roles,
+            'userRoles' => $userRoles,
+            'canEditRoles' => $canEditRoles,
             'cities' => $cities,
         ]);
     }
@@ -30,13 +38,21 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        
+        // Mise à jour des informations de base du profil
+        $user->fill($request->validated());
 
         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
         }
 
-        $request->user()->save();
+        // Mise à jour des rôles si l'utilisateur a la permission nécessaire
+        if ($request->has('roles') && $user->can('user.role.assign')) {
+            $user->syncRoles($request->roles);
+        }
+
+        $user->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }

@@ -15,8 +15,9 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => ['required', 'string', 'max:255'],
+        $rules = [
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
@@ -25,6 +26,17 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'phone_number' => ['nullable', 'string', 'max:20'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'address' => ['nullable', 'string', 'max:255'],
         ];
+
+        // Ajouter la validation des rôles uniquement si l'utilisateur a la permission
+        if ($this->user()->can('user.role.assign') && $this->has('roles')) {
+            $rules['roles'] = ['array'];
+            $rules['roles.*'] = ['exists:roles,name'];
+        }
+
+        return $rules;
     }
 }
