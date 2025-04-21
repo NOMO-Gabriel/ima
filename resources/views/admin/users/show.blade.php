@@ -229,9 +229,13 @@
                     </div>
                 </div>
                 
-                <div class="flex justify-end pt-4">
-                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
-                        <i class="fas fa-save mr-2"></i> Enregistrer les modifications
+                <!-- Bouton de sauvegarde -->
+                <div class="flex items-center justify-end mt-6 gap-4">
+                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                        {{ __('Annuler') }}
+                    </a>
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150">
+                        {{ __('Enregistrer les modifications') }}
                     </button>
                 </div>
             </form>

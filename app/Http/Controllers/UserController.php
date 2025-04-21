@@ -205,68 +205,62 @@ public function updateRoles(Request $request, User $user)
      * Met à jour un utilisateur
      */
     public function update(Request $request, User $user)
-    {
-        // Vérifier les permissions
-        if (!auth()->user()->can('user.update.any') && auth()->id() !== $user->id) {
-            abort(403, 'Non autorisé');
-        }
-        
-        // Validation des données
-        $rules = [
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number,' . $user->id],
-            'city' => ['nullable', 'string', 'max:100'],
-            'address' => ['nullable', 'string', 'max:255'],
-        ];
-        
-        // Si l'utilisateur modifie le mot de passe
-        if ($request->filled('password')) {
-            $rules['password'] = ['required', 'confirmed', Rules\Password::defaults()];
-        }
-        
-        // Si l'utilisateur a la permission de modifier les rôles
-        if (auth()->user()->can('user.role.assign')) {
-            $rules['roles'] = ['required', 'array'];
-            $rules['status'] = ['required', 'string', 'in:pending_validation,pending_finalization,active,suspended,rejected,archived'];
-        }
-        
-        $request->validate($rules);
-        
-        // Mise à jour des informations de base
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
-        $user->email = $request->email;
-        $user->phone_number = $request->phone_number;
-        $user->city = $request->city;
-        $user->address = $request->address;
-        
-        // Mise à jour du mot de passe si fourni
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-        
-        // Mise à jour du statut et des rôles si l'utilisateur a les permissions
-        if (auth()->user()->can('user.role.assign')) {
-            $user->status = $request->status;
-            $user->syncRoles($request->roles);
-            
-            // Si l'utilisateur est validé pour la première fois
-            if ($user->isDirty('status') && $user->status === 'active' && !$user->validated_at) {
-                $user->validated_by = auth()->id();
-                $user->validated_at = now();
-                $user->finalized_by = auth()->id();
-                $user->finalized_at = now();
-            }
-        }
-        
-        $user->save();
-        
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Utilisateur mis à jour avec succès.');
+{
+    // Validation des données
+    $rules = [
+        'first_name' => ['required', 'string', 'max:255'],
+        'last_name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
+        'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number,' . $user->id],
+        'city' => ['nullable', 'string', 'max:100'],
+        'address' => ['nullable', 'string', 'max:255'],
+    ];
+    
+    // Si l'utilisateur modifie le mot de passe
+    if ($request->filled('password')) {
+        $rules['password'] = ['required', 'confirmed', Rules\Password::defaults()];
     }
-
+    
+    // Si l'utilisateur a la permission de modifier les rôles
+    if (auth()->user()->can('user.role.assign')) {
+        $rules['role'] = ['required', 'string', 'exists:roles,name']; // Un seul rôle au lieu de plusieurs
+        $rules['status'] = ['required', 'string', 'in:pending_validation,pending_finalization,active,suspended,rejected,archived'];
+    }
+    
+    $request->validate($rules);
+    
+    // Mise à jour des informations de base
+    $user->first_name = $request->first_name;
+    $user->last_name = $request->last_name;
+    $user->email = $request->email;
+    $user->phone_number = $request->phone_number;
+    $user->city = $request->city;
+    $user->address = $request->address;
+    
+    // Mise à jour du mot de passe si fourni
+    if ($request->filled('password')) {
+        $user->password = Hash::make($request->password);
+    }
+    
+    // Mise à jour du statut et du rôle si l'utilisateur a les permissions
+    if (auth()->user()->can('user.role.assign')) {
+        $user->status = $request->status;
+        $user->syncRoles([$request->role]); // Assignation d'un seul rôle
+        
+        // Si l'utilisateur est validé pour la première fois
+        if ($user->isDirty('status') && $user->status === 'active' && !$user->validated_at) {
+            $user->validated_by = auth()->id();
+            $user->validated_at = now();
+            $user->finalized_by = auth()->id();
+            $user->finalized_at = now();
+        }
+    }
+    
+    $user->save();
+    
+    return redirect()->route('admin.users.index')
+        ->with('success', 'Utilisateur mis à jour avec succès.');
+}
     /**
      * Supprime un utilisateur
      */
