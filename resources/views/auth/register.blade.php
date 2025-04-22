@@ -106,9 +106,9 @@
                                 </div>
                                 <select id="account_type" name="account_type" class="block w-full pl-10 pr-3 py-2 rounded-md border border-gray-300 focus:ring-blue-500 focus:border-blue-500" required>
                                     <option value="">-- Sélectionnez un type de compte --</option>
-                                    <option value="Eleve" {{ old('account_type') == 'Eleve' ? 'selected' : '' }}>Élève</option>
-                                    <option value="Enseignant" {{ old('account_type') == 'Enseignant' ? 'selected' : '' }}>Enseignant</option>
-                                    <option value="Parent" {{ old('account_type') == 'Parent' ? 'selected' : '' }}>Parent</option>
+                                    <option value="eleve" {{ old('account_type') == 'eleve' ? 'selected' : '' }}>Élève</option>
+                                    <option value="enseignant" {{ old('account_type') == 'enseignant' ? 'selected' : '' }}>Enseignant</option>
+                                    <option value="parent" {{ old('account_type') == 'parent' ? 'selected' : '' }}>Parent</option>
                                 </select>
                             </div>
                             <x-input-error :messages="$errors->get('account_type')" class="mt-2 text-sm text-red-600" />

@@ -40,7 +40,7 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'phone_number' => ['required', 'string', 'max:20', 'unique:'.User::class],
             'city_id' => ['nullable', 'exists:cities,id'],
-            'account_type' => ['required', 'string', 'in:Eleve,Enseignant,Parent'],
+            'account_type' => ['required', 'string', 'in:eleve,enseignant,parent'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['required', 'accepted'],
         ]);

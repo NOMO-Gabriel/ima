@@ -9,11 +9,20 @@
             <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all">
                 <i class="fas fa-arrow-left mr-2"></i> Retour à la liste
             </a>
-            @can('user.update.any')
+            <!-- @can('user.update.any')
             <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
                 <i class="fas fa-edit mr-2"></i> Modifier
-            </a>
+            </a> -->
             @endcan
+            @if(auth()->id() !== $user->id)
+                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all " title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
+                        <i class="fas fa-trash mr-2"></i> Supprimer
+                    </button>
+                </form>
+            @endif
         </div>
     </div>
 
@@ -185,7 +194,7 @@
                             <div class="bg-white p-3 rounded-md border border-gray-200 hover:shadow-md transition-shadow">
                                 <div class="flex items-start">
                                     <div class="flex items-center h-5">
-                                        <input id="role_{{ $role->id }}" name="roles[]" type="checkbox" value="{{ $role->id }}" 
+                                        <input id="role_{{ $role->id }}" name="roles[]" type="checkbox" value="{{ $role->name }}" 
                                             {{ $user->roles->contains($role->id) ? 'checked' : '' }}
                                             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                     </div>

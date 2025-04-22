@@ -152,13 +152,13 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end space-x-2">
-                                <a href="{{ route('admin.users.show', $user) }}" class="text-blue-600 hover:text-blue-900" title="Voir">
+                                <a href="{{ route('admin.users.show', $user) }}" class="text-blue-600 hover:text-blue-900" title="Voir le profil">
                                     <i class="fas fa-eye"></i>
                                 </a>
-                                <a href="{{ route('admin.users.edit', $user) }}" class="text-green-600 hover:text-green-900" title="Modifier">
+                                <!-- <a href="{{ route('admin.users.edit', $user) }}" class="text-green-600 hover:text-green-900" title="Modifier">
                                     <i class="fas fa-edit"></i>
-                                </a>
-                                @if(auth()->id() !== $user->id)
+                                </a> -->
+                                <!-- @if(auth()->id() !== $user->id)
                                     <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('DELETE')
@@ -166,7 +166,7 @@
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>
-                                @endif
+                                @endif -->
                             </div>
                         </td>
                     </tr>
