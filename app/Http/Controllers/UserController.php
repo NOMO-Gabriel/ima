@@ -157,9 +157,9 @@ public function updateRoles(Request $request, User $user)
     // Validation des données
     $validated = $request->validate([
         'roles' => 'nullable|array',
-        'roles.*' => 'exists:roles,id',
+        'roles.*' => 'exists:roles',
         'permissions' => 'nullable|array',
-        'permissions.*' => 'exists:permissions,id',
+        'permissions.*' => 'exists:permissions',
         'status' => 'required|in:pending_validation,pending_finalization,active,suspended,rejected,archived',
     ]);
     
