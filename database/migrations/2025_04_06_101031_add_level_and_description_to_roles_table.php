@@ -8,7 +8,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('roles', function (Blueprint $table) {
-            $table->integer('level')->default(1)->after('guard_name');
+            $table->string('level')->nullable()->after('guard_name');
             $table->text('description')->nullable()->after('name');
         });
     }
