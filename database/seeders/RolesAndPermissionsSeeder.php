@@ -22,7 +22,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Création de toutes les permissions
         $this->createAllPermissions();
-        
+
         // Création des rôles et attribution des permissions
         $this->createAllRoles();
     }
@@ -263,7 +263,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'national',
         ]);
-        
+
         // Donner toutes les permissions au PCA
         $pca->givePermissionTo(Permission::all());
 
@@ -274,7 +274,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'national',
         ]);
-        
+
         // Exclure quelques permissions stratégiques
         $dgPermissions = Permission::whereNotIn('name', [
             'user.delete.any',
@@ -290,7 +290,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'national',
         ]);
-        
+
         // Permissions administratives sans accès complet aux finances
         $sgPermissions = Permission::where(function($query) {
             $query->where('module', 'User Management')
@@ -310,7 +310,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'national',
         ]);
-        
+
         // Permissions académiques et pédagogiques
         $daPermissions = Permission::where(function($query) {
             $query->where('module', 'Academy Management')
@@ -332,7 +332,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'national',
         ]);
-        
+
         // Permissions financières complètes
         $dfPermissions = Permission::where(function($query) {
             $query->where('module', 'Financial Management')
@@ -351,7 +351,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'national',
         ]);
-        
+
         // Permissions logistiques complètes
         $dlnPermissions = Permission::where(function($query) {
             $query->where('module', 'Logistics Management')
@@ -375,7 +375,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'city',
         ]);
-        
+
         // Permissions financières limitées à la ville
         $dfVillePermissions = Permission::where(function($query) {
             $query->where('module', 'Financial Management')
@@ -394,7 +394,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'city',
         ]);
-        
+
         // Permissions financières opérationnelles
         $agentPermissions = Permission::whereIn('name', [
             'finance.payment.student.create',
@@ -419,7 +419,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'city',
         ]);
-        
+
         // Permissions logistiques de ville
         $dlVillePermissions = Permission::where(function($query) {
             $query->where('module', 'Logistics Management')
@@ -437,7 +437,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'city',
         ]);
-        
+
         // Permissions académiques départementales
         $chefDepPermissions = Permission::where(function($query) {
             $query->where('module', 'Schedule Management')
@@ -465,7 +465,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'center',
         ]);
-        
+
         // Permissions de gestion de centre
         $chefCentrePermissions = Permission::where(function($query) {
             $query->where('name', 'like', 'center.%')
@@ -487,7 +487,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'center',
         ]);
-        
+
         // Permissions académiques de centre
         $respAcadPermissions = Permission::where(function($query) {
             $query->where('name', 'like', 'student.register')
@@ -512,7 +512,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'center',
         ]);
-        
+
         // Permissions financières de centre
         $respFinPermissions = Permission::whereIn('name', [
             'finance.payment.student.create',
@@ -538,7 +538,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'center',
         ]);
-        
+
         // Permissions logistiques de centre
         $respLogPermissions = Permission::where(function($query) {
             $query->where('name', 'like', 'logistics.order.create')
@@ -560,7 +560,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'center',
         ]);
-        
+
         // Permissions basiques pour le personnel
         $personnelPermissions = Permission::whereIn('name', [
             'user.view.own',
@@ -586,7 +586,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'basic',
         ]);
-        
+
         // Permissions pour enseignants
         $enseignantPermissions = Permission::whereIn('name', [
             'user.view.own',
@@ -612,7 +612,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'basic',
         ]);
-        
+
         // Permissions pour élèves
         $elevePermissions = Permission::whereIn('name', [
             'user.view.own',
@@ -639,7 +639,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'external',
         ]);
-        
+
         // Permissions pour parents
         $parentPermissions = Permission::whereIn('name', [
             'user.view.own',
@@ -657,7 +657,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'guard_name' => 'web',
             'level' => 'system',
         ]);
-        
+
         // Permissions pour le service de notification
         $notificationPermissions = Permission::whereIn('name', [
             'notification.send.auto',
