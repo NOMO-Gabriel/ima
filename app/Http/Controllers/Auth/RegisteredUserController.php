@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -21,7 +22,7 @@ class RegisteredUserController extends Controller
     {
         // Charger la liste des villes pour le formulaire
         $cities = \App\Models\City::where('is_active', true)->orderBy('name')->get();
-        
+
         return view('auth.register', [
             'cities' => $cities
         ]);
@@ -50,7 +51,7 @@ class RegisteredUserController extends Controller
             'last_name' => $request->last_name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
-            'city_id' => $request->city_id, 
+            'city_id' => $request->city_id,
             'account_type' => $request->account_type,
             'password' => Hash::make($request->password),
             'status' => 'pending_validation', // Par défaut, les utilisateurs sont en attente de validation
@@ -62,6 +63,10 @@ class RegisteredUserController extends Controller
         $user->assignRole($request->account_type);
 
         Auth::login($user);
+
+        // Ajoutez un message de succès à la session
+        Session::flash('status', 'Votre compte a été créé avec succès!');
+        Session::flash('status-type', 'success');
 
         return redirect(route('dashboard', absolute: false));
     }

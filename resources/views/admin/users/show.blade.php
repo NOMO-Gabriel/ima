@@ -6,16 +6,16 @@
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-semibold text-gray-800">Profil de {{ $user->first_name }} {{ $user->last_name }}</h1>
         <div class="flex space-x-2">
-            <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all">
+            <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-all">
                 <i class="fas fa-arrow-left mr-2"></i> Retour à la liste
             </a>
             <!-- @can('user.update.any')
-            <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
+            <a href="{{ route('admin.users.edit', ['locale' => app()->getLocale()], $user) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
                 <i class="fas fa-edit mr-2"></i> Modifier
             </a> -->
             @endcan
             @if(auth()->id() !== $user->id)
-                <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline-block">
+                <form action="{{ route('admin.users.destroy', ['locale' => app()->getLocale()], $user) }}" method="POST" class="inline-block">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-all " title="Supprimer" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')">
@@ -63,7 +63,7 @@
                 <div class="md:w-1/4 flex justify-center mb-6 md:mb-0">
                     <div class="relative">
                         <img class="h-40 w-40 rounded-full object-cover border-4 border-gray-200" src="{{ $user->profile_photo_url }}" alt="{{ $user->first_name }}">
-                        <div class="absolute bottom-0 right-0 h-6 w-6 rounded-full 
+                        <div class="absolute bottom-0 right-0 h-6 w-6 rounded-full
                             @if($user->status === 'active') bg-green-500 @else bg-gray-400 @endif"></div>
                     </div>
                 </div>
@@ -113,7 +113,7 @@
                                                 'rejected' => 'bg-gray-100 text-gray-800',
                                                 'archived' => 'bg-gray-100 text-gray-800'
                                             ];
-                                            
+
                                             $statusLabels = [
                                                 'pending_validation' => 'En attente de validation',
                                                 'pending_finalization' => 'En attente de finalisation',
@@ -167,11 +167,11 @@
             <h3 class="text-lg font-medium text-gray-900 mb-6 pb-2 border-b border-gray-200">
                 <i class="fas fa-user-shield mr-2 text-blue-500"></i>Gestion des rôles et permissions
             </h3>
-            
+
             <form action="{{ route('admin.users.update-roles', $user) }}" method="POST" class="space-y-6">
                 @csrf
                 @method('PUT')
-                
+
                 <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
                     <h4 class="text-md font-medium text-gray-700 mb-2">Statut du compte</h4>
                     <div class="flex items-center space-x-2">
@@ -186,7 +186,7 @@
                     </div>
                     <p class="mt-2 text-sm text-gray-500">Le changement de statut peut affecter l'accès de l'utilisateur au système.</p>
                 </div>
-                
+
                 <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
                     <h4 class="text-md font-medium text-gray-700 mb-4">Rôles</h4>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -194,7 +194,7 @@
                             <div class="bg-white p-3 rounded-md border border-gray-200 hover:shadow-md transition-shadow">
                                 <div class="flex items-start">
                                     <div class="flex items-center h-5">
-                                        <input id="role_{{ $role->id }}" name="roles[]" type="checkbox" value="{{ $role->name }}" 
+                                        <input id="role_{{ $role->id }}" name="roles[]" type="checkbox" value="{{ $role->name }}"
                                             {{ $user->roles->contains($role->id) ? 'checked' : '' }}
                                             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                     </div>
@@ -209,11 +209,11 @@
                         @endforeach
                     </div>
                 </div>
-                
+
                 <div class="bg-gray-50 p-4 rounded-md border border-gray-200">
                     <h4 class="text-md font-medium text-gray-700 mb-2">Permissions directes</h4>
                     <p class="text-sm text-gray-500 mb-4">Ces permissions sont attribuées directement à l'utilisateur, indépendamment de ses rôles.</p>
-                    
+
                     <div class="bg-white p-4 rounded-md border border-gray-200 max-h-96 overflow-y-auto">
                         @foreach($permissionsByModule as $module => $permissions)
                             <div class="mb-6">
@@ -222,7 +222,7 @@
                                     @foreach($permissions as $permission)
                                         <div class="flex items-start hover:bg-gray-50 p-2 rounded-md transition-colors">
                                             <div class="flex items-center h-5">
-                                                <input id="permission_{{ $permission->id }}" name="permissions[]" type="checkbox" value="{{ $permission->id }}" 
+                                                <input id="permission_{{ $permission->id }}" name="permissions[]" type="checkbox" value="{{ $permission->id }}"
                                                     {{ $user->hasDirectPermission($permission->name) ? 'checked' : '' }}
                                                     class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
                                             </div>
@@ -237,10 +237,10 @@
                         @endforeach
                     </div>
                 </div>
-                
+
                 <!-- Bouton de sauvegarde -->
                 <div class="flex items-center justify-end mt-6 gap-4">
-                    <a href="{{ route('admin.users.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
+                    <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
                         {{ __('Annuler') }}
                     </a>
                     <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition ease-in-out duration-150">
@@ -258,7 +258,7 @@
             <h3 class="text-lg font-medium text-gray-900 mb-6 pb-2 border-b border-gray-200">
                 <i class="fas fa-history mr-2 text-blue-500"></i>Historique des activités
             </h3>
-            
+
             <div class="flex flex-col items-center justify-center py-12">
                 <div class="rounded-full bg-blue-100 p-6 mb-4">
                     <i class="fas fa-clock text-blue-500 text-4xl"></i>
@@ -278,25 +278,25 @@
         document.addEventListener('DOMContentLoaded', function() {
             const tabButtons = document.querySelectorAll('[id^="tab-"]');
             const tabContents = document.querySelectorAll('[id^="content-"]');
-            
+
             function activateTab(tabId) {
                 // Masquer tous les contenus
                 tabContents.forEach(content => content.classList.add('hidden'));
-                
+
                 // Réinitialiser tous les boutons d'onglet
                 tabButtons.forEach(button => {
                     button.classList.remove('text-blue-600', 'border-blue-500');
                     button.classList.add('text-gray-500', 'border-transparent', 'hover:text-gray-700', 'hover:border-gray-300');
                 });
-                
+
                 // Activer l'onglet sélectionné
                 document.getElementById('tab-' + tabId).classList.remove('text-gray-500', 'border-transparent', 'hover:text-gray-700', 'hover:border-gray-300');
                 document.getElementById('tab-' + tabId).classList.add('text-blue-600', 'border-blue-500');
-                
+
                 // Afficher le contenu correspondant
                 document.getElementById('content-' + tabId).classList.remove('hidden');
             }
-            
+
             // Ajouter des écouteurs d'événements pour chaque onglet
             tabButtons.forEach(button => {
                 button.addEventListener('click', function() {
@@ -304,7 +304,7 @@
                     activateTab(tabId);
                 });
             });
-            
+
             // Activer le premier onglet par défaut
             activateTab('profile');
         });

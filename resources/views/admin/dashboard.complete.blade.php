@@ -8,15 +8,15 @@
         <div class="welcome-text mb-4 md:mb-0 text-center md:text-left">
             <h2 class="text-2xl font-bold mb-2">Bienvenue sur IMA Dashboard, {{ Auth::user()->first_name }}</h2>
             <p class="text-gray-600 max-w-2xl">
-                Gérez efficacement votre personnel et vos services éducatifs. Suivez vos indicateurs en temps réel 
+                Gérez efficacement votre personnel et vos services éducatifs. Suivez vos indicateurs en temps réel
                 et optimisez le fonctionnement de votre institution.
             </p>
         </div>
         <div class="welcome-actions flex gap-3 flex-wrap justify-center">
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all transform hover:-translate-y-1">
+            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all transform hover:-translate-y-1">
                 <i class="fas fa-calendar-plus mr-2"></i> Planifier un cours
             </a>
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-all transform hover:-translate-y-1">
+            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-all transform hover:-translate-y-1">
                 <i class="fas fa-user-plus mr-2"></i> Ajouter un enseignant
             </a>
         </div>
@@ -33,7 +33,7 @@
                 <p class="text-gray-600">Élèves inscrits</p>
             </div>
         </div>
-        
+
         <div class="bg-white p-6 rounded-lg shadow flex items-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
             <div class="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xl mr-4">
                 <i class="fas fa-chalkboard-teacher"></i>
@@ -43,7 +43,7 @@
                 <p class="text-gray-600">Enseignants actifs</p>
             </div>
         </div>
-        
+
         <div class="bg-white p-6 rounded-lg shadow flex items-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
             <div class="w-14 h-14 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 text-xl mr-4">
                 <i class="fas fa-calendar-day"></i>
@@ -53,7 +53,7 @@
                 <p class="text-gray-600">Cours planifiés aujourd'hui</p>
             </div>
         </div>
-        
+
         <div class="bg-white p-6 rounded-lg shadow flex items-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
             <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xl mr-4">
                 <i class="fas fa-money-bill-wave"></i>
@@ -80,7 +80,7 @@
                 <span>+5% ce mois</span>
             </div>
         </div>
-        
+
         <div class="bg-white p-6 rounded-lg shadow transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
             <div class="flex justify-between items-start mb-4">
                 <h4 class="font-medium text-gray-800">Taux de réussite ENS</h4>
@@ -94,7 +94,7 @@
                 <span>+2% cette année</span>
             </div>
         </div>
-        
+
         <div class="bg-white p-6 rounded-lg shadow transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
             <div class="flex justify-between items-start mb-4">
                 <h4 class="font-medium text-gray-800">Satisfaction des élèves</h4>
@@ -114,7 +114,7 @@
     <div class="mb-6">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-gray-800">Cours récents</h3>
-            <a href="{{ route('dashboard') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="text-blue-600 hover:text-blue-800 flex items-center">
                 Voir tout <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
@@ -202,7 +202,7 @@
     <div class="mb-6">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-gray-800">Activités récentes</h3>
-            <a href="{{ route('dashboard') }}" class="text-blue-600 hover:text-blue-800 flex items-center">
+            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="text-blue-600 hover:text-blue-800 flex items-center">
                 Voir tout <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
@@ -254,31 +254,31 @@
             <h3 class="text-lg font-semibold text-gray-800">Actions rapides</h3>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            <a href="{{ route('dashboard') }}" class="bg-white p-6 rounded-lg shadow text-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
+            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="bg-white p-6 rounded-lg shadow text-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
                 <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xl mx-auto mb-4">
                     <i class="fas fa-user-plus"></i>
                 </div>
                 <h4 class="font-medium text-gray-900 mb-1">Ajouter un élève</h4>
                 <p class="text-sm text-gray-600">Enregistrer un nouvel élève dans le système</p>
             </a>
-            
-            <a href="{{ route('dashboard') }}" class="bg-white p-6 rounded-lg shadow text-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
+
+            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="bg-white p-6 rounded-lg shadow text-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
                 <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xl mx-auto mb-4">
                     <i class="fas fa-chalkboard-teacher"></i>
                 </div>
                 <h4 class="font-medium text-gray-900 mb-1">Ajouter un enseignant</h4>
                 <p class="text-sm text-gray-600">Enregistrer un nouvel enseignant</p>
             </a>
-            
-            <a href="{{ route('dashboard') }}" class="bg-white p-6 rounded-lg shadow text-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
+
+            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="bg-white p-6 rounded-lg shadow text-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
                 <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 text-xl mx-auto mb-4">
                     <i class="fas fa-calendar-plus"></i>
                 </div>
                 <h4 class="font-medium text-gray-900 mb-1">Planifier un cours</h4>
                 <p class="text-sm text-gray-600">Programmer un nouveau cours</p>
             </a>
-            
-            <a href="{{ route('dashboard') }}" class="bg-white p-6 rounded-lg shadow text-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
+
+            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="bg-white p-6 rounded-lg shadow text-center transition-all hover:transform hover:-translate-y-1 hover:shadow-lg">
                 <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xl mx-auto mb-4">
                     <i class="fas fa-chart-bar"></i>
                 </div>

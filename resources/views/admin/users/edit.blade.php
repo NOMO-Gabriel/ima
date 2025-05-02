@@ -2,7 +2,7 @@
 
 @section('content')
 
-<form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-8">
+<form method="POST" action="{{ route('admin.users.update', ['locale' => app()->getLocale()], $user) }}" class="space-y-8">
     @csrf
     @method('PUT')
 
@@ -117,7 +117,7 @@
                         </div>
                         <x-text-input id
 ::contentReference[oaicite:0]{index=0}
- 
+
     <x-text-input id="password_confirmation" name="password_confirmation" type="password" class="pl-10 block w-full rounded-md shadow-sm" autocomplete="new-password" />
                     </div>
                     <x-input-error class="mt-2" :messages="$errors->get('password_confirmation')" />

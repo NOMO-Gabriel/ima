@@ -249,77 +249,77 @@
             </div>
             <div class="sidebar-menu">
                 <div class="menu-category">Principal</div>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-tachometer-alt"></i>
                     <span>Tableau de bord</span>
                 </a>
 
                 <div class="menu-category">Administration</div>
-                <a href="{{ route('admin.users.index') }}" class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('users.*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i>
                     <span>Utilisateurs</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('academies.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('academies.*') ? 'active' : '' }}">
                     <i class="fas fa-university"></i>
                     <span>Académies & Départements</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('formations.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('formations.*') ? 'active' : '' }}">
                     <i class="fas fa-graduation-cap"></i>
                     <span>Formations</span>
                 </a>
 
                 <div class="menu-category">Gestion</div>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
                     <i class="fas fa-chalkboard-teacher"></i>
                     <span>Enseignants</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('students.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('students.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Élèves</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
                     <i class="fas fa-users"></i>
                     <span>Classes & Groupes</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Planification</span>
                 </a>
 
                 <div class="menu-category">Finance</div>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
                     <i class="fas fa-money-bill-wave"></i>
                     <span>Transactions</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('payments.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('payments.*') ? 'active' : '' }}">
                     <i class="fas fa-credit-card"></i>
                     <span>Paiements</span>
                 </a>
 
                 <div class="menu-category">Ressources</div>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('documents.*') ? 'active' : '' }}">
                     <i class="fas fa-file-alt"></i>
                     <span>Documents</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('contests.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('contests.*') ? 'active' : '' }}">
                     <i class="fas fa-medal"></i>
                     <span>Concours</span>
                 </a>
 
                 <div class="menu-category">Système</div>
-                <a href="{{ route('profile.edit') }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
+                <a href="{{ route('profile.edit', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
                     <i class="fas fa-user-cog"></i>
                     <span>Mon profil</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('settings.*') ? 'active' : '' }}">
                     <i class="fas fa-cog"></i>
                     <span>Paramètres</span>
                 </a>
-                <a href="{{ route('dashboard') }}" class="menu-item {{ request()->routeIs('logs.*') ? 'active' : '' }}">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('logs.*') ? 'active' : '' }}">
                     <i class="fas fa-history"></i>
                     <span>Historique</span>
                 </a>
-                <form method="POST" action="{{ route('logout') }}" class="menu-item">
+                <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}" class="menu-item">
                     @csrf
                     <i class="fas fa-sign-out-alt"></i>
                     <button type="submit" class="bg-transparent border-none text-white cursor-pointer">

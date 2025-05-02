@@ -11,7 +11,7 @@
 
         <div class="bg-white shadow-md rounded-lg overflow-hidden">
             <div class="p-6">
-                <form action="{{ route('admin.users.store') }}" method="POST" class="space-y-6">
+                <form action="{{ route('admin.users.store', ['locale' => app()->getLocale()]) }}" method="POST" class="space-y-6">
                     @csrf
 
                     <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
@@ -19,7 +19,7 @@
                         <div class="sm:col-span-3">
                             <label for="first_name" class="block text-sm font-medium text-gray-700">Prénom <span class="text-red-500">*</span></label>
                             <div class="mt-1">
-                                <input type="text" name="first_name" id="first_name" value="{{ old('first_name') }}" required 
+                                <input type="text" name="first_name" id="first_name" value="{{ old('first_name') }}" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                             @error('first_name')
@@ -30,7 +30,7 @@
                         <div class="sm:col-span-3">
                             <label for="last_name" class="block text-sm font-medium text-gray-700">Nom <span class="text-red-500">*</span></label>
                             <div class="mt-1">
-                                <input type="text" name="last_name" id="last_name" value="{{ old('last_name') }}" required 
+                                <input type="text" name="last_name" id="last_name" value="{{ old('last_name') }}" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                             @error('last_name')
@@ -41,7 +41,7 @@
                         <div class="sm:col-span-3">
                             <label for="email" class="block text-sm font-medium text-gray-700">Email <span class="text-red-500">*</span></label>
                             <div class="mt-1">
-                                <input type="email" name="email" id="email" value="{{ old('email') }}" required 
+                                <input type="email" name="email" id="email" value="{{ old('email') }}" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                             @error('email')
@@ -52,7 +52,7 @@
                         <div class="sm:col-span-3">
                             <label for="phone_number" class="block text-sm font-medium text-gray-700">Téléphone <span class="text-red-500">*</span></label>
                             <div class="mt-1">
-                                <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number') }}" required 
+                                <input type="text" name="phone_number" id="phone_number" value="{{ old('phone_number') }}" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                             @error('phone_number')
@@ -63,7 +63,7 @@
                         <div class="sm:col-span-3">
                             <label for="city" class="block text-sm font-medium text-gray-700">Ville</label>
                             <div class="mt-1">
-                                <input type="text" name="city" id="city" value="{{ old('city') }}" 
+                                <input type="text" name="city" id="city" value="{{ old('city') }}"
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                             @error('city')
@@ -74,7 +74,7 @@
                         <div class="sm:col-span-3">
                             <label for="address" class="block text-sm font-medium text-gray-700">Adresse</label>
                             <div class="mt-1">
-                                <input type="text" name="address" id="address" value="{{ old('address') }}" 
+                                <input type="text" name="address" id="address" value="{{ old('address') }}"
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                             @error('address')
@@ -86,7 +86,7 @@
                         <div class="sm:col-span-3">
                             <label for="password" class="block text-sm font-medium text-gray-700">Mot de passe <span class="text-red-500">*</span></label>
                             <div class="mt-1">
-                                <input type="password" name="password" id="password" required 
+                                <input type="password" name="password" id="password" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                             @error('password')
@@ -97,7 +97,7 @@
                         <div class="sm:col-span-3">
                             <label for="password_confirmation" class="block text-sm font-medium text-gray-700">Confirmer le mot de passe <span class="text-red-500">*</span></label>
                             <div class="mt-1">
-                                <input type="password" name="password_confirmation" id="password_confirmation" required 
+                                <input type="password" name="password_confirmation" id="password_confirmation" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                             </div>
                         </div>
@@ -106,7 +106,7 @@
                         <div class="sm:col-span-3">
                             <label for="status" class="block text-sm font-medium text-gray-700">Statut <span class="text-red-500">*</span></label>
                             <div class="mt-1">
-                                <select id="status" name="status" required 
+                                <select id="status" name="status" required
                                     class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md">
                                     <option value="pending_validation" {{ old('status') == 'pending_validation' ? 'selected' : '' }}>En attente de validation</option>
                                     <option value="pending_finalization" {{ old('status') == 'pending_finalization' ? 'selected' : '' }}>En attente de finalisation</option>
@@ -127,7 +127,7 @@
                                         @foreach($chunk as $role)
                                             <div class="flex items-start mb-2">
                                                 <div class="flex items-center h-5">
-                                                    <input id="role_{{ $role->id }}" name="roles[]" type="checkbox" value="{{ $role->name }}" 
+                                                    <input id="role_{{ $role->id }}" name="roles[]" type="checkbox" value="{{ $role->name }}"
                                                         {{ in_array($role->name, old('roles', [])) ? 'checked' : '' }}
                                                         class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded">
                                                 </div>
@@ -149,11 +149,11 @@
                     </div>
 
                     <div class="flex justify-end space-x-3 pt-5 border-t border-gray-200">
-                        <a href="{{ route('admin.users.index') }}" 
+                        <a href="{{ route('admin.users.index') }}"
                             class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Annuler
                         </a>
-                        <button type="submit" 
+                        <button type="submit"
                             class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                             Créer l'utilisateur
                         </button>

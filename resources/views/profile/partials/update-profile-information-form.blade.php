@@ -10,11 +10,11 @@
         </p>
     </header>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
+    <form id="send-verification" method="post" action="{{ route('verification.send', ['locale' => app()->getLocale()]) }}">
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update', ['locale' => app()->getLocale()]) }}" class="mt-6 space-y-6">
         @csrf
         @method('patch')
 
@@ -96,7 +96,7 @@
                                class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                                {{ in_array($role->name, $userRoles) ? 'checked' : '' }}>
                         <label for="role_{{ $role->id }}" class="text-sm font-medium text-gray-700">
-                            {{ $role->name }} 
+                            {{ $role->name }}
                             @if($role->description)
                                 <span class="text-xs text-gray-500">({{ $role->description }})</span>
                             @endif
@@ -112,7 +112,7 @@
             <div class="mt-2 p-2 border border-gray-300 rounded-md bg-gray-100">
                 @foreach($user->roles as $role)
                     <div class="mb-1 text-sm text-gray-700">
-                        {{ $role->name }} 
+                        {{ $role->name }}
                         @if($role->description)
                             <span class="text-xs text-gray-500">({{ $role->description }})</span>
                         @endif

@@ -19,7 +19,7 @@
 
         <div class="p-6">
             <!-- Formulaire de mise à jour -->
-            <form method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+            <form method="POST" action="{{ route('profile.update', ['locale' => app()->getLocale()]) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PATCH')
 
@@ -57,7 +57,7 @@
                                         class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500"
                                         {{ in_array($role->name, $userRoles) ? 'checked' : '' }}>
                                     <label for="role_{{ $role->id }}" class="text-sm font-medium text-gray-700">
-                                        {{ $role->name }} 
+                                        {{ $role->name }}
                                         @if($role->description)
                                             <span class="text-xs text-gray-500">({{ $role->description }})</span>
                                         @endif
@@ -73,7 +73,7 @@
                         <div class="mt-2 p-2 border border-gray-300 rounded-md bg-gray-100">
                             @foreach($user->roles as $role)
                                 <div class="mb-1 text-sm text-gray-700">
-                                    {{ $role->name }} 
+                                    {{ $role->name }}
                                     @if($role->description)
                                         <span class="text-xs text-gray-500">({{ $role->description }})</span>
                                     @endif
@@ -149,7 +149,7 @@
 
                 <!-- Boutons de soumission -->
                 <div class="mt-6 flex justify-end space-x-3">
-                    <a href="{{ route('dashboard') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <i class="fas fa-times mr-2"></i> Annuler
                     </a>
                     <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
@@ -167,8 +167,8 @@
         </div>
         <div class="p-6">
             <p class="text-sm text-gray-600 mb-4">Une fois votre compte supprimé, toutes ses ressources et données seront définitivement effacées. Avant de supprimer votre compte, veuillez télécharger toutes les données ou informations que vous souhaitez conserver.</p>
-            
-            <form method="POST" action="{{ route('profile.destroy') }}">
+
+            <form method="POST" action="{{ route('profile.destroy', ['locale' => app()->getLocale()]) }}">
                 @csrf
                 @method('DELETE')
 

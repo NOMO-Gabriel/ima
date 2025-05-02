@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -28,7 +29,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        Session::flash('status', 'Vous êtes connecté avec succès!');
+        Session::flash('status-type', 'success');
+
+        return redirect()->intended(route('dashboard', ['locale' => app()->getLocale()], absolute: false));
     }
 
     /**

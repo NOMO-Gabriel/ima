@@ -9,7 +9,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Center extends Model
 {
     use HasFactory;
-    
+
+    /**
+     * @var bool|mixed
+     */
+    public mixed $is_active;
+    public mixed $updated_by;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -29,7 +35,7 @@ class Center extends Model
         'created_by',
         'updated_by'
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
@@ -38,7 +44,7 @@ class Center extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
-    
+
     /**
      * Get the academy of the center.
      */
@@ -46,7 +52,7 @@ class Center extends Model
     {
         return $this->belongsTo(Academy::class);
     }
-    
+
     /**
      * Get the director of the center.
      */
@@ -54,7 +60,7 @@ class Center extends Model
     {
         return $this->belongsTo(User::class, 'director_id');
     }
-    
+
     /**
      * Get the user who created the center.
      */
@@ -62,7 +68,7 @@ class Center extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    
+
     /**
      * Get the user who last updated the center.
      */
