@@ -201,7 +201,7 @@
     function confirmDeleteAccount() {
         if (confirm('Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.')) {
             event.preventDefault();
-            document.querySelector('form[action="{{ route('profile.destroy') }}"]').submit();
+            document.querySelector('form[action="{{ route('profile.destroy', ['locale' => app()->getLocale()]) }}"]').submit();
         }
     }
 

@@ -19,6 +19,11 @@ Route::get('/', function () {
     return redirect("/{$locale}");
 });
 
+Route::get('/dashboard', function () {
+    $locale = app()->getLocale();
+    return redirect()->route('dashboard', ['locale' => $locale]);
+})->name('dashboard.redirect');
+
 // Groupe de routes avec préfixe de langue
 Route::prefix('{locale}')
     ->where(['locale' => 'en|fr'])

@@ -68,6 +68,6 @@ class RegisteredUserController extends Controller
         Session::flash('status', 'Votre compte a été créé avec succès!');
         Session::flash('status-type', 'success');
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect(route('dashboard',['locale' => app()->getLocale()]));
     }
 }
