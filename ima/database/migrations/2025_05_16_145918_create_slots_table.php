@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('week_day');
             $table->string('room');
             $table->foreignId('timetable_id')->constrained('timetables')->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained('teacher_profiles')->onDelete('cascade');
+            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->timestamps();
         });

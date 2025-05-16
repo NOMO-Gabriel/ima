@@ -34,13 +34,6 @@ return new class extends Migration
                 'archived'
             ])->default('pending_validation');
 
-            $table->timestamp('last_login_at')->nullable();
-            $table->unsignedBigInteger('validated_by')->nullable();
-            $table->timestamp('validated_at')->nullable();
-            $table->unsignedBigInteger('finalized_by')->nullable();
-            $table->timestamp('finalized_at')->nullable();
-            $table->text('rejection_reason')->nullable();
-
             $table->rememberToken();
             $table->timestamps();
         });
