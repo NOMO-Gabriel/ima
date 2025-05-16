@@ -225,6 +225,36 @@ class UserController extends Controller
 - Indentation: 4 espaces, pas de tabulations
 - Fichiers encodés en UTF-8 sans BOM
 
+## Modélisation de données
+
+### Modèle logique
+
+- ICOORP(id PK, name, acronym, description, address, email, phone, website, logo, createdAt, updatedAt)
+- User(id PK, password, email, firstname, lastname, phone, gender, address, profil, hireDate, role, createdAt, updatedAt)
+- Teacher(id PK, salary, cni, matricule, birthdate, birthplace, profession, department, academy_id FK -> Academy.id)
+- Assignation(id PK, teacher_id -> Teacher.id, center_id -> Center.id)
+- Student(id PK, establishment)
+- Enrollment(id PK, student_id FK -> Student.id, entrance_exam_id FK -> EntranceExam.id)
+- Absences(id PK, student_id FK -> Student.id, slot_id FK -> Slot.id)
+- EntranceExamFormation(id PK, formation_id FK -> Formation.id, entrance_exam_id FK -> EntranceExam.id)
+- Academy(id PK, name, code, description, ACAMEDY_LANG)
+- Center(id PK, name, city, nb_students, academy_id FK -> Academy.id)
+- Timetable(id PK)
+- Slot(id PK, start_time, end_time, week_day, room, timetable_id FK -> Timetable.id, teacher_id FK -> Teacher.id, course_id FK -> Course.id)
+- EntranceExam(id PK, code, name)
+- Phase(id PK, start, end)
+- Formation(id PK, name, description, phase_id FK -> Phase.id)
+- Book(id PK, title, author, publisher, publicationYear, isbn, category, description, lang, nb_pages, coverImage, quantity)
+- FormationBook(id PK, book_id FK -> Book.id, formation_id FK -> Formation.id)
+- Course(id PK, code, title, description, formation_id FK -> Formation.id)
+- Exam(id PK, date, duration, exam_type, formation_id FK -> Formation.id)
+- ExamType(id PK, exam_id FK -> Exam.id, course_id FK -> Course.id)
+- Note(id PK, value, student_id FK -> Student.id, course_id FK -> Course.id, exam_id FK -> Exam.id)
+- Material(id PK, title, description, acquisition_date, quantity)
+- Command(id PK, date, quantity, amount, admin_id FK -> Admin.id)
+- CommandUnit(id PK, quantity, amount, material_id FK -> Material.id, command_id FK -> Command.id)
+- Transaction(id PK, date, amount, TRANSACTION_TYPE, TRANSACTION_REASON, admin_id FK -> Admin.id)
+
 ## Maintenance et déploiement
 
 ### Tests
