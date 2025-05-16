@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 700">
+  <!-- Styles -->
+  <style>
+    .state {
+      fill: #e1f5fe;
+      stroke: #01579b;
+      stroke-width: 2;
+    }
+    .start-end {
+      fill: #81c784;
+      stroke: #2e7d32;
+      stroke-width: 2;
+    }
+    .arrow {
+      stroke: #424242;
+      stroke-width: 2;
+      fill: none;
+      marker-end: url(#arrowhead);
+    }
+    .label {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      fill: #424242;
+    }
+    .state-text {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      fill: #01579b;
+      text-anchor: middle;
+    }
+    .start-end-text {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      font-weight: bold;
+      fill: #2e7d32;
+      text-anchor: middle;
+    }
+  </style>
+  
+  <!-- Arrow marker definition -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#424242" />
+    </marker>
+  </defs>
+  
+  <!-- States -->
+  <circle cx="100" cy="100" r="30" class="start-end" />
+  <text x="100" y="105" class="start-end-text">Début</text>
+  
+  <rect x="200" y="70" width="120" height="60" rx="10" class="state" />
+  <text x="260" y="105" class="state-text">Main</text>
+  
+  <rect x="400" y="70" width="180" height="60" rx="10" class="state" />
+  <text x="490" y="105" class="state-text">Branche Feature</text>
+  
+  <rect x="400" y="200" width="180" height="60" rx="10" class="state" />
+  <text x="490" y="235" class="state-text">Développement</text>
+  
+  <rect x="400" y="330" width="180" height="60" rx="10" class="state" />
+  <text x="490" y="365" class="state-text">Staging</text>
+  
+  <rect x="200" y="330" width="120" height="60" rx="10" class="state" />
+  <text x="260" y="365" class="state-text">Commit</text>
+  
+  <rect x="200" y="460" width="120" height="60" rx="10" class="state" />
+  <text x="260" y="495" class="state-text">Push</text>
+  
+  <rect x="400" y="460" width="180" height="60" rx="10" class="state" />
+  <text x="490" y="495" class="state-text">Pull Request</text>
+  
+  <rect x="620" y="460" width="120" height="60" rx="10" class="state" />
+  <text x="680" y="495" class="state-text">Revue</text>
+  
+  <rect x="620" y="330" width="120" height="60" rx="10" class="state" />
+  <text x="680" y="365" class="state-text">Merge</text>
+  
+  <rect x="620" y="200" width="120" height="60" rx="10" class="state" />
+  <text x="680" y="235" class="state-text">Clean Up</text>
+  
+  <circle cx="680" cy="100" r="30" class="start-end" />
+  <text x="680" y="105" class="start-end-text">Fin</text>
+  
+  <!-- Arrows -->
+  <path d="M130 100 H190" class="arrow" />
+  <text x="160" y="90" class="label">Début travail</text>
+  
+  <path d="M320 100 H390" class="arrow" />
+  <text x="360" y="90" class="label">git checkout -b feature/nom</text>
+  
+  <path d="M260 130 Q260 180 260 200 Q260 220 390 230" class="arrow" />
+  <text x="260" y="180" class="label">git pull origin main</text>
+  
+  <path d="M490 130 L490 190" class="arrow" />
+  <text x="510" y="160" class="label">Codage</text>
+  
+  <path d="M490 260 L490 320" class="arrow" />
+  <text x="510" y="290" class="label">git add .</text>
+  
+  <path d="M400 360 L330 360" class="arrow" />
+  <text x="365" y="380" class="label">git commit -m "..."</text>
+  
+  <path d="M260 390 L260 450" class="arrow" />
+  <text x="290" y="420" class="label">git push origin</text>
+  <text x="290" y="435" class="label">feature/nom</text>
+  
+  <path d="M320 490 L390 490" class="arrow" />
+  <text x="355" y="475" class="label">Créer PR</text>
+  <text x="355" y="490" class="label">sur GitHub</text>
+  
+  <path d="M580 490 L610 490" class="arrow" />
+  <text x="595" y="480" class="label">Revue de code</text>
+  
+  <path d="M680 460 L680 400" class="arrow" />
+  <text x="700" y="430" class="label">Approuvée</text>
+  
+  <path d="M620 490 Q540 550 480 550 L480 270" class="arrow" />
+  <text x="550" y="550" class="label">Modifications requises</text>
+  
+  <path d="M680 330 L680 270" class="arrow" />
+  <text x="700" y="300" class="label">PR mergée</text>
+  
+  <path d="M680 200 L680 140" class="arrow" />
+  <text x="700" y="170" class="label">git branch -d feature/nom</text>
+  
+  <path d="M620 365 L330 365 Q320 365 320 300 Q320 170 320 130" class="arrow" />
+  <text x="450" y="345" class="label">Retour à main</text>
+</svg>
