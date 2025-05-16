@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Center;
 use App\Models\User;
 use App\Models\Academy;
+use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,7 +22,7 @@ class CenterController extends Controller
         }
 
         $centers = Center::with(['academy', 'staff'])->get();
-        return view('centers.index', compact('centers'));
+        return view('admin.centers.index', compact('centers'));
     }
 
     /**
@@ -34,8 +35,15 @@ class CenterController extends Controller
             abort(403, 'Non autorisé');
         }
 
+        // Récupérer les utilisateurs qui peuvent être directeurs
+        $directors = User::whereHas('roles', function($query) {
+            $query->whereIn('name', ['DA', 'DG-PREPAS', 'SG', 'PCA']);
+        })->get();
+
+        $cities = City::all();
+
         $academies = Academy::all();
-        return view('centers.create', compact('academies'));
+        return view('admin.centers.create', compact('academies', 'directors', 'cities'));
     }
 
     /**
@@ -50,18 +58,20 @@ class CenterController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'phone' => 'required|string|max:20',
-            'capacity' => 'required|integer|min:1',
-            'academy_id' => 'required|exists:academies,id',
+            'code' => ['nullable', 'string', 'max:50', 'unique:centers'],
             'description' => 'nullable|string',
-            'status' => 'required|in:active,inactive'
+            'academy_id' => 'required|exists:academies,id',
+            'city_id' => ['required', 'exists:cities,id'],
+            'address' => 'required|string|max:255',
+            'contact_email' => ['nullable', 'email', 'max:255'],
+            'contact_phone' => ['nullable', 'string', 'max:20'],
+            'director_id' => ['nullable', 'exists:users,id'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         $center = Center::create($validated);
 
-        return redirect()->route('centers.index')
+        return redirect()->route('admin.centers.index', ['locale' => app()->getLocale()])
             ->with('success', 'Centre créé avec succès.');
     }
 
@@ -76,7 +86,7 @@ class CenterController extends Controller
         }
 
         $center->load(['academy', 'staff', 'rooms', 'courses']);
-        return view('centers.show', compact('center'));
+        return view('admin.centers.show', compact('center'));
     }
 
     /**
@@ -90,7 +100,7 @@ class CenterController extends Controller
         }
 
         $academies = Academy::all();
-        return view('centers.edit', compact('center', 'academies'));
+        return view('admin.centers.edit', compact('center', 'academies'));
     }
 
     /**
@@ -116,7 +126,7 @@ class CenterController extends Controller
 
         $center->update($validated);
 
-        return redirect()->route('centers.index')
+        return redirect()->route('admin.centers.index', ['locale' => app()->getLocale()])
             ->with('success', 'Centre mis à jour avec succès.');
     }
 
@@ -137,7 +147,7 @@ class CenterController extends Controller
 
         $center->delete();
 
-        return redirect()->route('centers.index')
+        return redirect()->route('admin.centers.index')
             ->with('success', 'Centre supprimé avec succès.');
     }
 
@@ -154,10 +164,10 @@ class CenterController extends Controller
         $staffMembers = User::role(['Personnel-Centre', 'Resp-Academique', 'Resp-Financier', 'Resp-Logistique'])
             ->where('status', 'active')
             ->get();
-        
+
         $assignedStaff = $center->staff()->pluck('user_id')->toArray();
 
-        return view('centers.assign-staff', compact('center', 'staffMembers', 'assignedStaff'));
+        return view('admin.centers.assign-staff', compact('center', 'staffMembers', 'assignedStaff'));
     }
 
     /**
@@ -178,7 +188,7 @@ class CenterController extends Controller
         // Mettre à jour les assignations
         $center->staff()->sync($validated['staff']);
 
-        return redirect()->route('centers.show', $center)
+        return redirect()->route('admin.centers.show', ['locale' => app()->getLocale(), 'center' => $center])
             ->with('success', 'Personnel assigné avec succès.');
     }
 }

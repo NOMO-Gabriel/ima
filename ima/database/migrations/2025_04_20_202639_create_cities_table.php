@@ -27,30 +27,6 @@ return new class extends Migration
             $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
             $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
         });
-
-        // Mise à jour de la table des centres pour remplacer la colonne city (string) par city_id
-        Schema::table('centers', function (Blueprint $table) {
-            // Supprimer la colonne city
-            $table->dropColumn('city');
-            
-            // Ajouter la colonne city_id
-            $table->unsignedBigInteger('city_id')->after('academy_id');
-            
-            // Contrainte de clé étrangère
-            $table->foreign('city_id')->references('id')->on('cities')->onDelete('cascade');
-        });
-
-        // Mise à jour de la table users pour remplacer la colonne city (string) par city_id
-        Schema::table('users', function (Blueprint $table) {
-            // Supprimer la colonne city
-            $table->dropColumn('city');
-            
-            // Ajouter la colonne city_id
-            $table->unsignedBigInteger('city_id')->nullable()->after('profile_photo_path');
-            
-            // Contrainte de clé étrangère
-            $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
-        });
     }
 
     /**
@@ -58,20 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Restaurer la colonne city dans la table users
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['city_id']);
-            $table->dropColumn('city_id');
-            $table->string('city')->nullable()->after('profile_photo_path');
-        });
-
-        // Restaurer la colonne city dans la table centers
-        Schema::table('centers', function (Blueprint $table) {
-            $table->dropForeign(['city_id']);
-            $table->dropColumn('city_id');
-            $table->string('city')->after('academy_id');
-        });
-
         Schema::dropIfExists('cities');
     }
 };

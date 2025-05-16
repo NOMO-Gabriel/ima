@@ -9,20 +9,14 @@
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
-   <!-- Fonts -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-
-<!-- Styles -->
-@if(app()->environment('local') && !app()->runningUnitTests())
+    <!-- Styles -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-@else
-    <link rel="stylesheet" href="{{ vite_asset('css/app.css') }}">
-    <script src="{{ vite_asset('js/app.js') }}" defer></script>
-@endif
 </head>
 <body
     x-data="{ darkMode: localStorage.getItem('darkMode') === 'true' }"

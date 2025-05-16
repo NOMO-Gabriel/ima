@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('location')->nullable();
             $table->string('contact_email')->nullable();
             $table->string('contact_phone')->nullable();
-            $table->unsignedBigInteger('director_id')->nullable(); // Référence à l'utilisateur qui est directeur
+            $table->enum('lang', ['FR', 'EN'])->nullable();
+            $table->unsignedBigInteger('director_id')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
             $table->unsignedBigInteger('created_by')->nullable();

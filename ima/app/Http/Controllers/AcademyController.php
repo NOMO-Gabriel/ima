@@ -10,19 +10,26 @@ use Illuminate\Validation\Rule;
 
 class AcademyController extends Controller
 {
+    protected $user;
+
+    public function __construct()
+    {
+        $this->user = auth()->user();
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         // Vérifier les permissions
-        if (!auth()->user()->can('academy.view')) {
+        if (!$this->user->can('academy.view')) {
             abort(403, 'Non autorisé');
         }
 
         // Filtrage des académies
         $query = Academy::query();
-        
+
         // Recherche par texte
         if ($request->filled('search')) {
             $search = $request->search;
@@ -32,16 +39,16 @@ class AcademyController extends Controller
                   ->orWhere('location', 'like', "%{$search}%");
             });
         }
-        
+
         // Filtrer par statut
         if ($request->filled('status')) {
             $status = $request->status === 'active' ? true : false;
             $query->where('is_active', $status);
         }
-        
+
         // Récupération des académies paginées
         $academies = $query->with(['director', 'departments'])->latest()->paginate(10);
-        
+
         return view('admin.academies.index', compact('academies'));
     }
 
@@ -51,15 +58,15 @@ class AcademyController extends Controller
     public function create()
     {
         // Vérifier les permissions
-        if (!auth()->user()->can('academy.create')) {
+        if (!$this->user->can('academy.create')) {
             abort(403, 'Non autorisé');
         }
-        
+
         // Récupérer les utilisateurs qui peuvent être directeurs
         $directors = User::whereHas('roles', function($query) {
             $query->whereIn('name', ['DA', 'DG-PREPAS', 'SG', 'PCA']);
         })->get();
-        
+
         return view('admin.academies.create', compact('directors'));
     }
 
@@ -69,10 +76,10 @@ class AcademyController extends Controller
     public function store(Request $request)
     {
         // Vérifier les permissions
-        if (!auth()->user()->can('academy.create')) {
+        if (!$this->user->can('academy.create')) {
             abort(403, 'Non autorisé');
         }
-        
+
         // Validation des données
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -84,15 +91,15 @@ class AcademyController extends Controller
             'director_id' => ['nullable', 'exists:users,id'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-        
+
         // Ajouter les champs de traçabilité
         $validated['created_by'] = Auth::id();
         $validated['updated_by'] = Auth::id();
-        
+
         // Créer l'académie
         $academy = Academy::create($validated);
-        
-        return redirect()->route('admin.academies.index')
+
+        return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie créée avec succès.');
     }
 
@@ -102,13 +109,13 @@ class AcademyController extends Controller
     public function show(Academy $academy)
     {
         // Vérifier les permissions
-        if (!auth()->user()->can('academy.view')) {
+        if (!$this->user->can('academy.view')) {
             abort(403, 'Non autorisé');
         }
-        
+
         // Charger les relations
         $academy->load(['director', 'departments', 'centers']);
-        
+
         return view('admin.academies.show', compact('academy'));
     }
 
@@ -118,15 +125,15 @@ class AcademyController extends Controller
     public function edit(Academy $academy)
     {
         // Vérifier les permissions
-        if (!auth()->user()->can('academy.update')) {
+        if (!$this->user->can('academy.update')) {
             abort(403, 'Non autorisé');
         }
-        
+
         // Récupérer les utilisateurs qui peuvent être directeurs
         $directors = User::whereHas('roles', function($query) {
             $query->whereIn('name', ['DA', 'DG-PREPAS', 'SG', 'PCA']);
         })->get();
-        
+
         return view('admin.academies.edit', compact('academy', 'directors'));
     }
 
@@ -136,10 +143,10 @@ class AcademyController extends Controller
     public function update(Request $request, Academy $academy)
     {
         // Vérifier les permissions
-        if (!auth()->user()->can('academy.update')) {
+        if (!$this->user->can('academy.update')) {
             abort(403, 'Non autorisé');
         }
-        
+
         // Validation des données
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -151,13 +158,13 @@ class AcademyController extends Controller
             'director_id' => ['nullable', 'exists:users,id'],
             'is_active' => ['nullable', 'boolean'],
         ]);
-        
+
         // Ajouter le champ de traçabilité
         $validated['updated_by'] = Auth::id();
-        
+
         // Mettre à jour l'académie
         $academy->update($validated);
-        
+
         return redirect()->route('admin.academies.index')
             ->with('success', 'Académie mise à jour avec succès.');
     }
@@ -168,18 +175,18 @@ class AcademyController extends Controller
     public function destroy(Academy $academy)
     {
         // Vérifier les permissions
-        if (!auth()->user()->can('academy.delete')) {
+        if (!$this->user->can('academy.delete')) {
             abort(403, 'Non autorisé');
         }
-        
+
         // Vérifier si l'académie a des départements
         if ($academy->departments()->count() > 0 || $academy->centers()->count() > 0) {
             return back()->with('error', 'Impossible de supprimer cette académie car elle contient des départements ou des centres.');
         }
-        
+
         // Supprimer l'académie
         $academy->delete();
-        
+
         return redirect()->route('admin.academies.index')
             ->with('success', 'Académie supprimée avec succès.');
     }

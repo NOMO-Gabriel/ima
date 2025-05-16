@@ -10,13 +10,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Styles -->
-@if(app()->environment('local') && !app()->runningUnitTests())
+    <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-@else
-    <link rel="stylesheet" href="{{ asset('build/assets/app.css') }}">
-    <script src="{{ asset('build/assets/app.js') }}" defer></script>
-@endif
 
     <style>
         :root {
@@ -1476,7 +1471,7 @@
                     @endcanany
 
                     @canany(['center.view', 'center.create', 'center.update', 'center.delete'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.centers.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.centers.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.centers.*') ? 'active' : '' }}">
                             <i class="fas fa-building"></i>
                             <span>Centres</span>
                         </a>

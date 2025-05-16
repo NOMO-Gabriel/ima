@@ -5,7 +5,6 @@ namespace App\Providers;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Vite;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,10 +27,6 @@ class AppServiceProvider extends ServiceProvider
             if (in_array($locale, ['en', 'fr'])) {
                 App::setLocale($locale);
             }
-        }
-        if (app()->environment('production')) {
-            Vite::useBuildDirectory('build');
-            Vite::useManifestFilename('manifest.json');
         }
     }
 }

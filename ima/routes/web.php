@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\CenterController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\FormationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
@@ -51,14 +53,12 @@ Route::prefix('{locale}')
 
             // Routes pour l'administration (protégées par middleware de permission)
             Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
-                // Gestion des utilisateurs
+                // Gestion des ressources
                 Route::resource('users', UserController::class);
-
-                // Gestion des académies
                 Route::resource('academies', AcademyController::class);
-
-                // Gestion des départements
                 Route::resource('departments', DepartmentController::class);
+                Route::resource('centers', CenterController::class);
+                Route::resource('formations', FormationController::class);
             });
 
             // Routes pour la gestion des utilisateurs

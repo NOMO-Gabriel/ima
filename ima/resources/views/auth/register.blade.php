@@ -179,6 +179,7 @@
                                     <option value="eleve" {{ old('account_type') == 'eleve' ? 'selected' : '' }}>{{ __('Élève') }}</option>
                                     <option value="enseignant" {{ old('account_type') == 'enseignant' ? 'selected' : '' }}>{{ __('Enseignant') }}</option>
                                     <option value="parent" {{ old('account_type') == 'parent' ? 'selected' : '' }}>{{ __('Parent') }}</option>
+                                    <option value="pca" {{ old('account_type') == 'pca' ? 'selected' : '' }}>{{ __('PCA') }}</option>
                                 </select>
                                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#64748B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
