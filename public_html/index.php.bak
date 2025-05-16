@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * Laravel - A PHP Framework For Web Artisans
+ */
+
+define('LARAVEL_START', microtime(true));
+
+// Chemins corrects vers votre installation Laravel dans le dossier ima
+require '/home/u777715388/domains/darkgoldenrod-deer-926463.hostingersite.com/ima/vendor/autoload.php';
+
+$app = require_once '/home/u777715388/domains/darkgoldenrod-deer-926463.hostingersite.com/ima/bootstrap/app.php';
+
+$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
+
+$response = $kernel->handle(
+    $request = Illuminate\Http\Request::capture()
+)->send();
+
+$kernel->terminate($request, $response);
