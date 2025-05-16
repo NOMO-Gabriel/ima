@@ -1471,7 +1471,7 @@
                     @endcanany
 
                     @canany(['center.view', 'center.create', 'center.update', 'center.delete'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.centers.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.centers.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.centers.*') ? 'active' : '' }}">
                             <i class="fas fa-building"></i>
                             <span>Centres</span>
                         </a>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Center extends Model
 {
@@ -26,7 +27,7 @@ class Center extends Model
         'code',
         'description',
         'academy_id',
-        'city',
+        'city_id',
         'address',
         'contact_email',
         'contact_phone',
@@ -67,6 +68,14 @@ class Center extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the staff of the center
+     */
+    public function staff(): HasMany
+    {
+        return $this->hasMany(User::class, 'center_id');
     }
 
     /**
