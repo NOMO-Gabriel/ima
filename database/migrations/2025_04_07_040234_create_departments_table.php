@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
             $table->unsignedBigInteger('created_by')->nullable();
             $table->unsignedBigInteger('updated_by')->nullable();
-            
+
             // Contraintes de clé étrangère
             $table->foreign('academy_id')->references('id')->on('academies')->onDelete('cascade');
             $table->foreign('head_id')->references('id')->on('users')->onDelete('set null');

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('notes', function (Blueprint $table) {
             $table->id();
             $table->float('value', 5, 2);
-            $table->foreignId('student_id')->constrained('student_profiles')->onDelete('cascade');
+            $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->foreignId('exam_id')->constrained('exams')->onDelete('cascade');
             $table->timestamps();
