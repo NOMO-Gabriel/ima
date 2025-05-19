@@ -4,62 +4,99 @@ namespace App\Http\Controllers;
 
 use App\Models\Absences;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class AbsencesController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    /** @var \App\Models\User|null */
+    protected $user;
+
+    public function __construct()
+    {
+        $this->user = Auth::user();
+    }
+
     public function index()
     {
-        //
+        if (!$this->user || !$this->user->can('absences.view')) {
+            abort(403, 'Non autorisé');
+        }
+
+        $absences = Absences::with('student', 'slot')->latest()->get();
+
+        return view('absences.index', compact('absences'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        if (!$this->user || !$this->user->can('absences.create')) {
+            abort(403, 'Non autorisé');
+        }
+
+        return view('absences.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        if (!$this->user || !$this->user->can('absences.create')) {
+            abort(403, 'Non autorisé');
+        }
+
+        $validated = $request->validate([
+            'student_id' => ['required', 'integer', 'exists:users,id'],
+            'slot_id' => ['required', 'integer', 'exists:slots,id'],
+        ]);
+
+        Absences::create($validated);
+
+        return redirect()->route('absences.index')
+            ->with('success', 'Absences ajoutée avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Absences $absences)
+    public function show(Absences $absence)
     {
-        //
+        if (!$this->user || !$this->user->can('absences.view')) {
+            abort(403, 'Non autorisé');
+        }
+
+        return view('absences.show', compact('absence'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Absences $absences)
+    public function edit(Absences $absence)
     {
-        //
+        if (!$this->user || !$this->user->can('absences.edit')) {
+            abort(403, 'Non autorisé');
+        }
+
+        return view('absences.edit', compact('absence'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Absences $absences)
+    public function update(Request $request, Absences $absence)
     {
-        //
+        if (!$this->user || !$this->user->can('absences.edit')) {
+            abort(403, 'Non autorisé');
+        }
+
+        $validated = $request->validate([
+            'student_id' => ['required', 'integer', 'exists:users,id'],
+            'slot_id' => ['required', 'integer', 'exists:slots,id'],
+        ]);
+
+        $absence->update($validated);
+
+        return redirect()->route('absences.index')
+            ->with('success', 'Absences mise à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Absences $absences)
+    public function destroy(Absences $absence)
     {
-        //
+        if (!$this->user || !$this->user->can('absences.delete')) {
+            abort(403, 'Non autorisé');
+        }
+
+        $absence->delete();
+
+        return redirect()->route('absences.index')
+            ->with('success', 'Absences supprimée avec succès.');
     }
 }

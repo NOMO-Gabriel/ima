@@ -14,11 +14,11 @@ return new class extends Migration
 
             // Teacher Profile
             $table->decimal('salary', 10, 2)->nullable();
-            $table->string('cni')->unique();
-            $table->string('matricule')->unique();
-            $table->date('birthdate');
-            $table->string('birthplace');
-            $table->string('profession');
+            $table->string('cni')->nullable()->unique();
+            $table->string('matricule')->nullable()->unique();
+            $table->date('birthdate')->nullable();
+            $table->string('birthplace')->nullable();
+            $table->string('profession')->nullable();
             $table->string('department')->nullable();
             $table->foreignId('academy_id')->nullable()->constrained('academies')->onDelete('cascade');
             $table->foreignId('department_id')->nullable()->constrained('departments')->onDelete('cascade');
@@ -36,6 +36,10 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->dropForeign(['academy_id']);
+            $table->dropForeign(['department_id']);
+            $table->dropForeign(['center_id']);
+
             $table->dropColumn([
                 'establishment',
                 'salary',
