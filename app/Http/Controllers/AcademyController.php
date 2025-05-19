@@ -10,13 +10,6 @@ use Illuminate\Validation\Rule;
 
 class AcademyController extends Controller
 {
-    protected $user;
-
-    public function __construct()
-    {
-        $this->user = auth()->user();
-    }
-
     /**
      * Display a listing of the resource.
      */
