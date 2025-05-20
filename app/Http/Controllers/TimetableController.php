@@ -31,7 +31,9 @@ class TimetableController extends Controller
                 'day_start_time'  => '08:00:00',
                 'day_end_time'    => '16:30:00',
             ]);
+        }
 
+        if ($timetable->slots()->count() === 0) {
             $weekDays = ['Monday','Tuesday','Wednesday','Thursday','Friday'];
             $slots    = [
                 ['08:00:00','10:30:00'],
@@ -53,6 +55,8 @@ class TimetableController extends Controller
                 }
             }
         }
+
+        $timetable->load('slots');
 
         // Navigation dates
         $prevWeek = $weekStart->copy()->subWeek()->toDateString();

@@ -22,6 +22,8 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prix</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre d'heures</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phase</th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -31,6 +33,8 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $formation->name }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ Str::limit($formation->description, 50) ?? '—' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $formation->price }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $formation->hours }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">{{ $formation->phase->name ?? '—' }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-right">
                             <a href="{{ route('admin.formations.show', ['locale' => app()->getLocale(), 'formation' => $formation->id]) }}" class="text-blue-600 hover:text-blue-900 mr-2" title="Voir"><i class="fas fa-eye"></i></a>

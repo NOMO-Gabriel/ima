@@ -9,6 +9,9 @@
         <p><span class="font-semibold">Description :</span></p>
         <p class="text-gray-700 whitespace-pre-line">{{ $formation->description ?? '—' }}</p>
 
+        <p><span class="font-semibold">Prix :</span> {{ $formation->price }} €</p>
+        <p><span class="font-semibold">Nombre d'heures :</span> {{ $formation->hours }} heures</p>
+
         <p><span class="font-semibold">Phase :</span> {{ $formation->phase->name ?? '—' }}</p>
         <p><span class="font-semibold">Créée le :</span> {{ $formation->created_at->format('d/m/Y') }}</p>
         <p><span class="font-semibold">Dernière modification :</span> {{ $formation->updated_at->format('d/m/Y') }}</p>

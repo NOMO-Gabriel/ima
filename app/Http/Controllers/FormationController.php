@@ -46,6 +46,8 @@ class FormationController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'price' => 'nullable|integer',
+            'hours' => 'nullable|integer',
             'phase_id' => 'nullable|integer|exists:phases,id',
         ]);
 
@@ -93,6 +95,8 @@ class FormationController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'price' => 'nullable|integer',
+            'hours' => 'nullable|integer',
             'phase_id' => 'nullable|integer|exists:phases,id',
         ]);
 

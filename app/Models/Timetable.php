@@ -18,6 +18,6 @@ class Timetable extends Model
 
     public function slots()
     {
-        return $this->hasMany(Slot::class);
+        return $this->hasMany(Slot::class)->orderBy('week_day')->orderBy('start_time');
     }
 }

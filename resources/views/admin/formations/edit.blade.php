@@ -22,6 +22,18 @@
         </div>
 
         <div>
+            <label for="price" class="block font-medium text-gray-700">Prix</label>
+            <input type="number" name="price" id="price" value="{{ old('price', $formation->price) }}" class="w-full border rounded p-2">
+            @error('price') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
+            <label for="hours" class="block font-medium text-gray-700">Duree</label>
+            <input type="number" name="hours" id="hours" value="{{ old('hours', $formation->hours) }}" class="w-full border rounded p-2">
+            @error('hours') <p class="text-red-600 text-sm">{{ $message }}</p> @enderror
+        </div>
+
+        <div>
             <label for="phase_id" class="block font-medium text-gray-700">Phase</label>
             <select name="phase_id" id="phase_id" class="w-full border rounded p-2">
                 <option value="">-- Sélectionner une phase --</option>

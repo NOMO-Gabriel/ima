@@ -11,17 +11,27 @@ class Slot extends Model
     use HasFactory;
 
     protected $fillable = [
-        'day',
-        'start',
-        'end',
-        'formation_id',
-        'teacher_id',
-        'room_id',
+        'start_time',
+        'end_time',
+        'week_day',
+        'room',
         'timetable_id',
+        'teacher_id',
+        'course_id',
     ];
 
     public function timetable()
     {
         return $this->belongsTo(Timetable::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
+
+    public function teacher()
+    {
+        return $this->belongsTo(User::class);
     }
 }

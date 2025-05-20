@@ -11,6 +11,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FormationController;
+use App\Http\Controllers\SlotController;
 use App\Http\Controllers\TimetableController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
@@ -60,6 +61,7 @@ Route::prefix('{locale}')
                 Route::resource('formations', FormationController::class);
                 Route::resource('courses', CourseController::class);
                 Route::resource('timetables', TimetableController::class);
+                Route::resource('slots', SlotController::class);
             });
 
             // Routes pour la gestion des utilisateurs
