@@ -9,4 +9,9 @@ class Phase extends Model
 {
     /** @use HasFactory<\Database\Factories\PhaseFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'start',
+        'end'
+    ];
 }

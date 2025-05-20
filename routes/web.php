@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FormationController;
+use App\Http\Controllers\PhaseController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SlotController;
 use App\Http\Controllers\TimetableController;
@@ -57,7 +58,6 @@ Route::prefix('{locale}')
 
             // Routes pour l'administration (protégées par middleware de permission)
             Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
-                Route::resource('users', UserController::class);
                 Route::resource('academies', AcademyController::class);
                 Route::resource('departments', DepartmentController::class);
                 Route::resource('centers', CenterController::class);
@@ -67,6 +67,7 @@ Route::prefix('{locale}')
                 Route::resource('slots', SlotController::class);
                 Route::resource('absences', AbsencesController::class);
                 Route::resource('rooms', RoomController::class);
+                Route::resource('phases', PhaseController::class);
             });
 
             // Routes pour la gestion des utilisateurs

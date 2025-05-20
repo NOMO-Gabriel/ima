@@ -26,14 +26,11 @@ class RoomController extends Controller
         return view('admin.rooms.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        if ($this->user && !$this->user->can('course.create')) {
-            abort(403, 'Non autorisé');
-        }
+        // if ($this->user && !$this->user->can('course.create')) {
+        //     abort(403, 'Non autorisé');
+        // }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -49,21 +46,6 @@ class RoomController extends Controller
             ->with('success', 'Salle créée avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show($locale, Room $room)
-    {
-        // if ($this->user && !$this->user->can('course.view')) {
-        //     abort(403, 'Non autorisé');
-        // }
-
-        return view('admin.courses.show', compact('room'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($locale, Room $room)
     {
         // if ($this->user && !$this->user->can('course.update')) {
@@ -73,9 +55,6 @@ class RoomController extends Controller
         return view('admin.rooms.edit', compact('room'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update($locale, Request $request, Room $room)
     {
         // if ($this->user && !$this->user->can('course.update')) {
@@ -93,9 +72,6 @@ class RoomController extends Controller
             ->with('success', 'Salle mise à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($locale, Room $room)
     {
         // if ($this->user && !$this->user->can('course.delete')) {

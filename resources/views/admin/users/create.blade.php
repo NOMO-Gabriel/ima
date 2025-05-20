@@ -4,7 +4,6 @@
 
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        <!-- En-tête avec fil d'ariane -->
         <div class="mb-8">
             <div class="flex items-center text-sm text-gray-500 mb-2">
                 <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="hover:text-[#4CA3DD]">
