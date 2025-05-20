@@ -5,9 +5,14 @@
 @section('content')
     <div class="mb-6">
         <h1 class="text-2xl font-semibold text-gray-800 mb-4">Détail du Centre : {{ $center->name }}</h1>
-        <a href="{{ route('admin.centers.index', ['locale' => app()->getLocale()]) }}" class="text-blue-600 hover:underline mb-6 inline-block">
-            ← Retour à la liste
-        </a>
+        <div class="flex justify-between items-center mb-6">
+            <a href="{{ route('admin.centers.index', ['locale' => app()->getLocale()]) }}" class="text-blue-600 hover:underline mb-6 inline-block">
+                ← Retour à la liste
+            </a>
+            <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'center_id' => $center->id]) }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all">
+                <i class="fas fa-eye mr-2"></i> Voir le planning
+            </a>
+        </div>
 
         <div class="bg-white rounded-lg shadow p-6">
             <p><strong>Code :</strong> {{ $center->code ?? '—' }}</p>

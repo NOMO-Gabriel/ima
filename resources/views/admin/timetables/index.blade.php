@@ -1,11 +1,28 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Emploi du temps de la semaine du {{ $weekStartDate->format('d/m/Y') }}</h1>
+    <h1>(Centre {{ $center->name }}) Emploi du temps de la semaine du {{ $weekStartDate->format('d/m/Y') }}</h1>
+    <form method="GET" action="{{ route('admin.timetables.index', app()->getLocale()) }}" class="mb-4">
+        <div class="row align-items-end">
+            <div class="col-md-4">
+                <label for="center_id" class="form-label">Changer de centre</label>
+                <select name="center_id" id="center_id" class="form-select" required onchange="this.form.submit()">
+                    @foreach (\App\Models\Center::all() as $c)
+                        <option value="{{ $c->id }}" {{ $center->id === $c->id ? 'selected' : '' }}>
+                            {{ $c->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <input type="hidden" name="week_start_date" value="{{ $weekStartDate->toDateString() }}">
+        </div>
+    </form>
+
 
     <div class="navigation-weeks mb-3 d-flex justify-content-between">
-        <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'week_start_date' => $prevWeek]) }}" class="btn btn-primary">&laquo; Semaine précédente</a>
-        <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'week_start_date' => $nextWeek]) }}" class="btn btn-primary">Semaine suivante &raquo;</a>
+        <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'week_start_date' => $prevWeek, 'center_id' => $center->id]) }}" class="btn btn-primary">&laquo; Semaine précédente</a>
+        <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'week_start_date' => $nextWeek, 'center_id' => $center->id]) }}" class="btn btn-primary">Semaine suivante &raquo;</a>
     </div>
 
     <style>

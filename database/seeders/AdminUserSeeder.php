@@ -56,26 +56,6 @@ namespace Database\Seeders;
                 ]);
             }
 
-            // Création des centres
-            $centres = [
-                'Centre Bastos' => ['city_id' => $yaounde->id, 'academy_id' => $academieFrancophone->id],
-                'Centre Bonanjo' => ['city_id' => $douala->id, 'academy_id' => $academieFrancophone->id],
-                'Centre Biyem-Assi' => ['city_id' => $yaounde->id, 'academy_id' => $academieFrancophone->id],
-                'Centre Akwa' => ['city_id' => $douala->id, 'academy_id' => $academieAnglophone->id],
-                'Centre Ngoa-Ekelle' => ['city_id' => $yaounde->id, 'academy_id' => $academieAnglophone->id],
-            ];
-
-            foreach ($centres as $nom => $data) {
-                Center::create([
-                    'name' => $nom,
-                    'description' => 'Centre de formation ' . $nom,
-                    'city_id' => $data['city_id'],
-                    'academy_id' => $data['academy_id'],
-                    'is_active' => true ,
-                    'address' => 'Adresse de ' . $nom
-                ]);
-            }
-
             // Création des utilisateurs avec rôles nationaux
             $this->createNationalUsers();
 

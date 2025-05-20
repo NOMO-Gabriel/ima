@@ -79,4 +79,9 @@ class Center extends Model
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
+
+    public function timetables(): HasMany
+    {
+        return $this->hasMany(Timetable::class);
+    }
 }

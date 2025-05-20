@@ -6,14 +6,14 @@ use App\Models\Center;
 use App\Models\User;
 use App\Models\Academy;
 use App\Models\City;
+use App\Models\Slot;
+use App\Models\Timetable;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class CenterController extends Controller
 {
-    /**
-     * Affiche la liste des centres
-     */
     public function index()
     {
         // Vérifier les permissions
@@ -25,9 +25,6 @@ class CenterController extends Controller
         return view('admin.centers.index', compact('centers'));
     }
 
-    /**
-     * Affiche le formulaire de création d'un centre
-     */
     public function create()
     {
         if ($this->user && !$this->user->can('center.create')) {
@@ -44,9 +41,6 @@ class CenterController extends Controller
         return view('admin.centers.create', compact('academies', 'directors', 'cities'));
     }
 
-    /**
-     * Enregistre un nouveau centre
-     */
     public function store(Request $request)
     {
         if ($this->user && !$this->user->can('center.create')) {
@@ -66,7 +60,16 @@ class CenterController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        Center::create($validated);
+        $center = Center::create($validated);
+
+        // Find the start of week to display
+        if ($request->filled('week_start_date')) {
+            $weekStart = Carbon::parse($request->input('week_start_date'))->startOfWeek();
+        } else {
+            $weekStart = Carbon::now()->startOfWeek();
+        }
+
+        Timetable::createWithDefaultSlots($center, $weekStart);
 
         return redirect()->route('admin.centers.index', ['locale' => app()->getLocale()])
             ->with('success', 'Centre créé avec succès.');

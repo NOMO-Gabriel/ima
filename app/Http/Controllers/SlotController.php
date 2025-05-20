@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Center;
 use App\Models\Course;
 use App\Models\Slot;
 use App\Models\User;
@@ -11,16 +12,18 @@ class SlotController extends Controller
 {
     public function edit($locale, Slot $slot)
     {
+        $center = $slot->timetable->center;
         $courses  = Course::all();
         $teachers = User::whereHas('roles', function($query) {
             $query->where('name', 'enseignant');
         })->get();
 
-        return view('admin.slots.edit', compact('slot', 'teachers', 'courses'));
+        return view('admin.slots.edit', compact('slot', 'teachers', 'courses', 'center'));
     }
 
     public function update($locale, Request $request, Slot $slot)
     {
+        $center = $slot->timetable->center;
         $validated = $request->validate([
             'room'       => 'nullable|string|max:255',
             'teacher_id' => 'nullable|exists:users,id',
@@ -30,7 +33,12 @@ class SlotController extends Controller
         $slot->update($validated);
 
         return redirect()
-            ->route('admin.timetables.index', ['locale' => app()->getLocale(), 'week_start_date' => $slot->timetable->week_start_date])
+            ->route('admin.timetables.index',
+                [
+                    'locale' => app()->getLocale(),
+                    'week_start_date' => $slot->timetable->week_start_date,
+                    'center_id' => $center->id,
+                ])
             ->with('success', 'Créneau mis à jour avec succès.');
     }
 }
