@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsencesController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\CenterController;
@@ -11,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FormationController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SlotController;
 use App\Http\Controllers\TimetableController;
 use Illuminate\Support\Facades\Route;
@@ -62,6 +64,8 @@ Route::prefix('{locale}')
                 Route::resource('courses', CourseController::class);
                 Route::resource('timetables', TimetableController::class);
                 Route::resource('slots', SlotController::class);
+                Route::resource('absences', AbsencesController::class);
+                Route::resource('rooms', RoomController::class);
             });
 
             // Routes pour la gestion des utilisateurs

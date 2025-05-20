@@ -9,4 +9,19 @@ class Absences extends Model
 {
     /** @use HasFactory<\Database\Factories\AbsencesFactory> */
     use HasFactory;
+
+    protected $fillable = [
+        'student_id',
+        'slot_id'
+    ];
+
+    public function student()
+    {
+        return $this->belongsTo(User::class, 'student_id');
+    }
+
+    public function slot()
+    {
+        return $this->belongsTo(Slot::class);
+    }
 }

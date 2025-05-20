@@ -26,4 +26,9 @@ class Formation extends Model
     {
         return $this->belongsToMany(Course::class, 'course_formations');
     }
+
+    public function entranceExams()
+    {
+        return $this->hasMany(EntranceExam::class);
+    }
 }

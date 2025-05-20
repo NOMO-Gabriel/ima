@@ -20,4 +20,13 @@ class Course extends Model
     {
         return $this->belongsToMany(Formation::class, 'course_formations');
     }
+
+    public function enrolledStudents()
+    {
+        return $this->formations
+            ->flatMap(fn($formation) => $formation->entranceExams)
+            ->flatMap(fn($exam) => $exam->students)
+            ->unique('id')
+            ->values();
+    }
 }
