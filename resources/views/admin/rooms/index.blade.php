@@ -5,7 +5,7 @@
 @section('content')
     <h1 class="text-2xl font-bold mb-6">Salles</h1>
 
-    <a href="{{ route('admin.rooms.create', ['locale' => app()->getLocale()]) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4 inline-block">Nouvelle Chambre</a>
+    <a href="{{ route('admin.rooms.create', ['locale' => app()->getLocale()]) }}" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 mb-4 inline-block">Nouvelle Salle</a>
 
     @if(session('success'))
         <div class="alert alert-success mb-4">{{ session('success') }}</div>

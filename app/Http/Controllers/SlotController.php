@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Center;
 use App\Models\Course;
+use App\Models\Room;
 use App\Models\Slot;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -18,14 +19,16 @@ class SlotController extends Controller
             $query->where('name', 'enseignant');
         })->get();
 
-        return view('admin.slots.edit', compact('slot', 'teachers', 'courses', 'center'));
+        $rooms = Room::all();
+
+        return view('admin.slots.edit', compact('slot', 'rooms', 'teachers', 'courses', 'center'));
     }
 
     public function update($locale, Request $request, Slot $slot)
     {
         $center = $slot->timetable->center;
         $validated = $request->validate([
-            'room'       => 'nullable|string|max:255',
+            'room_id' => 'nullable|exists:rooms,id',
             'teacher_id' => 'nullable|exists:users,id',
             'course_id'  => 'nullable|exists:courses,id',
         ]);
