@@ -100,11 +100,11 @@ class UserController extends Controller
         // Assignation des rôles
         $user->syncRoles($request->roles);
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.users.index', ['locale' => app()->getLocale()])
             ->with('success', 'Utilisateur créé avec succès.');
     }
 
-    public function show(User $user)
+    public function show($locale, User $user)
     {
         // Vérification supplémentaire
         if ($this->user && !$this->user->can('user.view.any')) {
@@ -125,7 +125,7 @@ class UserController extends Controller
         return view('admin.users.show', compact('user', 'roles', 'permissionsByModule'));
     }
 
-    public function updateRoles(Request $request, User $user)
+    public function updateRoles($locale,Request $request, User $user)
     {
         // Vérifier les permissions
         if ($this->user && !$this->user->can('user.role.assign')) {
@@ -169,7 +169,7 @@ class UserController extends Controller
     /**
      * Affiche le formulaire de modification d'un utilisateur
      */
-    public function edit(User $user)
+    public function edit($locale, User $user)
     {
         // Vérifier les permissions
         if ($this->user && !$this->user->can('user.update.any') && $this->user->id !== $user->id) {
@@ -183,7 +183,7 @@ class UserController extends Controller
     /**
      * Met à jour un utilisateur
      */
-    public function update(Request $request, User $user)
+    public function update($locale,Request $request, User $user)
     {
         // Validation des données
         $rules = [
