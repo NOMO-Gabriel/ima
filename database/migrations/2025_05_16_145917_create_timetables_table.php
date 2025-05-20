@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('timetables', function (Blueprint $table) {
             $table->id();
+            $table->date('week_start_date');
+            $table->time('day_start_time')->default('08:00:00');
+            $table->time('day_end_time')->default('16:30:00');
             $table->timestamps();
         });
     }

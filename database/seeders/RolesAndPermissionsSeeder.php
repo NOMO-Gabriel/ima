@@ -34,7 +34,7 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         // Module de Gestion des Utilisateurs
         $this->createPermissions([
-            'user.view.v' => 'Voir tous les utilisateurs',
+            'user.view.any' => 'Voir tous les utilisateurs',
             'user.view.own' => 'Voir son propre profil',
             'user.create' => 'Créer des utilisateurs',
             'user.update.any' => 'Modifier tous les utilisateurs',

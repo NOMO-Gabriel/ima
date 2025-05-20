@@ -1520,7 +1520,7 @@
                             <span>Classes & Groupes</span>
                         </a>
 
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Planification</span>
                         </a>

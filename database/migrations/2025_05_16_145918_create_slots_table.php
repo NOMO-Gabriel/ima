@@ -16,10 +16,10 @@ return new class extends Migration
             $table->time('start_time');
             $table->time('end_time');
             $table->string('week_day');
-            $table->string('room');
-            $table->foreignId('timetable_id')->constrained('timetables')->onDelete('cascade');
-            $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
+            $table->string('room')->nullable();
+            $table->foreignId('timetable_id')->nullable()->constrained('timetables')->onDelete('set null');
+            $table->foreignId('teacher_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('course_id')->nullable()->constrained('courses')->onDelete('set null');
             $table->timestamps();
         });
     }
@@ -29,6 +29,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('slots', function (Blueprint $table) {
+            $table->dropForeign(['timetable_id']);
+            $table->dropForeign(['teacher_id']);
+            $table->dropForeign(['course_id']);
+        });
         Schema::dropIfExists('slots');
     }
 };

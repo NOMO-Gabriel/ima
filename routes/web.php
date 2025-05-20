@@ -11,8 +11,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FormationController;
+use App\Http\Controllers\TimetableController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 
 // Route de redirection pour la page d'accueil
@@ -54,13 +54,12 @@ Route::prefix('{locale}')
 
             // Routes pour l'administration (protégées par middleware de permission)
             Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
-                // Gestion des ressources
-                Route::resource('users', UserController::class);
                 Route::resource('academies', AcademyController::class);
                 Route::resource('departments', DepartmentController::class);
                 Route::resource('centers', CenterController::class);
                 Route::resource('formations', FormationController::class);
                 Route::resource('courses', CourseController::class);
+                Route::resource('timetables', TimetableController::class);
             });
 
             // Routes pour la gestion des utilisateurs
