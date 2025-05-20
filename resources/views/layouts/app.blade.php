@@ -1514,17 +1514,26 @@
                         </a>
                     @endcanany
 
-                    @canany(['course.view', 'course.create', 'course.update', 'course.teacher.assign'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
-                            <i class="fas fa-users-class"></i>
-                            <span>Classes & Groupes</span>
+                    {{-- @canany(['room.view', 'room.create', 'room.update', 'room.delete']) --}}
+                        <a href="{{ route('admin.rooms.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
+                            <i class="fas fa-chalkboard"></i>
+                            <span>Classes</span>
                         </a>
+                    {{-- @endcanany --}}
 
+                    @canany(['schedule.view', 'schedule.create'])
                         <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Planification</span>
                         </a>
                     @endcanany
+
+                    {{-- @canany(['student.attendance']) --}}
+                        <a href="{{ route('admin.absences.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('absences.*') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-times"></i>
+                            <span>Absences</span>
+                        </a>
+                    {{-- @endcanany --}}
                 </div>
             @endcanany
 

@@ -37,6 +37,11 @@ class User extends Authenticatable
         'finalized_at' => 'datetime',
     ];
 
+    public function enrollments()
+    {
+        return $this->hasMany(Enrollment::class);
+    }
+
     // Ajouter ces méthodes pour faciliter l'accès aux informations
     public function getFullNameAttribute()
     {
@@ -48,7 +53,7 @@ class User extends Authenticatable
         if ($this->profile_photo_path) {
             return asset('storage/' . $this->profile_photo_path);
         }
-        
+
         // Fallback sur Gravatar
         $hash = md5(strtolower(trim($this->email)));
         return "https://www.gravatar.com/avatar/{$hash}?s=200&d=mp";
@@ -84,23 +89,23 @@ class User extends Authenticatable
    /**
  * Assigne un rôle à l'utilisateur et met à jour son account_type
  */
-public function myAssignRole($roles)
-{
-    // Appel à la méthode du trait
-    $this->assignRole($roles);
-    
-    // Mettre à jour le account_type
-    if (is_array($roles) || $roles instanceof \Illuminate\Support\Collection) {
-        $this->account_type = $roles[0];
-    } else {
-        $this->account_type = $roles;
+    public function myAssignRole($roles)
+    {
+        // Appel à la méthode du trait
+        $this->assignRole($roles);
+
+        // Mettre à jour le account_type
+        if (is_array($roles) || $roles instanceof \Illuminate\Support\Collection) {
+            $this->account_type = $roles[0];
+        } else {
+            $this->account_type = $roles;
+        }
+
+        // Sauvegarder sans déclencher les events pour éviter les boucles
+        $this->saveQuietly();
+
+        return $this;
     }
-    
-    // Sauvegarder sans déclencher les events pour éviter les boucles
-    $this->saveQuietly();
-    
-    return $this;
-}
 
 }
 

@@ -30,7 +30,7 @@
             @else
                 <ul class="list-disc pl-5 text-gray-900">
                     @foreach($course->formations as $formation)
-                        <li>{{ $formation->title }}</li>
+                        <li>{{ $formation->name }}</li>
                     @endforeach
                 </ul>
             @endif
