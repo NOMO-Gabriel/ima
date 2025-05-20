@@ -57,6 +57,7 @@ Route::prefix('{locale}')
 
             // Routes pour l'administration (protégées par middleware de permission)
             Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
+                Route::resource('users', UserController::class);
                 Route::resource('academies', AcademyController::class);
                 Route::resource('departments', DepartmentController::class);
                 Route::resource('centers', CenterController::class);
@@ -81,6 +82,9 @@ Route::prefix('{locale}')
                 ->name('admin.users.update-roles');
         });
     });
+
+Route::get('{locale}/admin/slots/{slot}/absences', [AbsencesController::class, 'list'])
+->name('admin.absences.list');
 
 // Route pour changer de langue
 Route::get('/language/{locale}', function ($locale) {

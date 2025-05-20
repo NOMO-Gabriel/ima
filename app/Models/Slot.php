@@ -20,6 +20,10 @@ class Slot extends Model
         'course_id',
     ];
 
+    public function absences() {
+        return $this->hasMany(Absences::class);
+    }
+
     public function room()
     {
         return $this->belongsTo(Room::class);
