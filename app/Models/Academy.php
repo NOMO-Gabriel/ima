@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Academy extends Model
 {
     use HasFactory;
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -23,12 +23,13 @@ class Academy extends Model
         'location',
         'contact_email',
         'contact_phone',
+        'lang',
         'director_id',
         'is_active',
         'created_by',
         'updated_by'
     ];
-    
+
     /**
      * The attributes that should be cast.
      *
@@ -37,7 +38,7 @@ class Academy extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
-    
+
     /**
      * Get the director of the academy.
      */
@@ -45,7 +46,7 @@ class Academy extends Model
     {
         return $this->belongsTo(User::class, 'director_id');
     }
-    
+
     /**
      * Get the departments of the academy.
      */
@@ -53,7 +54,7 @@ class Academy extends Model
     {
         return $this->hasMany(Department::class);
     }
-    
+
     /**
      * Get the centers of the academy.
      */
@@ -61,7 +62,7 @@ class Academy extends Model
     {
         return $this->hasMany(Center::class);
     }
-    
+
     /**
      * Get the user who created the academy.
      */
@@ -69,7 +70,7 @@ class Academy extends Model
     {
         return $this->belongsTo(User::class, 'created_by');
     }
-    
+
     /**
      * Get the user who last updated the academy.
      */

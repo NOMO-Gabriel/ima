@@ -125,6 +125,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'course.create' => 'Créer un cours',
             'course.update' => 'Modifier un cours planifié',
             'course.cancel' => 'Annuler un cours planifié',
+            'course.delete' => 'Supprimer un cours',
             'course.teacher.assign' => 'Affecter un enseignant à un cours',
             'course.teacher.replace' => 'Remplacer un enseignant',
             'course.room.assign' => 'Affecter une salle à un cours',

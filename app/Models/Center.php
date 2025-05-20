@@ -12,12 +12,6 @@ class Center extends Model
     use HasFactory;
 
     /**
-     * @var bool|mixed
-     */
-    public mixed $is_active;
-    public mixed $updated_by;
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

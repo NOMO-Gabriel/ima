@@ -9,6 +9,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FormationController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\App;
@@ -59,6 +60,7 @@ Route::prefix('{locale}')
                 Route::resource('departments', DepartmentController::class);
                 Route::resource('centers', CenterController::class);
                 Route::resource('formations', FormationController::class);
+                Route::resource('courses', CourseController::class);
             });
 
             // Routes pour la gestion des utilisateurs

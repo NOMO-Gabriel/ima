@@ -23,6 +23,7 @@ class AcademyResource extends JsonResource
             'location' => $this->location,
             'contact_email' => $this->contact_email,
             'contact_phone' => $this->contact_phone,
+            'lang' => $this->lang,
             'director_id' => $this->director_id,
             'director' => $this->whenLoaded('director', function () {
                 return new UserResource($this->director);

@@ -81,6 +81,7 @@ class AcademyController extends Controller
             'location' => ['nullable', 'string', 'max:255'],
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:20'],
+            'lang' => ['required', Rule::in(['FR', 'EN'])],
             'director_id' => ['nullable', 'exists:users,id'],
             'is_active' => ['nullable', 'boolean'],
         ]);
@@ -99,7 +100,7 @@ class AcademyController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Academy $academy)
+    public function show($locale, Academy $academy)
     {
         // Vérifier les permissions
         if (!$this->user->can('academy.view')) {
@@ -115,7 +116,7 @@ class AcademyController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Academy $academy)
+    public function edit($locale, Academy $academy)
     {
         // Vérifier les permissions
         if (!$this->user->can('academy.update')) {
@@ -133,7 +134,7 @@ class AcademyController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Academy $academy)
+    public function update($locale, Request $request, Academy $academy)
     {
         // Vérifier les permissions
         if (!$this->user->can('academy.update')) {
@@ -148,6 +149,7 @@ class AcademyController extends Controller
             'location' => ['nullable', 'string', 'max:255'],
             'contact_email' => ['nullable', 'email', 'max:255'],
             'contact_phone' => ['nullable', 'string', 'max:20'],
+            'lang' => ['required', Rule::in(['FR', 'EN'])],
             'director_id' => ['nullable', 'exists:users,id'],
             'is_active' => ['nullable', 'boolean'],
         ]);
@@ -158,14 +160,14 @@ class AcademyController extends Controller
         // Mettre à jour l'académie
         $academy->update($validated);
 
-        return redirect()->route('admin.academies.index')
+        return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie mise à jour avec succès.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Academy $academy)
+    public function destroy($locale, Academy $academy)
     {
         // Vérifier les permissions
         if (!$this->user->can('academy.delete')) {
@@ -180,7 +182,7 @@ class AcademyController extends Controller
         // Supprimer l'académie
         $academy->delete();
 
-        return redirect()->route('admin.academies.index')
+        return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie supprimée avec succès.');
     }
 }

@@ -69,6 +69,19 @@
                 </div>
 
                 <div>
+                    <label for="lang" class="block text-sm font-medium text-gray-700">Langue</label>
+                    <select name="lang" id="lang"
+                        class="mt-1 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                        <option value="">-- Sélectionner --</option>
+                        <option value="FR" {{ old('lang') == 'FR' ? 'selected' : '' }}>Français</option>
+                        <option value="EN" {{ old('lang') == 'EN' ? 'selected' : '' }}>Anglais</option>
+                    </select>
+                    @error('lang')
+                        <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
                     <label for="director_id" class="block text-sm font-medium text-gray-700">Directeur</label>
                     <select name="director_id" id="director_id"
                         class="mt-1 block w-full rounded-md border border-gray-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
@@ -85,7 +98,9 @@
                 </div>
 
                 <div class="flex items-center space-x-4">
-                    <input type="checkbox" name="is_active" id="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="h-4 w-4 text-blue-600 border-gray-300 rounded">
+                    <input type="checkbox" name="is_active" id="is_active" value="1"
+                        {{ old('is_active', '1') ? 'checked' : '' }}
+                        class="h-4 w-4 text-blue-600 border-gray-300 rounded">
                     <label for="is_active" class="text-sm text-gray-700">Actif</label>
                 </div>
 

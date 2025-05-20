@@ -20,6 +20,7 @@ class CenterResource extends JsonResource
             'name' => $this->name,
             'code' => $this->code,
             'description' => $this->description,
+            'nb_students' => $this->nb_students,
             'academy_id' => $this->academy_id,
             'academy' => $this->whenLoaded('academy', function () {
                 return [

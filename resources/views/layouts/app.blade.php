@@ -1478,9 +1478,16 @@
                     @endcanany
 
                     @canany(['formation.view', 'formation.create', 'formation.update', 'formation.delete'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.formations.*') ? 'active' : '' }}">
+                        <a href="{{ route('admin.formations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.formations.*') ? 'active' : '' }}">
                             <i class="fas fa-graduation-cap"></i>
                             <span>Formations</span>
+                        </a>
+                    @endcanany
+
+                    @canany(['course.view', 'course.create', 'course.update', 'course.delete'])
+                        <a href="{{ route('admin.courses.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.courses.*') ? 'active' : '' }}">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Cours</span>
                         </a>
                     @endcanany
                 </div>

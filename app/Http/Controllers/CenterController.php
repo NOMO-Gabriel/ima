@@ -7,7 +7,7 @@ use App\Models\User;
 use App\Models\Academy;
 use App\Models\City;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class CenterController extends Controller
 {
@@ -17,7 +17,7 @@ class CenterController extends Controller
     public function index()
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('center.view')) {
+        if ($this->user && !$this->user->can('center.view')) {
             abort(403, 'Non autorisé');
         }
 
@@ -30,19 +30,17 @@ class CenterController extends Controller
      */
     public function create()
     {
-        // Vérifier les permissions
-        if (!Auth::user()->can('center.create')) {
+        if ($this->user && !$this->user->can('center.create')) {
             abort(403, 'Non autorisé');
         }
 
-        // Récupérer les utilisateurs qui peuvent être directeurs
         $directors = User::whereHas('roles', function($query) {
             $query->whereIn('name', ['DA', 'DG-PREPAS', 'SG', 'PCA']);
         })->get();
 
         $cities = City::all();
-
         $academies = Academy::all();
+
         return view('admin.centers.create', compact('academies', 'directors', 'cities'));
     }
 
@@ -51,8 +49,7 @@ class CenterController extends Controller
      */
     public function store(Request $request)
     {
-        // Vérifier les permissions
-        if (!Auth::user()->can('center.create')) {
+        if ($this->user && !$this->user->can('center.create')) {
             abort(403, 'Non autorisé');
         }
 
@@ -69,7 +66,7 @@ class CenterController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $center = Center::create($validated);
+        Center::create($validated);
 
         return redirect()->route('admin.centers.index', ['locale' => app()->getLocale()])
             ->with('success', 'Centre créé avec succès.');
@@ -78,50 +75,58 @@ class CenterController extends Controller
     /**
      * Affiche les détails d'un centre
      */
-    public function show(Center $center)
+    public function show($locale, Center $center)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('center.view')) {
+        if ($this->user && !$this->user->can('center.view')) {
             abort(403, 'Non autorisé');
         }
 
-        $center->load(['academy', 'staff', 'rooms', 'courses']);
+        $center->load(['academy']);
         return view('admin.centers.show', compact('center'));
     }
 
     /**
      * Affiche le formulaire de modification d'un centre
      */
-    public function edit(Center $center)
+    public function edit($locale, Center $center)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('center.update')) {
+        if ($this->user && !$this->user->can('center.update')) {
             abort(403, 'Non autorisé');
         }
 
+        $directors = User::whereHas('roles', function($query) {
+            $query->whereIn('name', ['DA', 'DG-PREPAS', 'SG', 'PCA']);
+        })->get();
+
+        $cities = City::all();
         $academies = Academy::all();
-        return view('admin.centers.edit', compact('center', 'academies'));
+
+        return view('admin.centers.edit', compact('center', 'academies', 'directors', 'cities'));
     }
 
     /**
      * Met à jour un centre
      */
-    public function update(Request $request, Center $center)
+    public function update($locale, Request $request, Center $center)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('center.update')) {
+        if ($this->user && !$this->user->can('center.update')) {
             abort(403, 'Non autorisé');
         }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'city' => 'required|string|max:100',
-            'phone' => 'required|string|max:20',
-            'capacity' => 'required|integer|min:1',
-            'academy_id' => 'required|exists:academies,id',
+            'code' => ['nullable', 'string', 'max:50', Rule::unique('centers')->ignore($center->id)],
             'description' => 'nullable|string',
-            'status' => 'required|in:active,inactive'
+            'academy_id' => 'required|exists:academies,id',
+            'city_id' => ['required', 'exists:cities,id'],
+            'address' => 'required|string|max:255',
+            'contact_email' => ['nullable', 'email', 'max:255'],
+            'contact_phone' => ['nullable', 'string', 'max:20'],
+            'director_id' => ['nullable', 'exists:users,id'],
+            'is_active' => ['nullable', 'boolean'],
         ]);
 
         $center->update($validated);
@@ -133,21 +138,15 @@ class CenterController extends Controller
     /**
      * Supprime un centre
      */
-    public function destroy(Center $center)
+    public function destroy($locale, Center $center)
     {
-        // Vérifier les permissions
-        if (!Auth::user()->can('center.delete')) {
+        if ($this->user && !$this->user->can('center.delete')) {
             abort(403, 'Non autorisé');
-        }
-
-        // Vérifier si le centre a des cours ou du personnel assigné
-        if ($center->courses()->count() > 0 || $center->staff()->count() > 0) {
-            return back()->with('error', 'Impossible de supprimer ce centre car il contient des cours ou du personnel.');
         }
 
         $center->delete();
 
-        return redirect()->route('admin.centers.index')
+        return redirect()->route('admin.centers.index', ['locale' => app()->getLocale()])
             ->with('success', 'Centre supprimé avec succès.');
     }
 
@@ -157,7 +156,7 @@ class CenterController extends Controller
     public function assignStaff(Center $center)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('staff.assign')) {
+        if ($this->user && !$this->user->can('staff.assign')) {
             abort(403, 'Non autorisé');
         }
 
@@ -176,7 +175,7 @@ class CenterController extends Controller
     public function storeAssignStaff(Request $request, Center $center)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('staff.assign')) {
+        if ($this->user && !$this->user->can('staff.assign')) {
             abort(403, 'Non autorisé');
         }
 

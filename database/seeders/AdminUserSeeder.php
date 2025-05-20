@@ -109,7 +109,7 @@ namespace Database\Seeders;
                     'email_verified_at' => now(),
                     'validated_at' => now(),
                     'finalized_at' => now(),
-                'phone_number' => '237' . rand(600000000, 699999999),
+                    'phone_number' => '237' . rand(600000000, 699999999),
                 ]);
 
                 $user->myAssignRole($role);

@@ -10,93 +10,46 @@
         </a>
     </div>
 
-    <!-- Messages de succès ou d'erreur -->
-    @if (session('success'))
+    @if(session('success'))
         <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded" role="alert">
             <p><i class="fas fa-check-circle mr-2"></i> {{ session('success') }}</p>
         </div>
     @endif
 
-    @if (session('error'))
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded" role="alert">
-            <p><i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}</p>
-        </div>
-    @endif
-
-    <!-- Liste des centres -->
     <div class="bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
             <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Nom du centre
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Description
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Ville
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Académie parente
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Date de création
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Actions
-                    </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Académie</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nb étudiants</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Directeur</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-                @forelse ($centers as $center)
+                @forelse($centers as $center)
                     <tr>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">
-                                {{ $center->name }}
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $center->description ?? '—' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $center->city }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $center->academy->name ?? '—' }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                            {{ $center->created_at->format('d/m/Y') }}
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <div class="flex justify-end space-x-2">
-                                <a href="{{ route('admin.centers.show', ['locale' => app()->getLocale(), 'center' => $center]) }}"
-                                   class="text-blue-600 hover:text-blue-900" title="Voir">
-                                    <i class="fas fa-eye"></i>
-                                </a>
-                                <a href="{{ route('admin.centers.edit', ['locale' => app()->getLocale(), 'center' => $center]) }}"
-                                   class="text-green-600 hover:text-green-900" title="Modifier">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <form action="{{ route('admin.centers.destroy', ['locale' => app()->getLocale(), 'center' => $center]) }}"
-                                      method="POST" class="inline-block">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-600 hover:text-red-900" title="Supprimer"
-                                            onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce centre ?')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                </form>
-                            </div>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $center->name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $center->code ?? '—' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $center->academy->name ?? '—' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $center->nb_students }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ $center->director->name ?? '—' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <a href="{{ route('admin.centers.show', ['locale' => app()->getLocale(), 'center' => $center->id]) }}" class="text-blue-600 hover:text-blue-900 mr-2" title="Voir"><i class="fas fa-eye"></i></a>
+                            <a href="{{ route('admin.centers.edit', ['locale' => app()->getLocale(), 'center' => $center->id]) }}" class="text-green-600 hover:text-green-900 mr-2" title="Modifier"><i class="fas fa-edit"></i></a>
+                            <form action="{{ route('admin.centers.destroy', ['locale' => app()->getLocale(), 'center' => $center->id]) }}" method="POST" class="inline-block" onsubmit="return confirm('Voulez-vous vraiment supprimer ce centre ?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-red-600 hover:text-red-900" title="Supprimer"><i class="fas fa-trash"></i></button>
+                            </form>
                         </td>
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-gray-500">
-                            <div class="flex flex-col items-center justify-center py-6">
-                                <i class="fas fa-building text-gray-300 text-5xl mb-4"></i>
-                                <p class="text-lg font-medium">Aucun centre enregistré</p>
-                            </div>
+                        <td colspan="6" class="text-center py-6 text-gray-500">
+                            Aucun centre enregistré
                         </td>
                     </tr>
                 @endforelse
