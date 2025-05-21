@@ -112,7 +112,7 @@
 
                             <div class="form-group">
                                 <label for="price" class="block text-sm font-medium text-gray-700 mb-1">
-                                    Prix (€)
+                                    Prix (XAF)
                                 </label>
                                 <div class="mt-1 relative rounded-md shadow-sm">
                                     <input type="number" step="0.01" name="price" id="price" value="{{ old('price', $formation->price) }}"
