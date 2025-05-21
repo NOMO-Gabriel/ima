@@ -8,7 +8,6 @@ use App\Models\Slot;
 use App\Models\Timetable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class AbsencesController extends Controller
 {
@@ -50,6 +49,42 @@ class AbsencesController extends Controller
             'prevWeek'      => $prevWeek,
             'nextWeek'      => $nextWeek,
         ]);
+    }
+
+    public function list($locale, Slot $slot)
+    {
+        app()->setLocale($locale);
+
+        $course = $slot->course;
+
+        $students = $course
+            ? $course->enrolledStudents
+            : collect();
+
+        $absentStudentIds = $slot->absences->pluck('student_id')->toArray();
+
+        return view('admin.absences.list', compact('slot', 'students', 'absentStudentIds'));
+    }
+
+    public function toggle(Request $request, $locale)
+    {
+        $slotId = $request->input('slot_id');
+        $studentId = $request->input('student_id');
+
+        $absence = Absences::where('slot_id', $slotId)
+            ->where('student_id', $studentId)
+            ->first();
+
+        if ($absence) {
+            $absence->delete(); // mark present
+        } else {
+            Absences::create([
+                'slot_id' => $slotId,
+                'student_id' => $studentId,
+            ]); // mark absent
+        }
+
+        return back();
     }
 
     public function show(Slot $slot)

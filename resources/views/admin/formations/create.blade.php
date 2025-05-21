@@ -179,7 +179,9 @@
                             class="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4CA3DD] focus:border-[#4CA3DD] appearance-none">
                             <option value="">-- Sélectionner une phase --</option>
                             @foreach($phases as $phase)
-                                <option value="{{ $phase->id }}" {{ old('phase_id') == $phase->id ? 'selected' : '' }}>{{ $phase->name }}</option>
+                                <option value="{{ $phase->id }}" {{ old('phase_id') == $phase->id ? 'selected' : '' }}>
+                                    {{ \Carbon\Carbon::parse($phase->start)->translatedFormat('d F Y') }} - {{ \Carbon\Carbon::parse($phase->end)->translatedFormat('d F Y') }}
+                                </option>
                             @endforeach
                         </select>
                         <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">

@@ -1521,6 +1521,13 @@
                         </a>
                     {{-- @endcanany --}}
 
+                    {{-- @canany(['phase.view', 'phase.create', 'phase.update', 'phase.delete']) --}}
+                        <a href="{{ route('admin.phases.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('phases.*') ? 'active' : '' }}">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Phases</span>
+                        </a>
+                    {{-- @endcanany --}}
+
                     @canany(['schedule.view', 'schedule.create'])
                         <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>

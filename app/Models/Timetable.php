@@ -52,7 +52,7 @@ class Timetable extends Model
                     'start_time' => $start,
                     'end_time' => $end,
                     'week_day' => $day,
-                    'room' => null,
+                    'room_id' => null,
                     'timetable_id' => $timetable->id,
                     'teacher_id' => null,
                     'course_id' => null,

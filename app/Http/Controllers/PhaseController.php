@@ -7,59 +7,58 @@ use Illuminate\Http\Request;
 
 class PhaseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $phases = Phase::all();
+        return view('admin.phases.index', compact('phases'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.phases.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'start' => 'required|date',
+            'end' => 'required|date|after_or_equal:start',
+        ]);
+
+        Phase::create($validated);
+
+        return redirect()->route('admin.phases.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Phase créée avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Phase $phase)
+    public function show($locale, Phase $phase)
     {
-        //
+        return view('admin.phases.show', compact('phase'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Phase $phase)
+    public function edit($locale, Phase $phase)
     {
-        //
+        return view('admin.phases.edit', compact('phase'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Phase $phase)
+    public function update($locale, Request $request, Phase $phase)
     {
-        //
+        $validated = $request->validate([
+            'start' => 'required|date',
+            'end' => 'required|date|after_or_equal:start',
+        ]);
+
+        $phase->update($validated);
+
+        return redirect()->route('admin.phases.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Phase mise à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Phase $phase)
+    public function destroy($locale, Phase $phase)
     {
-        //
+        $phase->delete();
+
+        return redirect()->route('admin.phases.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Phase supprimée avec succès.');
     }
 }

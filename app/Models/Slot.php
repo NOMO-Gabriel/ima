@@ -14,11 +14,20 @@ class Slot extends Model
         'start_time',
         'end_time',
         'week_day',
-        'room',
+        'room_id',
         'timetable_id',
         'teacher_id',
         'course_id',
     ];
+
+    public function absences() {
+        return $this->hasMany(Absences::class);
+    }
+
+    public function room()
+    {
+        return $this->belongsTo(Room::class);
+    }
 
     public function timetable()
     {

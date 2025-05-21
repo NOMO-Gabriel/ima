@@ -99,7 +99,7 @@
                             <a href="{{ route('admin.slots.edit', ['locale' => app()->getLocale(), 'slot' => $slot]) }}" style="display:block; color:inherit; text-decoration:none;">
                                 @if ($slot)
                                     <div class="slot-info">
-                                        <p>SALLE {{ $slot->room ?? '—' }}</p>
+                                        <p>SALLE {{ $slot->room->name ?? '—' }}</p>
                                         <p>COURS {{ $slot->course ? $slot->course->title : '—' }}</p>
                                         <p>PROF {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : '—' }}</p>
                                     </div>

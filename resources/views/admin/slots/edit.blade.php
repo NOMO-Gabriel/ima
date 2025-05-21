@@ -26,7 +26,14 @@
 
         <div class="mb-3">
             <label for="room" class="form-label">Salle</label>
-            <input type="text" name="room" id="room" class="form-control" value="{{ old('room', $slot->room) }}">
+            <select name="room_id" id="room_id" class="form-select">
+                <option value="">-- Aucun --</option>
+                @foreach ($rooms as $room)
+                    <option value="{{ $room->id }}" {{ old('room_id', $slot->room_id) == $room->id ? 'selected' : '' }}>
+                        {{ $room->name }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div class="mb-3">

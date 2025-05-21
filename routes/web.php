@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\FormationController;
+use App\Http\Controllers\PhaseController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SlotController;
 use App\Http\Controllers\TimetableController;
@@ -66,6 +67,7 @@ Route::prefix('{locale}')
                 Route::resource('slots', SlotController::class);
                 Route::resource('absences', AbsencesController::class);
                 Route::resource('rooms', RoomController::class);
+                Route::resource('phases', PhaseController::class);
             });
 
             // Routes pour la gestion des utilisateurs
@@ -87,6 +89,9 @@ Route::prefix('{locale}')
                 ->name('admin.users.update-roles');
         });
     });
+
+Route::get('{locale}/admin/slots/{slot}/absences', [AbsencesController::class, 'list'])
+->name('admin.absences.list');
 
 // Route pour changer de langue
 Route::get('/language/{locale}', function ($locale) {

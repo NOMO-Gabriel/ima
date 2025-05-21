@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Center;
-use App\Models\Slot;
 use App\Models\Timetable;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -30,7 +29,7 @@ class TimetableController extends Controller
 
         $timetable = $center->timetables()
             ->whereDate('week_start_date', $weekStart)
-            ->with('slots')
+            ->with('slots.room', 'slots.course', 'slots.teacher')
             ->first();
 
         if (!$timetable) {
