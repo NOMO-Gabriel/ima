@@ -37,6 +37,90 @@
         <p class="text-gray-600 mb-6">Gérez les académies, leurs informations et leurs paramètres.</p>
     </div>
 
+    <!-- Section des statistiques -->
+    <div class="stats-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+                <div class="stats-icon primary bg-blue-100 text-[#4CA3DD] p-3 rounded-full">
+                    <i class="fas fa-university"></i>
+                </div>
+                <span class="text-sm text-gray-500">Total</span>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->total() ?? count($academies) }}</h3>
+                <p class="stats-label text-sm text-gray-600">Académies</p>
+            </div>
+            <div class="stats-trend mt-3">
+                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-[#4CA3DD]" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+                <div class="stats-icon success bg-green-100 text-green-600 p-3 rounded-full">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <span class="text-sm text-gray-500">Actives</span>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('is_active', true)->count() }}</h3>
+                <p class="stats-label text-sm text-gray-600">Académies actives</p>
+            </div>
+            <div class="stats-trend mt-3">
+                @php
+                    $activePercentage = ($academies->total() > 0) ? ($academies->where('is_active', true)->count() / $academies->total()) * 100 : 0;
+                @endphp
+                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-green-500" style="width: {{ $activePercentage }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+                <div class="stats-icon warning bg-blue-100 text-blue-600 p-3 rounded-full">
+                    <i class="fas fa-language"></i>
+                </div>
+                <span class="text-sm text-gray-500">Françaises</span>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('lang', 'FR')->count() }}</h3>
+                <p class="stats-label text-sm text-gray-600">Académies francophones</p>
+            </div>
+            <div class="stats-trend mt-3">
+                @php
+                    $frPercentage = ($academies->total() > 0) ? ($academies->where('lang', 'FR')->count() / $academies->total()) * 100 : 0;
+                @endphp
+                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-blue-500" style="width: {{ $frPercentage }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
+            <div class="flex items-center justify-between mb-3">
+                <div class="stats-icon info bg-red-100 text-red-600 p-3 rounded-full">
+                    <i class="fas fa-globe-americas"></i>
+                </div>
+                <span class="text-sm text-gray-500">Anglaises</span>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('lang', 'EN')->count() }}</h3>
+                <p class="stats-label text-sm text-gray-600">Académies anglophones</p>
+            </div>
+            <div class="stats-trend mt-3">
+                @php
+                    $enPercentage = ($academies->total() > 0) ? ($academies->where('lang', 'EN')->count() / $academies->total()) * 100 : 0;
+                @endphp
+                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div class="progress-bar h-full bg-red-500" style="width: {{ $enPercentage }}%"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Barre de recherche et filtres -->
     <div class="mb-6 bg-white p-4 rounded-lg shadow">
         <div class="flex flex-col md:flex-row md:items-end gap-4">
@@ -213,21 +297,14 @@
             </tbody>
         </table>
 
-        <!-- Pagination -->
-        @if(isset($academies) && $academies->count() > 0)
-            <div class="px-6 py-4 border-t border-gray-200">
-                <div class="flex items-center justify-between">
-                    <div class="text-sm text-gray-500">
-                        Affichage de <span class="font-medium">1</span> à <span class="font-medium">{{ count($academies) }}</span> sur <span class="font-medium">{{ count($academies) }}</span> académies
-                    </div>
-                    <div class="flex space-x-2">
-                        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <button class="px-3 py-1 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
+        <!-- Pagination améliorée -->
+        @if($academies->hasPages())
+            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 px-6 py-4 bg-white border-t border-gray-200">
+                <div class="pagination-info mb-4 sm:mb-0">
+                    Affichage de <span>{{ $academies->firstItem() ?? 0 }}</span> à <span>{{ $academies->lastItem() ?? 0 }}</span> sur <span>{{ $academies->total() }}</span> académies
+                </div>
+                <div class="pagination-controls">
+                    {{ $academies->links('vendor.pagination.tailwind') }}
                 </div>
             </div>
         @endif
@@ -306,7 +383,83 @@
                 </div>
             </div>
         @endforelse
+
+        <!-- Pagination pour mobile -->
+        @if($academies->hasPages())
+            <div class="bg-white rounded-lg shadow p-4 my-4">
+                {{ $academies->links('vendor.pagination.tailwind') }}
+            </div>
+        @endif
     </div>
+
+    <!-- Styles pour la pagination -->
+    @push('styles')
+        <style>
+            /* Style pour l'info de pagination */
+            .pagination-info {
+                font-size: 0.875rem;
+                color: #64748B;
+            }
+
+            .pagination-info span {
+                font-weight: 600;
+                color: #1E293B;
+            }
+
+            /* Style pour les contrôles de pagination */
+            .pagination {
+                display: flex;
+                list-style: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .pagination li {
+                margin: 0 2px;
+            }
+
+            .pagination li.disabled span,
+            .pagination li.disabled a {
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+
+            .pagination li a,
+            .pagination li span {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0.5rem 0.75rem;
+                border-radius: 0.375rem;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                text-decoration: none;
+                transition: all 200ms;
+            }
+
+            .pagination li:not(.active) a {
+                background-color: #f3f4f6;
+                color: #374151;
+            }
+
+            .pagination li:not(.active) a:hover {
+                background-color: #e5e7eb;
+            }
+
+            .pagination li.active span {
+                background-color: #4CA3DD;
+                color: white;
+            }
+
+            /* Style pour les points de suspension */
+            .pagination li.dots span {
+                display: flex;
+                align-items: center;
+                color: #6b7280;
+                padding: 0 0.25rem;
+            }
+        </style>
+    @endpush
 
     <!-- Script pour la fonctionnalité de recherche et tri -->
     @push('scripts')
@@ -380,6 +533,17 @@
                             card.classList.add('hidden');
                         }
                     });
+                });
+
+                // Auto-dismiss pour les alertes
+                const alerts = document.querySelectorAll('[role="alert"]');
+                alerts.forEach(alert => {
+                    setTimeout(() => {
+                        alert.classList.add('opacity-0', 'transform', 'translate-y-[-10px]', 'transition-all', 'duration-500');
+                        setTimeout(() => {
+                            alert.remove();
+                        }, 500);
+                    }, 5000);
                 });
             });
         </script>

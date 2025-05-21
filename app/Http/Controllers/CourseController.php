@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Formation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CourseController extends Controller
 {
@@ -63,7 +64,7 @@ class CourseController extends Controller
         }
 
         return redirect()->route('admin.courses.index', ['locale' => app()->getLocale()])
-            ->with('success', 'Cours créé avec succès.');
+            ->with('success', 'Le cours a été créé avec succès !');
     }
 
     /**

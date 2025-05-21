@@ -98,7 +98,7 @@
                 </button>
 
                 @auth
-                    <a href="{{ url('/dashboard', ['locale' => app()->getLocale()]) }}" class="bg-sky-600 text-white hover:bg-sky-700 transition-colors duration-300 px-4 py-2 rounded-md text-sm font-medium">Tableau de bord</a>
+                    <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="bg-sky-600 text-white hover:bg-sky-700 transition-colors duration-300 px-4 py-2 rounded-md text-sm font-medium">Tableau de bord</a>
                 @else
                     <a href="{{ route('login', ['locale' => app()->getLocale()]) }}" class="transition-colors duration-300 px-3 py-2 text-sm font-medium"
                        :class="{ 'text-gray-300 hover:text-white': darkMode, 'text-gray-600 hover:text-sky-600': !darkMode }">Connexion</a>
