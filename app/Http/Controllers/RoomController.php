@@ -8,15 +8,65 @@ use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // if ($this->user && !$this->user->can('course.view')) {
         //     abort(403, 'Non autorisé');
         // }
 
-        $rooms = Room::with('formation')->get();
+        $query = Room::with('formation');
 
-        return view('admin.rooms.index', compact('rooms'));
+        // Filtre formation
+        if ($request->filled('formation_id')) {
+            $query->where('formation_id', $request->formation_id);
+        }
+
+        // Filtre recherche
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                ->orWhere('code', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtre capacité
+        if ($request->filled('capacity')) {
+            $capacity = $request->capacity;
+            if ($capacity === '1') {
+                $query->where('capacity', 1);
+            } elseif ($capacity === '2') {
+                $query->where('capacity', 2);
+            } elseif ($capacity === '3+') {
+                $query->where('capacity', '>=', 3);
+            }
+        }
+
+        // Tri
+        if ($request->filled('sort')) {
+            switch ($request->sort) {
+                case 'name-asc':
+                    $query->orderBy('name', 'asc');
+                    break;
+                case 'name-desc':
+                    $query->orderBy('name', 'desc');
+                    break;
+                case 'capacity-asc':
+                    $query->orderBy('capacity', 'asc');
+                    break;
+                case 'capacity-desc':
+                    $query->orderBy('capacity', 'desc');
+                    break;
+            }
+        } else {
+            // Tri par défaut si besoin
+            $query->orderBy('name', 'asc');
+        }
+
+        $rooms = $query->get();
+        $formations = Formation::all();
+
+        return view('admin.rooms.index', compact('rooms', 'formations'));
     }
 
     public function create()

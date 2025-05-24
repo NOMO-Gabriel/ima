@@ -168,13 +168,21 @@
                     <input type="search" id="search-rooms" class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD]" placeholder="Rechercher une salle...">
                 </div>
                 <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-                    <select id="filter-capacity" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
+                    <select name="capacity" id="filter-capacity" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
                         <option value="">Toutes les capacités</option>
                         <option value="1">1 personne</option>
                         <option value="2">2 personnes</option>
                         <option value="3+">3 personnes ou plus</option>
                     </select>
-                    <select id="filter-sort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
+                    <select name="formation_id" id="formation_id">
+                        <option value="">-- Toutes les formations --</option>
+                        @foreach ($formations as $formation)
+                            <option value="{{ $formation->id }}" {{ old('formation_id') == $formation->id ? 'selected' : '' }}>
+                                {{ $formation->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <select name="sort" id="filter-sort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
                         <option value="name-asc">Nom (A-Z)</option>
                         <option value="name-desc">Nom (Z-A)</option>
                         <option value="capacity-asc">Capacité (croissant)</option>
