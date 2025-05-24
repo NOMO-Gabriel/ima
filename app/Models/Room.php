@@ -13,5 +13,11 @@ class Room extends Model
     protected $fillable = [
         'name',
         'capacity',
+        'formation_id',
     ];
+
+    public function formation()
+    {
+        return $this->belongsTo(Formation::class);
+    }
 }

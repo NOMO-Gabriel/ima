@@ -18,10 +18,15 @@ class Slot extends Model
         'timetable_id',
         'teacher_id',
         'course_id',
+        'formation_id',
     ];
 
     public function absences() {
         return $this->hasMany(Absences::class);
+    }
+
+    public function formation() {
+        return $this->belongsTo(Formation::class);
     }
 
     public function room()

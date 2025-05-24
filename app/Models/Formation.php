@@ -17,6 +17,11 @@ class Formation extends Model
         'phase_id',
     ];
 
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
+    }
+
     public function phase()
     {
         return $this->belongsTo(Phase::class);

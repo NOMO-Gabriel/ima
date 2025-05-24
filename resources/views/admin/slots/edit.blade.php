@@ -16,24 +16,12 @@
 
         <div class="mb-3">
             <label>Jour : </label>
-            <strong>{{ \Carbon\Carbon::parse($slot->week_day)->locale('fr')->isoFormat('dddd') }}</strong>
+            <strong>{{ ucfirst($slot->week_day) }}</strong>
         </div>
 
         <div class="mb-3">
             <label>Heure : </label>
             <strong>{{ \Carbon\Carbon::parse($slot->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($slot->end_time)->format('H:i') }}</strong>
-        </div>
-
-        <div class="mb-3">
-            <label for="room" class="form-label">Salle</label>
-            <select name="room_id" id="room_id" class="form-select">
-                <option value="">-- Aucun --</option>
-                @foreach ($rooms as $room)
-                    <option value="{{ $room->id }}" {{ old('room_id', $slot->room_id) == $room->id ? 'selected' : '' }}>
-                        {{ $room->name }}
-                    </option>
-                @endforeach
-            </select>
         </div>
 
         <div class="mb-3">

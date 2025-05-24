@@ -12,7 +12,76 @@ use Spatie\Permission\Models\Permission;
 class UserController extends Controller
 {
     /**
-     * Affiche la liste des utilisateurs
+     * Affiche le formulaire de création d'un utilisateur
+     * Note: Seuls les enseignants et personnel peuvent être créés manuellement
+     */
+    public function create()
+    {
+        if ($this->user && !$this->user->can('user.create')) {
+            abort(403, 'Non autorisé');
+        }
+
+        // Exclure le rôle 'eleve' des options disponibles
+        $roles = Role::where('name', '!=', 'eleve')->get();
+        
+        return view('admin.users.create', compact('roles'));
+    }
+
+    /**
+     * Enregistre un nouvel utilisateur
+     * Note: Seuls les enseignants et personnel peuvent être créés manuellement
+     */
+    public function store(Request $request)
+    {
+        if ($this->user && !$this->user->can('user.create')) {
+            abort(403, 'Non autorisé');
+        }
+
+        $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number'],
+            'city_id' => ['required', 'exists:cities,id'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+            'roles' => ['required', 'array'],
+            'roles.*' => ['exists:roles,name', 'not_in:eleve'], // Interdire le rôle élève
+        ]);
+
+        // Vérifier qu'aucun rôle élève n'est sélectionné
+        if (in_array('eleve', $request->roles)) {
+            return back()->withErrors(['roles' => 'Les élèves ne peuvent pas être créés manuellement. Ils doivent s\'inscrire via le formulaire d\'inscription.']);
+        }
+
+        // Déterminer le account_type basé sur le premier rôle
+        $accountType = $request->roles[0];
+
+        // Création de l'utilisateur
+        $user = User::create([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'email' => $request->email,
+            'phone_number' => $request->phone_number,
+            'city_id' => $request->city_id,
+            'address' => $request->address,
+            'password' => Hash::make($request->password),
+            'account_type' => $accountType,
+            'status' => User::STATUS_ACTIVE, // Les comptes créés manuellement sont directement actifs
+            'validated_by' => $this->user->id,
+            'validated_at' => now(),
+            'finalized_by' => $this->user->id,
+            'finalized_at' => now(),
+        ]);
+
+        // Assignation des rôles
+        $user->syncRoles($request->roles);
+
+        return redirect()->route('admin.users.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Utilisateur créé avec succès.');
+    }
+
+    /**
+     * Affiche la liste des utilisateurs avec filtres améliorés
      */
     public function index(Request $request)
     {
@@ -34,6 +103,11 @@ class UserController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Filtrage par type de compte
+        if ($request->filled('account_type')) {
+            $query->where('account_type', $request->account_type);
+        }
+
         // Recherche par texte
         if ($request->filled('search')) {
             $search = $request->search;
@@ -45,87 +119,50 @@ class UserController extends Controller
             });
         }
 
-        $users = $query->latest()->paginate(10);
+        $users = $query->with(['roles', 'city'])->latest()->paginate(15);
         $roles = Role::all();
 
-        return view('admin.users.index', compact('users', 'roles'));
+        // Statistiques pour le dashboard
+        $stats = [
+            'total' => User::count(),
+            'active' => User::where('status', User::STATUS_ACTIVE)->count(),
+            'pending_validation' => User::where('status', User::STATUS_PENDING_VALIDATION)->count(),
+            'pending_contract' => User::where('status', User::STATUS_PENDING_CONTRACT)->count(),
+            'students' => User::where('account_type', 'eleve')->count(),
+            'teachers' => User::where('account_type', 'enseignant')->count(),
+        ];
+
+        return view('admin.users.index', compact('users', 'roles', 'stats'));
     }
 
     /**
-     * Affiche le formulaire de création d'un utilisateur
+     * Affiche les détails d'un utilisateur avec informations détaillées pour les élèves
      */
-    public function create()
+    public function show(User $user)
     {
-        if ($this->user && !$this->user->can('user.create')) {
-            abort(403, 'Non autorisé');
-        }
-
-        $roles = Role::all();
-        return view('admin.users.create', compact('roles'));
-    }
-
-    /**
-     * Enregistre un nouvel utilisateur
-     */
-    public function store(Request $request)
-    {
-        if ($this->user && !$this->user->can('user.create')) {
-            abort(403, 'Non autorisé');
-        }
-
-        $request->validate([
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
-            'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-            'roles' => ['required', 'array'],
-            'status' => ['required', 'string', 'in:pending_validation,pending_finalization,active,suspended,rejected,archived'],
-        ]);
-
-        // Création de l'utilisateur
-        $user = User::create([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'city' => $request->city,
-            'address' => $request->address,
-            'password' => Hash::make($request->password),
-            'status' => $request->status,
-            'validated_by' => $this->user->id,
-            'validated_at' => now(),
-        ]);
-
-        // Assignation des rôles
-        $user->syncRoles($request->roles);
-
-        return redirect()->route('admin.users.index', ['locale' => app()->getLocale()])
-            ->with('success', 'Utilisateur créé avec succès.');
-    }
-
-    public function show($locale, User $user)
-    {
-        // Vérification supplémentaire
         if ($this->user && !$this->user->can('user.view.any')) {
             abort(403, 'Non autorisé');
         }
 
+        // Charger les relations nécessaires
+        $user->load(['roles', 'city', 'financialValidator']);
+
         // Récupérer les rôles si l'utilisateur peut les modifier
-        $roles = $this->user->can('user.role.assign')
-            ? Role::all()
-            : collect();
+        $roles = $this->user->can('user.role.assign') ? Role::all() : collect();
 
         // Les permissions regroupées par module
         $permissionsByModule = [];
-        if ($this->user && !$this->user->can('user.role.assign')) {
+        if ($this->user && $this->user->can('user.role.assign')) {
             $permissionsByModule = Permission::all()->groupBy('module');
         }
 
         return view('admin.users.show', compact('user', 'roles', 'permissionsByModule'));
     }
 
-    public function updateRoles($locale,Request $request, User $user)
+    /**
+     * Met à jour les rôles et permissions d'un utilisateur
+     */
+    public function updateRoles(Request $request, User $user)
     {
         // Vérifier les permissions
         if ($this->user && !$this->user->can('user.role.assign')) {
@@ -135,17 +172,22 @@ class UserController extends Controller
         // Validation des données
         $validated = $request->validate([
             'roles' => 'nullable|array',
-            'roles.*' => 'exists:roles',
+            'roles.*' => ['exists:roles,name'],
             'permissions' => 'nullable|array',
-            'permissions.*' => 'exists:permissions',
-            'status' => 'required|in:pending_validation,pending_finalization,active,suspended,rejected,archived',
+            'permissions.*' => 'exists:permissions,id',
+            'status' => 'required|in:pending_validation,pending_contract,active,suspended,rejected,archived',
         ]);
+
+        // Empêcher la modification du rôle élève via cette méthode
+        if (isset($validated['roles']) && in_array('eleve', $validated['roles']) && $user->account_type !== 'eleve') {
+            return back()->withErrors(['roles' => 'Le rôle élève ne peut pas être assigné manuellement.']);
+        }
 
         // Mise à jour du statut
         $user->status = $validated['status'];
 
         // Gestion de la validation/finalisation automatique si passage à actif
-        if ($validated['status'] === 'active' && !$user->validated_at) {
+        if ($validated['status'] === User::STATUS_ACTIVE && !$user->validated_at) {
             $user->validated_by = $this->user->id;
             $user->validated_at = now();
             $user->finalized_by = $this->user->id;
@@ -154,91 +196,17 @@ class UserController extends Controller
 
         $user->save();
 
-        // Mise à jour des rôles
-        $roles = isset($validated['roles']) ? $validated['roles'] : [];
-        $user->syncRoles($roles);
+        // Mise à jour des rôles (seulement si ce n'est pas un élève)
+        if (isset($validated['roles']) && $user->account_type !== 'eleve') {
+            $user->syncRoles($validated['roles']);
+        }
 
         // Mise à jour des permissions directes
         $permissions = isset($validated['permissions']) ? $validated['permissions'] : [];
         $user->syncPermissions($permissions);
 
-        return redirect()->route('admin.users.show', $user)
+        return redirect()->route('admin.users.show', ['locale' => app()->getLocale(), 'user' => $user])
             ->with('success', 'Rôles et permissions mis à jour avec succès');
-    }
-
-    /**
-     * Affiche le formulaire de modification d'un utilisateur
-     */
-    public function edit($locale, User $user)
-    {
-        // Vérifier les permissions
-        if ($this->user && !$this->user->can('user.update.any') && $this->user->id !== $user->id) {
-            abort(403, 'Non autorisé');
-        }
-
-        $roles = Role::all();
-        return view('admin.users.edit', compact('user', 'roles'));
-    }
-
-    /**
-     * Met à jour un utilisateur
-     */
-    public function update($locale,Request $request, User $user)
-    {
-        // Validation des données
-        $rules = [
-            'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone_number' => ['required', 'string', 'max:20', 'unique:users,phone_number,' . $user->id],
-            'city' => ['nullable', 'string', 'max:100'],
-            'address' => ['nullable', 'string', 'max:255'],
-        ];
-
-        // Si l'utilisateur modifie le mot de passe
-        if ($request->filled('password')) {
-            $rules['password'] = ['required', 'confirmed', Password::defaults()];
-        }
-
-        // Si l'utilisateur a la permission de modifier les rôles
-        if ($this->user->can('user.role.assign')) {
-            $rules['role'] = ['required', 'string', 'exists:roles,name']; // Un seul rôle au lieu de plusieurs
-            $rules['status'] = ['required', 'string', 'in:pending_validation,pending_finalization,active,suspended,rejected,archived'];
-        }
-
-        $request->validate($rules);
-
-        // Mise à jour des informations de base
-        $user->first_name = $request->first_name;
-        $user->last_name = $request->last_name;
-        $user->email = $request->email;
-        $user->phone_number = $request->phone_number;
-        $user->city = $request->city;
-        $user->address = $request->address;
-
-        // Mise à jour du mot de passe si fourni
-        if ($request->filled('password')) {
-            $user->password = Hash::make($request->password);
-        }
-
-        // Mise à jour du statut et du rôle si l'utilisateur a les permissions
-        if ($this->user->can('user.role.assign')) {
-            $user->status = $request->status;
-            $user->syncRoles([$request->role]); // Assignation d'un seul rôle
-
-            // Si l'utilisateur est validé pour la première fois
-            if ($user->isDirty('status') && $user->status === 'active' && !$user->validated_at) {
-                $user->validated_by = $this->user->id;
-                $user->validated_at = now();
-                $user->finalized_by = $this->user->id;
-                $user->finalized_at = now();
-            }
-        }
-
-        $user->save();
-
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Utilisateur mis à jour avec succès.');
     }
 
     /**
@@ -258,7 +226,7 @@ class UserController extends Controller
 
         $user->delete();
 
-        return redirect()->route('admin.users.index')
+        return redirect()->route('admin.users.index', ['locale' => app()->getLocale()])
             ->with('success', 'Utilisateur supprimé avec succès.');
     }
 }

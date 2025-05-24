@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->string('name');
             $table->unsignedInteger('capacity')->default(0);
+            $table->foreignId('formation_id')->nullable()->constrained('formations')->onDelete('set null');
 
             $table->timestamps();
         });
