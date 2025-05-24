@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Formation;
 use App\Models\Room;
 use Illuminate\Http\Request;
 
@@ -13,7 +14,8 @@ class RoomController extends Controller
         //     abort(403, 'Non autorisé');
         // }
 
-        $rooms = Room::all();
+        $rooms = Room::with('formation')->get();
+
         return view('admin.rooms.index', compact('rooms'));
     }
 
@@ -23,7 +25,9 @@ class RoomController extends Controller
         //     abort(403, 'Non autorisé');
         // }
 
-        return view('admin.rooms.create');
+        $formations = Formation::all();
+
+        return view('admin.rooms.create', compact('formations'));
     }
 
     public function store(Request $request)
@@ -35,12 +39,10 @@ class RoomController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'capacity' => 'required|integer',
+            'formation_id' => 'nullable|exists:formations,id',
         ]);
 
-        $room = Room::create([
-            'name' => $validated['name'],
-            'capacity' => $validated['capacity'],
-        ]);
+        Room::create($validated);
 
         return redirect()->route('admin.rooms.index', ['locale' => app()->getLocale()])
             ->with('success', 'Salle créée avec succès.');
@@ -52,7 +54,9 @@ class RoomController extends Controller
         //     abort(403, 'Non autorisé');
         // }
 
-        return view('admin.rooms.edit', compact('room'));
+        $formations = Formation::all();
+
+        return view('admin.rooms.edit', compact('room', 'formations'));
     }
 
     public function update($locale, Request $request, Room $room)
@@ -64,6 +68,7 @@ class RoomController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'capacity' => 'required|integer',
+            'formation_id' => 'nullable|exists:formations,id',
         ]);
 
         $room->update($validated);

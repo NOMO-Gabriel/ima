@@ -148,6 +148,16 @@
                 @enderror
             </div>
 
+            <label for="formation_id">Formation affectée</label>
+            <select name="formation_id" id="formation_id">
+                <option value="">-- Aucune --</option>
+                @foreach ($formations as $formation)
+                    <option value="{{ $formation->id }}" {{ old('formation_id') == $formation->id ? 'selected' : '' }}>
+                        {{ $formation->name }}
+                    </option>
+                @endforeach
+            </select>
+
             <!-- Boutons d'action -->
             <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t transition-colors duration-300"
                  :class="{ 'border-gray-700': darkMode, 'border-gray-200': !darkMode }">
