@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Center;
 use App\Models\Course;
 use App\Models\Room;
 use App\Models\Slot;

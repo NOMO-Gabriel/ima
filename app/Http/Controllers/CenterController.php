@@ -60,16 +60,7 @@ class CenterController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $center = Center::create($validated);
-
-        // Find the start of week to display
-        if ($request->filled('week_start_date')) {
-            $weekStart = Carbon::parse($request->input('week_start_date'))->startOfWeek();
-        } else {
-            $weekStart = Carbon::now()->startOfWeek();
-        }
-
-        Timetable::createWithDefaultSlots($center, $weekStart);
+        Center::create($validated);
 
         return redirect()->route('admin.centers.index', ['locale' => app()->getLocale()])
             ->with('success', 'Centre créé avec succès.');
