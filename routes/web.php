@@ -3,7 +3,7 @@
 use App\Http\Controllers\AbsencesController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AcademyController;
-use App\Http\Controllers\Api\CityController;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\CenterController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
@@ -19,7 +19,6 @@ use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SlotController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\TransactionController;
-use App\Models\EntranceExam;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 

@@ -1491,8 +1491,6 @@
                         </a>
                     {{-- @endcanany --}}
 
-                    @
-
                     @canany(['formation.view', 'formation.create', 'formation.update', 'formation.delete'])
                         <a href="{{ route('admin.formations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.formations.*') ? 'active' : '' }}">
                             <i class="fas fa-graduation-cap"></i>
@@ -1544,12 +1542,12 @@
                         </a>
                     {{-- @endcanany --}}
 
-                    @canany(['city.view', 'city.create', 'city.update', 'city.delete'])
+                    {{-- @canany(['city.view', 'city.create', 'city.update', 'city.delete']) --}}
                         <a href="{{ route('admin.cities.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('cities.*') ? 'active' : '' }}">
                             <i class="fas fa-calendar-alt"></i>
                             <span>Villes</span>
                         </a>
-                    @endcanany
+                    {{-- @endcanany --}}
 
                     @canany(['schedule.view', 'schedule.create'])
                         <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">

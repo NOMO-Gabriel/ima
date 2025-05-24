@@ -52,6 +52,7 @@ class EntranceExamController extends Controller
         return view('admin.entrance-exams.edit', compact('entrance_exam'));
     }
 
+
     public function update($locale, Request $request, EntranceExam $entrance_exam)
     {
         // if ($this->user && !$this->user->can('course.update')) {

@@ -34,12 +34,11 @@ class CityController extends Controller
         // }
 
         $validated = $request->validate([
+            'code' => 'required|string|max:255',
             'name' => 'required|string|max:255|unique:cities',
         ]);
 
-        City::create([
-            'name' => $validated['name'],
-        ]);
+        City::create($validated);
 
         return redirect()->route('admin.cities.index', ['locale' => app()->getLocale()])
             ->with('success', 'La ville a été créé avec succès !');
@@ -61,6 +60,7 @@ class CityController extends Controller
         // }
 
         $validated = $request->validate([
+            'code' => 'required|string|max:255',
             'name' => 'required|string|max:255|unique:cities',
         ]);
 
