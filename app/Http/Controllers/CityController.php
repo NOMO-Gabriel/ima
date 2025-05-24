@@ -7,9 +7,6 @@ use Illuminate\Http\Request;
 
 class CityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         // if ($this->user && !$this->user->can('course.view')) {
@@ -21,9 +18,6 @@ class CityController extends Controller
         return view('admin.cities.index', compact('cities'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         // if ($this->user && !$this->user->can('course.create')) {
@@ -33,9 +27,6 @@ class CityController extends Controller
         return view('admin.cities.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         // if ($this->user && !$this->user->can('course.create')) {
@@ -54,9 +45,6 @@ class CityController extends Controller
             ->with('success', 'La ville a été créé avec succès !');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($locale, City $city)
     {
         // if ($this->user && !$this->user->can('course.update')) {
@@ -66,9 +54,6 @@ class CityController extends Controller
         return view('admin.cities.edit', compact('city'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update($locale, Request $request, City $city)
     {
         // if ($this->user && !$this->user->can('course.update')) {
@@ -85,9 +70,6 @@ class CityController extends Controller
             ->with('success', 'Ville mise à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($locale, City $city)
     {
         // if ($this->user && !$this->user->can('course.delete')) {

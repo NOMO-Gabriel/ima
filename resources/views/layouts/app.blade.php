@@ -1491,6 +1491,8 @@
                         </a>
                     {{-- @endcanany --}}
 
+                    @
+
                     @canany(['formation.view', 'formation.create', 'formation.update', 'formation.delete'])
                         <a href="{{ route('admin.formations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.formations.*') ? 'active' : '' }}">
                             <i class="fas fa-graduation-cap"></i>
