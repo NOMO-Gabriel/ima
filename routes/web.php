@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbsencesController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\Api\CityController;
 use App\Http\Controllers\CenterController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
@@ -11,11 +12,14 @@ use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EntranceExamController;
 use App\Http\Controllers\FormationController;
 use App\Http\Controllers\PhaseController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SlotController;
 use App\Http\Controllers\TimetableController;
+use App\Http\Controllers\TransactionController;
+use App\Models\EntranceExam;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -68,6 +72,9 @@ Route::prefix('{locale}')
                 Route::resource('absences', AbsencesController::class);
                 Route::resource('rooms', RoomController::class);
                 Route::resource('phases', PhaseController::class);
+                Route::resource('cities', CityController::class);
+                Route::resource('entrance-exams', EntranceExamController::class);
+                Route::resource('transactions', TransactionController::class);
             });
 
             // Routes pour la gestion des utilisateurs

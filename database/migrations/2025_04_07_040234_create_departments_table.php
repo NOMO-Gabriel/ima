@@ -13,21 +13,16 @@ return new class extends Migration
     {
         Schema::create('departments', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
             $table->string('code')->unique()->nullable();
             $table->text('description')->nullable();
-            $table->unsignedBigInteger('academy_id'); // Académie parente
-            $table->unsignedBigInteger('head_id')->nullable(); // Chef de département (user_id)
             $table->boolean('is_active')->default(true);
-            $table->timestamps();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
 
-            // Contraintes de clé étrangère
-            $table->foreign('academy_id')->references('id')->on('academies')->onDelete('cascade');
-            $table->foreign('head_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
+            $table->unsignedBigInteger('academy_id');
+            $table->unsignedBigInteger('head_id')->nullable();
+
+            $table->timestamps();
         });
     }
 

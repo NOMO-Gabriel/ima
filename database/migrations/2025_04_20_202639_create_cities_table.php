@@ -13,19 +13,11 @@ return new class extends Migration
     {
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
             $table->string('code', 10)->unique();
-            $table->text('description')->nullable();
-            $table->string('region')->nullable();
-            $table->string('country')->default('Cameroun');
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
 
-            // Contraintes de clé étrangère
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
+            $table->timestamps();
         });
     }
 
