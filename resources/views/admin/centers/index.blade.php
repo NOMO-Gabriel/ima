@@ -399,6 +399,7 @@
                         }, 500);
                     }
                 }, 8000);
+            });
 
             // Filtrage des centres (simulation)
             const searchInput = document.getElementById('search-centers');
@@ -426,7 +427,6 @@
                     // Logique de tri à implémenter
                 });
             }
-        });
         });
     </script>
 @endpush
