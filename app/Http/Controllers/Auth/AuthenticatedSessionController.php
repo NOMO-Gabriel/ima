@@ -32,7 +32,8 @@ class AuthenticatedSessionController extends Controller
         Session::flash('status', 'Vous êtes connecté avec succès!');
         Session::flash('status-type', 'success');
 
-        return redirect()->intended(route('dashboard', ['locale' => app()->getLocale()], absolute: false));
+        // Utiliser app()->getLocale() pour récupérer la locale actuelle
+        return redirect()->intended(route('dashboard', ['locale' => app()->getLocale()]));
     }
 
     /**
@@ -46,6 +47,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Rediriger vers la page de connexion avec la locale
+        return redirect()->route('login', ['locale' => app()->getLocale()]);
     }
 }

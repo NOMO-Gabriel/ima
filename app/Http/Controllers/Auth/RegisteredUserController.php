@@ -20,8 +20,10 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        // Charger la liste des villes pour le formulaire
-        $cities = \App\Models\City::where('is_active', true)->orderBy('name')->get();
+        // Charger la liste des villes actives depuis la base de données
+        $cities = \App\Models\City::where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
         return view('auth.register', [
             'cities' => $cities
@@ -40,34 +42,36 @@ class RegisteredUserController extends Controller
             'last_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'phone_number' => ['required', 'string', 'max:20', 'unique:'.User::class],
-            'city_id' => ['nullable', 'exists:cities,id'],
-            'account_type' => ['required', 'string', 'in:eleve,enseignant,parent,pca'],
+            'city_id' => ['required', 'exists:cities,id'], // Obligatoire maintenant
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'terms' => ['required', 'accepted'],
         ]);
 
+        // Créer l'utilisateur élève uniquement
         $user = User::create([
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
             'email' => $request->email,
             'phone_number' => $request->phone_number,
             'city_id' => $request->city_id,
-            'account_type' => $request->account_type,
+            'account_type' => 'eleve', // Forcé à élève
             'password' => Hash::make($request->password),
-            'status' => 'pending_validation', // Par défaut, les utilisateurs sont en attente de validation
+            'status' => 'pending_validation', // En attente de validation par la responsable financière
         ]);
 
         event(new Registered($user));
 
-        // Assigner le rôle en fonction du type de compte sélectionné
-        $user->assignRole($request->account_type);
+        // Assigner automatiquement le rôle élève
+        $user->myAssignRole('eleve');
 
-        Auth::login($user);
+        // Ne pas connecter automatiquement l'utilisateur
+        // Auth::login($user);
 
-        // Ajoutez un message de succès à la session
-        Session::flash('status', 'Votre compte a été créé avec succès!');
+        // Message d'information
+        Session::flash('status', 'Votre compte a été créé avec succès! Il sera activé après validation par notre équipe financière.');
         Session::flash('status-type', 'success');
 
-        return redirect(route('dashboard',['locale' => app()->getLocale()]));
+        // Rediriger vers la page de connexion avec la locale
+        return redirect()->route('login', ['locale' => app()->getLocale()]);
     }
 }

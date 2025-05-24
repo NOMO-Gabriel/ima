@@ -17,6 +17,7 @@ use App\Http\Controllers\FormationController;
 use App\Http\Controllers\PhaseController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SlotController;
+use App\Http\Controllers\StudentFinancialController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
@@ -126,5 +127,37 @@ Route::get('/language/{locale}', function ($locale) {
 
     return redirect($newUrl);
 })->name('language');
+
+
+// Routes pour la gestion financière des élèves
+Route::prefix('finance')->name('finance.')->middleware(['role:resp-financier|df-ville|df-national'])->group(function () {
+    // Élèves en attente de validation
+    Route::get('/students/pending', [StudentFinancialController::class, 'pendingStudents'])
+        ->name('students.pending');
+    
+    // Élèves en attente d'assignation de contrat
+    Route::get('/students/pending-contract', [StudentFinancialController::class, 'pendingContract'])
+        ->name('students.pending-contract');
+    
+    // Valider un élève (première étape)
+    Route::post('/students/{student}/validate', [StudentFinancialController::class, 'validateStudent'])
+        ->name('students.validate');
+    
+    // Rejeter un élève
+    Route::post('/students/{student}/reject', [StudentFinancialController::class, 'rejectStudent'])
+        ->name('students.reject');
+    
+    // Formulaire d'assignation de contrat
+    Route::get('/students/{student}/assign-contract', [StudentFinancialController::class, 'showContractForm'])
+        ->name('students.assign-contract-form');
+    
+    // Assigner contrat et concours
+    Route::post('/students/{student}/assign-contract', [StudentFinancialController::class, 'assignContract'])
+        ->name('students.assign-contract');
+    
+    // Détails d'un élève
+    Route::get('/students/{student}', [StudentFinancialController::class, 'showStudent'])
+        ->name('students.show');
+});
 
 require __DIR__.'/auth.php';
