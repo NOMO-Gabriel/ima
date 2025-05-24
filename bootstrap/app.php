@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'set.locale' => \App\Http\Middleware\SetLocale::class,
+            'check.account.status' => \App\Http\Middleware\CheckAccountStatus::class, // Nouveau middleware
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
