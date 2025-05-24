@@ -6,7 +6,6 @@ use App\Models\Academy;
 use App\Models\Department;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class DepartmentController extends Controller
 {
@@ -40,13 +39,10 @@ class DepartmentController extends Controller
             $query->where('is_active', $status);
         }
 
-        // Récupération des départements paginés
         $departments = $query->with(['academy', 'head'])->latest()->paginate(10);
-
-        // Récupérer toutes les académies pour le filtre
         $academies = Academy::where('is_active', true)->get();
 
-        return view('departments.index', compact('departments', 'academies'));
+        return view('admin.departments.index', compact('departments', 'academies'));
     }
 
     public function create()
@@ -55,18 +51,16 @@ class DepartmentController extends Controller
             abort(403, 'Non autorisé');
         }
 
-        // Récupérer les académies actives
         $academies = Academy::where('is_active', true)->get();
 
-        // Récupérer les utilisateurs qui peuvent être chefs de département
         $heads = User::whereHas('roles', function($query) {
             $query->where('name', 'Chef-Departement');
         })->get();
 
-        return view('departments.create', compact('academies', 'heads'));
+        return view('admin.departments.create', compact('academies', 'heads'));
     }
 
-    public function store(Request $request)
+    public function store($locale, Request $request)
     {
         if ($this->user && !$this->user->can('department.create')) {
             abort(403, 'Non autorisé');
@@ -77,27 +71,17 @@ class DepartmentController extends Controller
             'code' => ['nullable', 'string', 'max:50', 'unique:departments'],
             'description' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
+            'academy_id' => ['required', 'exists:academies,id'],
+            'head_id' => ['nullable', 'exists:users,id'],
         ]);
 
         Department::create($validated);
 
-        return redirect()->route('departments.index')
+        return redirect()->route('admin.departments.index', ['locale' => app()->getLocale()])
             ->with('success', 'Département créé avec succès.');
     }
 
-    public function show(Department $department)
-    {
-        if ($this->user && !$this->user->can('department.view')) {
-            abort(403, 'Non autorisé');
-        }
-
-        // Charger les relations
-        $department->load(['academy', 'head']);
-
-        return view('departments.show', compact('department'));
-    }
-
-    public function edit(Department $department)
+    public function edit($locale, Department $department)
     {
         if ($this->user && !$this->user->can('department.update')) {
             abort(403, 'Non autorisé');
@@ -111,30 +95,31 @@ class DepartmentController extends Controller
             $query->where('name', 'Chef-Departement');
         })->get();
 
-        return view('departments.edit', compact('department', 'academies', 'heads'));
+        return view('admin.departments.edit', compact('department', 'academies', 'heads'));
     }
 
-    public function update(Request $request, Department $department)
+    public function update($locale, Request $request, Department $department)
     {
         if ($this->user && !$this->user->can('department.update')) {
             abort(403, 'Non autorisé');
         }
 
-        // Validation des données
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'code' => ['nullable', 'string', 'max:50', 'unique:departments'],
+            'code' => ['nullable', 'string', 'max:50', 'unique:departments,code,' . $department->id],
             'description' => ['nullable', 'string'],
             'is_active' => ['nullable', 'boolean'],
+            'academy_id' => ['required', 'exists:academies,id'],
+            'head_id' => ['nullable', 'exists:users,id'],
         ]);
 
         $department->update($validated);
 
-        return redirect()->route('departments.index')
+        return redirect()->route('admin.departments.index', ['locale' => app()->getLocale()])
             ->with('success', 'Département mis à jour avec succès.');
     }
 
-    public function destroy(Department $department)
+    public function destroy($locale, Department $department)
     {
         if ($this->user && !$this->user->can('department.delete')) {
             abort(403, 'Non autorisé');
@@ -142,7 +127,7 @@ class DepartmentController extends Controller
 
         $department->delete();
 
-        return redirect()->route('departments.index')
+        return redirect()->route('admin.departments.index', ['locale' => app()->getLocale()])
             ->with('success', 'Département supprimé avec succès.');
     }
 }
