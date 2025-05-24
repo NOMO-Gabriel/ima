@@ -11,7 +11,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // Ajout de notre middleware personnalisé
+        $middleware->alias([
+            'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+            'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+            'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+            'set.locale' => \App\Http\Middleware\SetLocale::class,
+            'check.account.status' => \App\Http\Middleware\CheckAccountStatus::class, // Nouveau middleware
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

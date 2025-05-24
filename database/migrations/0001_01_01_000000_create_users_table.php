@@ -13,10 +13,27 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('first_name');
+            $table->string('last_name')->nullable();
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('phone_number')->nullable()->unique();
+            $table->string('profile_photo_path')->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
+            $table->unsignedBigInteger('city_id')->nullable()->default(null);
+            $table->string('address')->nullable()->default('cradat');
+            $table->string('enrollmentDate')->nullable();
+            $table->string('account_type', 30)->default('eleve');
+            $table->enum('status', [
+                'pending_validation',
+                'pending_finalization',
+                'active',
+                'suspended',
+                'rejected',
+                'archived'
+            ])->default('pending_validation');
+
             $table->rememberToken();
             $table->timestamps();
         });
