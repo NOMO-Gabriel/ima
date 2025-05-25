@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\URL;
 
 class SetLocale
 {
@@ -30,6 +31,7 @@ class SetLocale
 
         // Définir la locale pour cette requête
         App::setLocale($locale);
+        URL::defaults(['locale' => $locale]);
 
         // Stocker la locale dans la session pour la conserver
         Session::put('locale', $locale);

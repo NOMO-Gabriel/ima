@@ -53,7 +53,6 @@
                                     <label for="center_id_filter" class="form-label"><i class="fas fa-school me-1"></i>Centre</label>
                                     <select id="center_id_filter" name="center_id" class="form-select form-select-sm">
                                         <option value="">Tous les centres</option>
-                                        {{-- $centersForFilter est déjà scopé dans le contrôleur --}}
                                         @foreach($centersForFilter as $center)
                                             <option value="{{ $center->id }}" data-city="{{ $center->city_id }}" {{ request('center_id') == $center->id ? 'selected' : '' }}>
                                                 {{ $center->name }}
@@ -63,7 +62,7 @@
                                 </div>
                             @endcan
 
-                            <div class="col-md-3"> {{-- La recherche est toujours dispo si on a finance.student.view --}}
+                            <div class="col-md-3">
                                 <label for="search" class="form-label"><i class="fas fa-search me-1"></i>Recherche</label>
                                 <div class="input-group input-group-sm">
                                     <input type="text" id="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Nom, email, matricule...">
@@ -103,7 +102,7 @@
                                             $icon = $currentDirection === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
                                         }
                                         $queryParams = array_merge($request->except('page'), ['sort' => $field, 'direction' => $direction]);
-                                        return '<a href="'.route('finance.students.index', $queryParams).'" class="sortable-header text-decoration-none">'.$displayName.' <i class="'.$icon.' ms-1"></i></a>';
+                                        return '<a href="'.route('finance.students.index', ['locale' => app()->getLocale()] + $queryParams).'" class="sortable-header text-decoration-none">'.$displayName.' <i class="'.$icon.' ms-1"></i></a>';
                                     };
                                 @endphp
                                 <th style="width:20%">{!! $sortLink('users.last_name', 'Nom & Prénom') !!}</th>
@@ -124,7 +123,9 @@
                                             <img src="{{ $student->profile_photo_url }}" alt="{{ $student->first_name }}" class="avatar rounded-circle me-2" style="width:32px; height:32px;">
                                             <div>
                                                 <div class="fw-bold">{{ $student->last_name }} {{ $student->first_name }}</div>
-                                                <small class="text-muted">{{ $student->student_data['matricule'] ?? 'N/A' }}</small>
+                                                <small class="text-muted">
+                                                    {{ $student->student_data['matricule'] ?? 'ELEVE-' . $student->created_at->format('Y') . '-' . str_pad($student->id, 6, '0', STR_PAD_LEFT) }}
+                                                </small>
                                             </div>
                                         </div>
                                     </td>
@@ -169,16 +170,13 @@
                                     <td class="text-end">
                                         @php
                                             $currentUser = Auth::user();
-                                            // Le PCA peut tout éditer.
-                                            // Resp Financier peut éditer contrat de son centre.
-                                            // Tout user avec edit.details peut éditer les détails.
                                             $canShowEditButton = $currentUser->hasRole('pca') ||
                                                                  $currentUser->can('finance.student.edit.details') ||
                                                                  ($currentUser->can('finance.student.edit.contract') && $currentUser->hasRole('resp-financier') && $currentUser->center_id === $student->center_id);
                                         @endphp
 
                                         @if($canShowEditButton)
-                                            <a href="{{ route('finance.students.editFinancials', ['locale' => app()->getLocale(), 'student' => $student->id]) }}" class="btn btn-sm btn-outline-primary btn-icon" title="Modifier les infos financières">
+                                            <a href="{{ route('finance.students.editFinancials', [, 'user' => $student->id]) }}" class="btn btn-sm btn-outline-primary btn-icon" title="Modifier les infos financières">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         @else
@@ -190,7 +188,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9">
+                                    <td colspan="8">
                                         <div class="text-center p-5">
                                             <div class="display-4 text-muted mb-3"><i class="fas fa-users"></i></div>
                                             <h4>Aucun élève trouvé</h4>
@@ -217,18 +215,19 @@
 @endsection
 
 @push('styles')
-    {{-- Styles de la vue précédente --}}
     <style>
         .status-badge-sm { padding: 0.2em 0.5em; font-size: 0.75rem; font-weight: 500; border-radius: 0.25rem; display: inline-flex; align-items: center; }
-        .status-badge-sm.success { background-color: var(--success-light); color: var(--success); }
-        .status-badge-sm.warning { background-color: var(--warning-light); color: var(--warning); }
-        .status-badge-sm.info { background-color: var(--info-light); color: var(--info); }
-        .status-badge-sm.danger { background-color: var(--danger-light); color: var(--danger); }
-        .status-badge-sm.secondary { background-color: var(--secondary-light); color: var(--secondary); }
+        .status-badge-sm.success { background-color: rgba(52, 211, 153, 0.1); color: rgb(5, 150, 105); }
+        .status-badge-sm.warning { background-color: rgba(251, 191, 36, 0.1); color: rgb(146, 64, 14); }
+        .status-badge-sm.info { background-color: rgba(96, 165, 250, 0.1); color: rgb(30, 64, 175); }
+        .status-badge-sm.danger { background-color: rgba(248, 113, 113, 0.1); color: rgb(185, 28, 28); }
+        .status-badge-sm.secondary { background-color: rgba(107, 114, 128, 0.1); color: rgb(75, 85, 99); }
         .status-badge-sm.dark { background-color: rgba(30, 41, 59, 0.1); color: rgb(71, 85, 105); }
         .btn-icon { width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
         .form-select-sm, .input-group-sm > .form-control, .input-group-sm > .input-group-text, .input-group-sm > .btn { font-size: 0.875rem; }
         .pagination { margin-bottom: 0; }
+        .sortable-header { color: inherit; }
+        .sortable-header:hover { color: var(--bs-primary); }
     </style>
 @endpush
 
@@ -238,44 +237,34 @@
         const filterToggle = document.querySelector('.filter-toggle');
         if (filterToggle) {
             const filtersCollapseEl = document.getElementById('filtersCollapse');
-            const filtersCollapse = new bootstrap.Collapse(filtersCollapseEl, { toggle: false });
             
             filterToggle.addEventListener('click', function() {
                 const icon = this.querySelector('i');
-                if (filtersCollapseEl.classList.contains('show')) { // If it's about to hide
+                if (filtersCollapseEl.classList.contains('show')) {
                     icon.classList.remove('fa-chevron-up');
                     icon.classList.add('fa-chevron-down');
-                } else { // If it's about to show
+                } else {
                     icon.classList.remove('fa-chevron-down');
                     icon.classList.add('fa-chevron-up');
                 }
             });
-            // Initial icon state
-            if (filtersCollapseEl.classList.contains('show')) {
-                filterToggle.querySelector('i').classList.remove('fa-chevron-down');
-                filterToggle.querySelector('i').classList.add('fa-chevron-up');
-            } else {
-                filterToggle.querySelector('i').classList.remove('fa-chevron-up');
-                filterToggle.querySelector('i').classList.add('fa-chevron-down');
-            }
         }
 
         const cityFilter = document.getElementById('city_id_filter');
         const centerFilter = document.getElementById('center_id_filter');
 
-        @can('finance.student.filter.by_city') // Le script n'est pertinent que si le filtre de ville est là
-            if (cityFilter && centerFilter) { // S'assurer que les deux filtres sont présents
+        @can('finance.student.filter.by_city')
+            if (cityFilter && centerFilter) {
                 const allCenterOptions = Array.from(centerFilter.options).filter(opt => opt.value !== "");
 
                 const updateCentersForCity = () => {
                     const selectedCityId = cityFilter.value;
-                    const currentCenterVal = centerFilter.value; // Garder la valeur sélectionnée actuelle
+                    const currentCenterVal = centerFilter.value;
                     
-                    // Vider le select des centres, en gardant la première option (placeholder)
                     while (centerFilter.options.length > 1) {
                         centerFilter.remove(1);
                     }
-                    centerFilter.value = ""; // Réinitialiser la sélection
+                    centerFilter.value = "";
 
                     if (selectedCityId) {
                         allCenterOptions.forEach(option => {
@@ -283,21 +272,23 @@
                                 centerFilter.appendChild(option.cloneNode(true));
                             }
                         });
-                    } else { // Si aucune ville sélectionnée, réafficher tous les centres (si l'utilisateur peut les voir)
-                         @if(Auth::user()->can('finance.student.filter.by_city')) // Seuls ceux qui peuvent voir toutes les villes devraient voir tous les centres si aucune ville n'est spécifiée
+                    } else {
+                         @if(Auth::user()->can('finance.student.filter.by_city'))
                             allCenterOptions.forEach(option => centerFilter.appendChild(option.cloneNode(true)));
                          @endif
                     }
-                    // Essayer de restaurer la sélection du centre si elle est valide pour la nouvelle liste
+                    
                     if (centerFilter.querySelector(`option[value="${currentCenterVal}"]`)) {
                         centerFilter.value = currentCenterVal;
                     }
                 };
+                
                 cityFilter.addEventListener('change', updateCentersForCity);
-                if (cityFilter.value || "{{ request('city_id') }}") { // Exécuter au chargement si une ville est déjà sélectionnée
+                
+                if (cityFilter.value || "{{ request('city_id') }}") {
                      updateCentersForCity();
                      @if(request('center_id'))
-                        centerFilter.value = "{{ request('center_id') }}"; // Restaurer la sélection du centre si elle existait
+                        centerFilter.value = "{{ request('center_id') }}";
                      @endif
                 }
             }

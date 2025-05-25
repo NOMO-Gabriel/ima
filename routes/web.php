@@ -90,48 +90,41 @@ Route::prefix('{locale}')
                 ->middleware('permission:user.role.assign')
                 ->name('admin.users.update-roles');
 
-            // Routes pour la gestion financière des élèves
-            Route::prefix('admin/finance')->name('finance.')->middleware(['role:resp-financier|df-ville|df-national'])->group(function () {
-                // Élèves en attente de validation
+            // ✅ ROUTES POUR LA GESTION FINANCIÈRE DES ÉLÈVES - CORRIGÉES
+            Route::prefix('admin/finance')->name('finance.')->middleware(['role:pca|resp-financier|df-ville|df-national'])->group(function () {
+                
+                // ✅ NOUVELLES ROUTES PRINCIPALES (à utiliser maintenant)
+                Route::get('students', [StudentFinancialController::class, 'index'])
+                    ->name('students.index')
+                    ->middleware('can:finance.student.view');
+
+                Route::get('students/{user}/edit-financials', [StudentFinancialController::class, 'editFinancials'])
+                    ->name('students.editFinancials');
+
+                Route::put('students/{user}/update-financials', [StudentFinancialController::class, 'updateFinancials'])
+                    ->name('students.updateFinancials');
+
+                // ✅ ANCIENNES ROUTES (garder pour compatibilité si nécessaire)
                 Route::get('/students/pending', [StudentFinancialController::class, 'pendingStudents'])
                     ->name('students.pending');
                 
-                // Élèves en attente d'assignation de contrat
                 Route::get('/students/pending-contract', [StudentFinancialController::class, 'pendingContract'])
                     ->name('students.pending-contract');
                 
-                // Valider un élève (première étape)
                 Route::post('/students/{user}/validate', [StudentFinancialController::class, 'validateStudent'])
                     ->name('students.validate');
                 
-                // Rejeter un élève
                 Route::post('/students/{user}/reject', [StudentFinancialController::class, 'rejectStudent'])
                     ->name('students.reject');
                 
-                // Formulaire d'assignation de contrat
                 Route::get('/students/{user}/assign-contract', [StudentFinancialController::class, 'showContractForm'])
                     ->name('students.assign-contract-form');
                 
-                // Assigner contrat et concours
                 Route::post('/students/{user}/assign-contract', [StudentFinancialController::class, 'assignContract'])
                     ->name('students.assign-contract');
                 
-                // Détails d'un élève
                 Route::get('/students/{user}', [StudentFinancialController::class, 'showStudent'])
                     ->name('students.show');
-                // Nouvelles routes pour la gestion unifiée
-            Route::get('students', [App\Http\Controllers\StudentFinancialController::class, 'index'])
-            ->name('students.index')
-            ->middleware('can:finance.student.view'); // Permission de base pour voir la liste
-
-            Route::get('students/{user}/edit-financials', [App\Http\Controllers\StudentFinancialController::class, 'editFinancials'])
-        ->name('students.editFinancials');
-        // La permission d'édition sera vérifiée dans le contrôleur (finance.student.edit.details ou finance.student.edit.contract)
-
-        Route::put('students/{user}/update-financials', [App\Http\Controllers\StudentFinancialController::class, 'updateFinancials'])
-        ->name('students.updateFinancials');
-
-                
             });
         });
     });

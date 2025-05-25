@@ -11,7 +11,7 @@
 
 @section('content')
 <div class="container-fluid">
-    <form method="POST" action="{{ route('finance.students.updateFinancials', ['locale' => app()->getLocale(), 'student' => $student->id]) }}" id="editStudentFinancialsForm">
+    <form method="POST" action="{{ route('finance.students.updateFinancials', ['locale' => app()->getLocale(), 'user' => $student->id]) }}" id="editStudentFinancialsForm">
         @csrf
         @method('PUT')
 
@@ -22,7 +22,6 @@
                         <h3 class="card-title"><i class="fas fa-user-edit me-2"></i>Informations Personnelles de l'Élève</h3>
                     </div>
                     <div class="card-body">
-                        {{-- Les champs ici sont conditionnés par $canEditDetails (qui est true pour PCA) --}}
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="first_name" class="form-label">Prénom <span class="text-danger">*</span></label>
@@ -118,25 +117,30 @@
                     <div class="card-body">
                         @if(!$canEditContract && $student->status === \App\Models\User::STATUS_PENDING_VALIDATION && !Auth::user()->hasRole('pca'))
                              <div class="alert alert-info small">
+                                <i class="fas fa-info-circle me-2"></i>
                                 Les informations de contrat et concours ne sont pas modifiables par vous à ce stade ou pour cet élève.
                             </div>
                         @endif
-                        {{-- Les champs ici sont conditionnés par $canEditContract (qui est true pour PCA) --}}
+                        
                         <div class="mb-3">
-                            <label class="form-label">Concours Préparés <span class="text-danger">*</span></label>
-                            @foreach($entranceExams as $exam)
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="entrance_exams[]" value="{{ $exam->id }}" id="exam_{{ $exam->id }}"
-                                    {{ in_array($exam->id, old('entrance_exams', $studentExamsIds)) ? 'checked' : '' }} {{ $canEditContract ? '' : 'disabled' }}>
-                                <label class="form-check-label" for="exam_{{ $exam->id }}">{{ $exam->name }}</label>
+                            <label class="form-label">Concours Préparés</label>
+                            <div class="row">
+                                @foreach($entranceExams as $exam)
+                                <div class="col-md-6 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" name="entrance_exams[]" value="{{ $exam->id }}" id="exam_{{ $exam->id }}"
+                                            {{ in_array($exam->id, old('entrance_exams', $studentExamsIds)) ? 'checked' : '' }} {{ $canEditContract ? '' : 'disabled' }}>
+                                        <label class="form-check-label small" for="exam_{{ $exam->id }}">{{ $exam->name }}</label>
+                                    </div>
+                                </div>
+                                @endforeach
                             </div>
-                            @endforeach
                             @error('entrance_exams') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                             @error('entrance_exams.*') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
                         </div>
 
                         <div class="mb-3">
-                            <label for="formation_id" class="form-label">Formation Principale (Contrat) <span class="text-danger">*</span></label>
+                            <label for="formation_id" class="form-label">Formation Principale (Contrat)</label>
                             <select id="formation_id" name="formation_id" class="form-select @error('formation_id') is-invalid @enderror" {{ $canEditContract ? '' : 'disabled' }}>
                                 <option value="">Sélectionnez la formation</option>
                                 @foreach($formations as $formation)
@@ -150,7 +154,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="contract_amount" class="form-label">Montant Total Contrat (FCFA) <span class="text-danger">*</span></label>
+                            <label for="contract_amount" class="form-label">Montant Total Contrat (FCFA)</label>
                             <input type="number" class="form-control @error('contract_amount') is-invalid @enderror" id="contract_amount" name="contract_amount" value="{{ old('contract_amount', $contractAmount) }}" min="0" {{ $canEditContract ? '' : 'readonly' }}>
                             @error('contract_amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
@@ -180,6 +184,7 @@
                                 @error('end_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
+                        
                         <div class="mb-3">
                             <label for="special_conditions" class="form-label">Conditions Spéciales</label>
                             <textarea class="form-control @error('special_conditions') is-invalid @enderror" id="special_conditions" name="special_conditions" rows="3" {{ $canEditContract ? '' : 'readonly' }}>{{ old('special_conditions', $specialConditions) }}</textarea>
@@ -213,20 +218,47 @@
                                 @error('rejection_reason') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         @elseif($student->rejection_reason)
-                             <p class="text-muted small">Raison du rejet: {{ $student->rejection_reason }}</p>
+                             <div class="alert alert-warning small">
+                                <strong>Raison du rejet:</strong> {{ $student->rejection_reason }}
+                             </div>
                         @endif
+                        
                         <hr>
-                        <p class="text-muted small">
-                            Matricule: {{ $student->student_data['matricule'] ?? 'Non assigné' }}<br>
-                            Inscrit le: {{ $student->created_at->isoFormat('D MMMM YYYY [à] HH:mm') }}<br>
-                            @if($student->financialValidator) Validé par: {{ $student->financialValidator->full_name }} ({{ $student->financial_validation_date?->isoFormat('D MMM YYYY') }})<br>@endif
-                            @if($student->finalizedBy) Finalisé par: {{ $student->finalizedBy->full_name }} ({{ $student->finalized_at?->isoFormat('D MMM YYYY') }}) @endif
-                        </p>
+                        
+                        <div class="student-info">
+                            <h6 class="text-muted mb-2">Informations élève</h6>
+                            <p class="text-muted small mb-1">
+                                <strong>Matricule:</strong> {{ $student->student_data['matricule'] ?? 'ELEVE-' . $student->created_at->format('Y') . '-' . str_pad($student->id, 6, '0', STR_PAD_LEFT) }}
+                            </p>
+                            <p class="text-muted small mb-1">
+                                <strong>Inscrit le:</strong> {{ $student->created_at->isoFormat('D MMMM YYYY [à] HH:mm') }}
+                            </p>
+                            @if($student->financialValidator)
+                                <p class="text-muted small mb-1">
+                                    <strong>Validé par:</strong> {{ $student->financialValidator->full_name }} 
+                                    @if($student->financial_validation_date)
+                                        ({{ $student->financial_validation_date->isoFormat('D MMM YYYY') }})
+                                    @endif
+                                </p>
+                            @endif
+                            @if($student->finalizedBy)
+                                <p class="text-muted small mb-1">
+                                    <strong>Finalisé par:</strong> {{ $student->finalizedBy->full_name }} 
+                                    @if($student->finalized_at)
+                                        ({{ $student->finalized_at->isoFormat('D MMM YYYY') }})
+                                    @endif
+                                </p>
+                            @endif
+                        </div>
                     </div>
                     <div class="card-footer text-end">
-                        <a href="{{ route('finance.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-secondary me-2">Annuler</a>
+                        <a href="{{ route('finance.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-secondary me-2">
+                            <i class="fas fa-times me-1"></i> Annuler
+                        </a>
                         @if($canEditDetails || $canEditContract)
-                            <button type="submit" class="btn btn-primary"><i class="fas fa-save me-1"></i> Enregistrer les modifications</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i> Enregistrer les modifications
+                            </button>
                         @endif
                     </div>
                 </div>
@@ -250,6 +282,23 @@
     .form-check-input:disabled {
         cursor: not-allowed;
     }
+    .student-info {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.375rem;
+        border: 1px solid #e9ecef;
+    }
+    .alert {
+        border-radius: 0.375rem;
+    }
+    .btn-icon {
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 </style>
 @endpush
 
@@ -264,12 +313,13 @@ document.addEventListener('DOMContentLoaded', function () {
         const allCenterOptionsOriginalForm = Array.from(centerSelectForm.options).filter(opt => opt.value !== "");
 
         function updateCenterOptionsForm() {
-            // Ne rien faire si le select de ville est désactivé (car l'utilisateur ne peut pas le changer)
+            // Ne rien faire si le select de ville est désactivé
             if (citySelectForm.disabled) return;
 
             const selectedCityId = citySelectForm.value;
             const currentCenterValue = centerSelectForm.value;
 
+            // Vider le select des centres, en gardant la première option (placeholder)
             while (centerSelectForm.options.length > 1) {
                 centerSelectForm.remove(1);
             }
@@ -286,6 +336,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     centerSelectForm.appendChild(optionNode.cloneNode(true));
                 });
             }
+            
             // Restaurer la sélection si possible et valide
             if (centerSelectForm.querySelector(`option[value="${currentCenterValue}"]`)) {
                 centerSelectForm.value = currentCenterValue;
@@ -300,6 +351,40 @@ document.addEventListener('DOMContentLoaded', function () {
         if(oldCenterId && centerSelectForm.querySelector(`option[value="${oldCenterId}"]`)) {
             centerSelectForm.value = oldCenterId;
         }
+    }
+
+    // Validation côté client pour le statut actif
+    const statusSelect = document.getElementById('status');
+    const formElement = document.getElementById('editStudentFinancialsForm');
+    
+    if (statusSelect && formElement) {
+        formElement.addEventListener('submit', function(e) {
+            const selectedStatus = statusSelect.value;
+            const centerSelect = document.getElementById('center_id_form');
+            
+            if (selectedStatus === 'active') {
+                // Vérifier qu'un centre est sélectionné
+                if (!centerSelect.value) {
+                    e.preventDefault();
+                    alert('Un centre doit être assigné pour activer le compte de l\'élève.');
+                    centerSelect.focus();
+                    return false;
+                }
+                
+                // Vérifier les informations de contrat si l'utilisateur peut les modifier
+                @if($canEditContract)
+                    const formationSelect = document.getElementById('formation_id');
+                    const amountInput = document.getElementById('contract_amount');
+                    const checkedExams = document.querySelectorAll('input[name="entrance_exams[]"]:checked');
+                    
+                    if (!formationSelect.value || !amountInput.value || checkedExams.length === 0) {
+                        e.preventDefault();
+                        alert('Pour activer l\'élève, vous devez définir:\n- Au moins un concours d\'entrée\n- Une formation principale\n- Un montant de contrat');
+                        return false;
+                    }
+                @endif
+            }
+        });
     }
 });
 </script>

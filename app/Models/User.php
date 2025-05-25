@@ -32,6 +32,11 @@ class User extends Authenticatable
         'entrance_exam_assigned',
         'contract_assigned',
         'student_data',// Pour stocker matricule, concours, détails du contrat, etc.
+        'finalized_by',      // ✅ Ajouter ce champ
+        'finalized_at',      // ✅ Ajouter ce champ
+        'validated_by',      // ✅ Ajouter ce champ si pas déjà présent
+        'validated_at',      // ✅ Ajouter ce champ si pas déjà présent
+        'rejection_reason', 
     ];
 
     protected $hidden = [
@@ -257,5 +262,23 @@ class User extends Authenticatable
         self::STATUS_ARCHIVED => 'Archivé',
     ];
 }
+
+
+
+    /**
+     * ✅ AJOUTER - Relation avec celui qui a finalisé le compte
+     */
+    public function finalizedBy()
+    {
+        return $this->belongsTo(User::class, 'finalized_by');
+    }
+
+    /**
+     * ✅ AJOUTER - Relation avec celui qui a validé initialement
+     */
+    public function validator()
+    {
+        return $this->belongsTo(User::class, 'validated_by');
+    }
 
 }
