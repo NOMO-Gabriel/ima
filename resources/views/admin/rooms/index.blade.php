@@ -168,14 +168,8 @@
                     <input type="search" id="search-rooms" class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD]" placeholder="Rechercher une salle...">
                 </div>
                 <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
-                    <select name="capacity" id="filter-capacity" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
-                        <option value="">Toutes les capacités</option>
-                        <option value="1">1 personne</option>
-                        <option value="2">2 personnes</option>
-                        <option value="3+">3 personnes ou plus</option>
-                    </select>
-                    <select name="formation_id" id="formation_id">
-                        <option value="">-- Toutes les formations --</option>
+                    <select name="formation_id" id="formation_id" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] px-6.5 py-2.5">
+                        <option value="">Toutes les formations</option>
                         @foreach ($formations as $formation)
                             <option value="{{ $formation->id }}" {{ old('formation_id') == $formation->id ? 'selected' : '' }}>
                                 {{ $formation->name }}
@@ -237,9 +231,6 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             <div class="flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                                </svg>
                                 <span>{{ $room->formation->name ?? 'Aucune' }}</span>
                             </div>
                         </td>
