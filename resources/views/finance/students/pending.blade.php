@@ -45,7 +45,7 @@
                                         class="text-blue-600 hover:text-blue-900 text-sm font-medium">
                                     Voir détails
                                 </button>
-                                <form method="POST" action="{{ route('finance.students.validate', ['locale' => app()->getLocale(), 'student' => $student]) }}" class="inline">
+                                <form method="POST" action="{{ route('finance.students.validate', ['locale' => app()->getLocale(), 'user' => $student]) }}" class="inline">
                                     @csrf
                                     <button type="submit" 
                                             class="bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700"

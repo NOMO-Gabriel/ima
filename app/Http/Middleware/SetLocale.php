@@ -23,8 +23,9 @@ class SetLocale
         // Obtenir la locale depuis le paramètre d'URL
         $locale = $request->route('locale');
 
-        if (!in_array($locale, ['en', 'fr'])) {
-            $locale = 'en'; // Valeur par défaut
+        // Vérifier si la locale est valide
+        if (!$locale || !in_array($locale, ['en', 'fr'])) {
+            $locale = Session::get('locale', 'en'); // Valeur par défaut
         }
 
         // Définir la locale pour cette requête

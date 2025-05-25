@@ -49,13 +49,17 @@ class StudentFinancialController extends Controller
 
     /**
      * Valide un élève (première étape)
+     * CHANGÉ: Accepte l'ID et récupère l'utilisateur manuellement
      */
-    public function validateStudent(Request $request, User $student)
+    public function validateStudent(Request $request, $userId)
     {
         if (!Auth::user()->hasRole(['resp-financier', 'df-ville', 'df-national'])) {
             abort(403, 'Accès refusé');
         }
 
+        // Récupérer l'utilisateur par son ID
+        $student = User::findOrFail($userId);
+        
         if ($student->account_type !== 'eleve' || $student->status !== User::STATUS_PENDING_VALIDATION) {
             return back()->with('error', 'Cet élève ne peut pas être validé.');
         }
@@ -70,13 +74,17 @@ class StudentFinancialController extends Controller
 
     /**
      * Affiche le formulaire d'assignation de contrat et concours
+     * CHANGÉ: Accepte l'ID et récupère l'utilisateur manuellement
      */
-    public function showContractForm(User $student)
+    public function showContractForm($userId)
     {
         if (!Auth::user()->hasRole(['resp-financier', 'df-ville', 'df-national'])) {
             abort(403, 'Accès refusé');
         }
 
+        // Récupérer l'utilisateur par son ID
+        $student = User::findOrFail($userId);
+        
         if ($student->status !== User::STATUS_PENDING_CONTRACT) {
             return back()->with('error', 'Cet élève n\'est pas en attente d\'assignation de contrat.');
         }
@@ -89,12 +97,16 @@ class StudentFinancialController extends Controller
 
     /**
      * Assigne le contrat et les concours à un élève
+     * CHANGÉ: Accepte l'ID et récupère l'utilisateur manuellement
      */
-    public function assignContract(Request $request, User $student)
+    public function assignContract(Request $request, $userId)
     {
         if (!Auth::user()->hasRole(['resp-financier', 'df-ville', 'df-national'])) {
             abort(403, 'Accès refusé');
         }
+
+        // Récupérer l'utilisateur par son ID
+        $student = User::findOrFail($userId);
 
         $request->validate([
             'entrance_exams' => 'required|array|min:1',
@@ -149,12 +161,16 @@ class StudentFinancialController extends Controller
 
     /**
      * Rejette un élève
+     * CHANGÉ: Accepte l'ID et récupère l'utilisateur manuellement
      */
-    public function rejectStudent(Request $request, User $student)
+    public function rejectStudent(Request $request, $userId)
     {
         if (!Auth::user()->hasRole(['resp-financier', 'df-ville', 'df-national'])) {
             abort(403, 'Accès refusé');
         }
+
+        // Récupérer l'utilisateur par son ID
+        $student = User::findOrFail($userId);
 
         $request->validate([
             'rejection_reason' => 'required|string|max:500',
@@ -178,12 +194,16 @@ class StudentFinancialController extends Controller
 
     /**
      * Affiche les détails d'un élève
+     * CHANGÉ: Accepte l'ID et récupère l'utilisateur manuellement
      */
-    public function showStudent(User $student)
+    public function showStudent($userId)
     {
         if (!Auth::user()->hasRole(['resp-financier', 'df-ville', 'df-national'])) {
             abort(403, 'Accès refusé');
         }
+
+        // Récupérer l'utilisateur par son ID
+        $student = User::findOrFail($userId);
 
         if ($student->account_type !== 'eleve') {
             abort(404, 'Élève non trouvé');

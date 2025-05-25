@@ -17,8 +17,6 @@ class CitySeeder extends Seeder
             [
                 'name' => 'Mbalmayo',
                 'code' => 'MBA',
-
-                
             ],
             [
                 'name' => 'Obala',

@@ -21,9 +21,7 @@ class RegisteredUserController extends Controller
     public function create(): View
     {
         // Charger la liste des villes actives depuis la base de données
-        $cities = \App\Models\City::where('is_active', true)
-            ->orderBy('name')
-            ->get();
+        $cities = \App\Models\City::orderBy('name')->get(['id', 'name']);;
 
         return view('auth.register', [
             'cities' => $cities

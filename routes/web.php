@@ -30,11 +30,6 @@ Route::get('/', function () {
     return redirect("/{$locale}");
 });
 
-Route::get('/dashboard', function () {
-    $locale = app()->getLocale();
-    return redirect()->route('dashboard', ['locale' => $locale]);
-})->name('dashboard.redirect');
-
 // Groupe de routes avec préfixe de langue
 Route::prefix('{locale}')
     ->where(['locale' => 'en|fr'])
@@ -94,6 +89,37 @@ Route::prefix('{locale}')
             Route::put('/admin/users/{user}/roles', [UserController::class, 'updateRoles'])
                 ->middleware('permission:user.role.assign')
                 ->name('admin.users.update-roles');
+
+            // Routes pour la gestion financière des élèves
+            Route::prefix('finance')->name('finance.')->middleware(['role:resp-financier|df-ville|df-national'])->group(function () {
+                // Élèves en attente de validation
+                Route::get('/students/pending', [StudentFinancialController::class, 'pendingStudents'])
+                    ->name('students.pending');
+                
+                // Élèves en attente d'assignation de contrat
+                Route::get('/students/pending-contract', [StudentFinancialController::class, 'pendingContract'])
+                    ->name('students.pending-contract');
+                
+                // Valider un élève (première étape)
+                Route::post('/students/{user}/validate', [StudentFinancialController::class, 'validateStudent'])
+                    ->name('students.validate');
+                
+                // Rejeter un élève
+                Route::post('/students/{user}/reject', [StudentFinancialController::class, 'rejectStudent'])
+                    ->name('students.reject');
+                
+                // Formulaire d'assignation de contrat
+                Route::get('/students/{user}/assign-contract', [StudentFinancialController::class, 'showContractForm'])
+                    ->name('students.assign-contract-form');
+                
+                // Assigner contrat et concours
+                Route::post('/students/{user}/assign-contract', [StudentFinancialController::class, 'assignContract'])
+                    ->name('students.assign-contract');
+                
+                // Détails d'un élève
+                Route::get('/students/{user}', [StudentFinancialController::class, 'showStudent'])
+                    ->name('students.show');
+            });
         });
     });
 
@@ -127,37 +153,5 @@ Route::get('/language/{locale}', function ($locale) {
 
     return redirect($newUrl);
 })->name('language');
-
-
-// Routes pour la gestion financière des élèves
-Route::prefix('finance')->name('finance.')->middleware(['role:resp-financier|df-ville|df-national'])->group(function () {
-    // Élèves en attente de validation
-    Route::get('/students/pending', [StudentFinancialController::class, 'pendingStudents'])
-        ->name('students.pending');
-    
-    // Élèves en attente d'assignation de contrat
-    Route::get('/students/pending-contract', [StudentFinancialController::class, 'pendingContract'])
-        ->name('students.pending-contract');
-    
-    // Valider un élève (première étape)
-    Route::post('/students/{student}/validate', [StudentFinancialController::class, 'validateStudent'])
-        ->name('students.validate');
-    
-    // Rejeter un élève
-    Route::post('/students/{student}/reject', [StudentFinancialController::class, 'rejectStudent'])
-        ->name('students.reject');
-    
-    // Formulaire d'assignation de contrat
-    Route::get('/students/{student}/assign-contract', [StudentFinancialController::class, 'showContractForm'])
-        ->name('students.assign-contract-form');
-    
-    // Assigner contrat et concours
-    Route::post('/students/{student}/assign-contract', [StudentFinancialController::class, 'assignContract'])
-        ->name('students.assign-contract');
-    
-    // Détails d'un élève
-    Route::get('/students/{student}', [StudentFinancialController::class, 'showStudent'])
-        ->name('students.show');
-});
 
 require __DIR__.'/auth.php';
