@@ -17,18 +17,21 @@ class User extends Authenticatable
         'email',
         'password',
         'phone_number',
+        'parent_phone_number', // Nouveau
         'city_id',
+        'center_id', // Nouveau
         'address',
+        'establishment', // Nouveau - Établissement d'origine
         'account_type',
         'profile_photo_path',
         'status',
-        'establishment', // Pour les élèves
-        'wanted_entrance_exams', // Pour les élèves
-        'contract_details', // Détails du contrat
+        'wanted_entrance_exams',
+        'contract_details',
         'validated_by_financial',
         'financial_validation_date',
         'entrance_exam_assigned',
         'contract_assigned',
+        'student_data',// Pour stocker matricule, concours, détails du contrat, etc.
     ];
 
     protected $hidden = [
@@ -43,14 +46,15 @@ class User extends Authenticatable
         'validated_at' => 'datetime',
         'finalized_at' => 'datetime',
         'financial_validation_date' => 'datetime',
-        'wanted_entrance_exams' => 'array', // Cast en array pour stocker les concours
-        'contract_details' => 'array', // Cast en array pour stocker les détails du contrat
+        'wanted_entrance_exams' => 'array',
+        'contract_details' => 'array',
+        'student_data' => 'array', // ou 'json'
     ];
 
     // Statuts possibles pour les élèves
-    const STATUS_PENDING_VALIDATION = 'pending_validation'; // En attente de validation par responsable financière
-    const STATUS_PENDING_CONTRACT = 'pending_contract'; // En attente d'assignation de contrat et concours
-    const STATUS_ACTIVE = 'active'; // Compte activé
+    const STATUS_PENDING_VALIDATION = 'pending_validation';
+    const STATUS_PENDING_CONTRACT = 'pending_contract';
+    const STATUS_ACTIVE = 'active';
     const STATUS_SUSPENDED = 'suspended';
     const STATUS_REJECTED = 'rejected';
     const STATUS_ARCHIVED = 'archived';
@@ -105,7 +109,7 @@ class User extends Authenticatable
         $this->save();
     }
 
-    // Ajouter ces méthodes pour faciliter l'accès aux informations
+    // Accesseurs
     public function getFullNameAttribute()
     {
         return "{$this->first_name} {$this->last_name}";
@@ -117,30 +121,21 @@ class User extends Authenticatable
             return asset('storage/' . $this->profile_photo_path);
         }
         
-        // Fallback sur Gravatar
         $hash = md5(strtolower(trim($this->email)));
         return "https://www.gravatar.com/avatar/{$hash}?s=200&d=mp";
     }
 
-    /**
-     * Get the academies directed by the user.
-     */
+    // Relations
     public function directedAcademies()
     {
         return $this->hasMany(Academy::class, 'director_id');
     }
 
-    /**
-     * Get the departments headed by the user.
-     */
     public function headedDepartments()
     {
         return $this->hasMany(Department::class, 'head_id');
     }
 
-    /**
-     * Get the centers directed by the user.
-     */
     public function directedCenters()
     {
         return $this->hasMany(Center::class, 'director_id');
@@ -155,6 +150,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Relation avec le centre choisi par l'élève
+     */
+    public function center()
+    {
+        return $this->belongsTo(Center::class);
+    }
+
+    /**
      * Relation avec la responsable financière qui a validé
      */
     public function financialValidator()
@@ -163,23 +166,96 @@ class User extends Authenticatable
     }
 
     /**
+     * Scope pour les élèves uniquement
+     */
+    public function scopeStudents($query)
+    {
+        return $query->where('account_type', 'eleve');
+    }
+
+    /**
+     * Scope pour filtrer par centre
+     */
+    public function scopeByCenter($query, $centerId)
+    {
+        return $query->where('center_id', $centerId);
+    }
+
+    /**
+     * Scope pour filtrer par ville
+     */
+    public function scopeByCity($query, $cityId)
+    {
+        return $query->where('city_id', $cityId);
+    }
+
+    /**
+     * Scope pour les élèves en attente de validation
+     */
+    public function scopePendingValidation($query)
+    {
+        return $query->students()->where('status', self::STATUS_PENDING_VALIDATION);
+    }
+
+    /**
+     * Scope pour les élèves en attente de contrat
+     */
+    public function scopePendingContract($query)
+    {
+        return $query->students()->where('status', self::STATUS_PENDING_CONTRACT);
+    }
+
+    /**
      * Override de la méthode assignRole pour mettre à jour le account_type
      */
     public function myAssignRole($roles)
     {
-        // Appel à la méthode du trait
         $this->assignRole($roles);
         
-        // Mettre à jour le account_type
         if (is_array($roles) || $roles instanceof \Illuminate\Support\Collection) {
             $this->account_type = $roles[0];
         } else {
             $this->account_type = $roles;
         }
         
-        // Sauvegarder sans déclencher les events pour éviter les boucles
         $this->saveQuietly();
         
         return $this;
     }
+    public static function getStudentStatusInfo($statusKey)
+{
+    $statuses = self::getStudentStatuses();
+    $statusText = $statuses[$statusKey] ?? 'Inconnu';
+
+    $statusConfig = [
+        self::STATUS_PENDING_VALIDATION => ['class' => 'warning', 'icon' => 'hourglass-start'],
+        self::STATUS_PENDING_CONTRACT => ['class' => 'info', 'icon' => 'file-signature'],
+        self::STATUS_ACTIVE => ['class' => 'success', 'icon' => 'check-circle'],
+        self::STATUS_SUSPENDED => ['class' => 'danger', 'icon' => 'ban'],
+        self::STATUS_REJECTED => ['class' => 'secondary', 'icon' => 'times-circle'],
+        self::STATUS_ARCHIVED => ['class' => 'dark', 'icon' => 'archive'],
+    ];
+    $config = $statusConfig[$statusKey] ?? ['class' => 'secondary', 'icon' => 'question-circle'];
+
+    return array_merge($config, ['text' => $statusText]);
+}
+
+// Relation pour accéder aux données financières (si vous en avez une table séparée plus tard)
+// public function financialData() {
+//     return $this->hasOne(StudentFinancialData::class);
+// }
+
+
+    public static function getStudentStatuses()
+{
+    return [
+        self::STATUS_PENDING_VALIDATION => 'En attente de validation',
+        self::STATUS_PENDING_CONTRACT => 'En attente de contrat',
+        self::STATUS_ACTIVE => 'Actif',
+        self::STATUS_SUSPENDED => 'Suspendu',
+        self::STATUS_REJECTED => 'Rejeté',
+        self::STATUS_ARCHIVED => 'Archivé',
+    ];
+}
+
 }

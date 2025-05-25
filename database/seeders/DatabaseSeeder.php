@@ -12,8 +12,10 @@ class DatabaseSeeder extends Seeder
             CitySeeder::class,
             RolesAndPermissionsSeeder::class,
             AdminUserSeeder::class,
+            CenterSeeder::class,
             EntranceExamSeeder::class,
             TestSeeder::class,
+
         ]);
     }
 }

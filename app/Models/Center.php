@@ -49,6 +49,14 @@ class Center extends Model
     }
 
     /**
+     * Get the city of the center.
+     */
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class);
+    }
+
+    /**
      * Get the director of the center.
      */
     public function director(): BelongsTo
@@ -83,5 +91,29 @@ class Center extends Model
     public function timetables(): HasMany
     {
         return $this->hasMany(Timetable::class);
+    }
+
+    /**
+     * Scope pour les centres actifs
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
+    /**
+     * Scope pour filtrer par ville
+     */
+    public function scopeByCity($query, $cityId)
+    {
+        return $query->where('city_id', $cityId);
+    }
+
+    /**
+     * Scope pour filtrer par académie
+     */
+    public function scopeByAcademy($query, $academyId)
+    {
+        return $query->where('academy_id', $academyId);
     }
 }

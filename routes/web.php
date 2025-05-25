@@ -91,7 +91,7 @@ Route::prefix('{locale}')
                 ->name('admin.users.update-roles');
 
             // Routes pour la gestion financière des élèves
-            Route::prefix('finance')->name('finance.')->middleware(['role:resp-financier|df-ville|df-national'])->group(function () {
+            Route::prefix('admin/finance')->name('finance.')->middleware(['role:resp-financier|df-ville|df-national'])->group(function () {
                 // Élèves en attente de validation
                 Route::get('/students/pending', [StudentFinancialController::class, 'pendingStudents'])
                     ->name('students.pending');
@@ -119,6 +119,19 @@ Route::prefix('{locale}')
                 // Détails d'un élève
                 Route::get('/students/{user}', [StudentFinancialController::class, 'showStudent'])
                     ->name('students.show');
+                // Nouvelles routes pour la gestion unifiée
+            Route::get('students', [App\Http\Controllers\StudentFinancialController::class, 'index'])
+            ->name('students.index')
+            ->middleware('can:finance.student.view'); // Permission de base pour voir la liste
+
+            Route::get('students/{user}/edit-financials', [App\Http\Controllers\StudentFinancialController::class, 'editFinancials'])
+        ->name('students.editFinancials');
+        // La permission d'édition sera vérifiée dans le contrôleur (finance.student.edit.details ou finance.student.edit.contract)
+
+        Route::put('students/{user}/update-financials', [App\Http\Controllers\StudentFinancialController::class, 'updateFinancials'])
+        ->name('students.updateFinancials');
+
+                
             });
         });
     });

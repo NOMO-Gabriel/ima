@@ -1565,7 +1565,7 @@
                 </div>
             @endcanany
 
-            @canany(['finance.transaction.view', 'finance.balance.view', 'finance.payment.student.view', 'finance.payment.student.create', 'finance.payment.teacher.calculate', 'finance.payment.teacher.validate', 'finance.expense.create', 'finance.receipt.generate', 'finance.report.view', 'finance.report.generate'])
+            @canany(['finance.transaction.view', 'finance.balance.view', 'finance.payment.student.view', 'finance.payment.student.create', 'finance.payment.teacher.calculate', 'finance.payment.teacher.validate', 'finance.expense.create', 'finance.receipt.generate', 'finance.report.view', 'finance.report.generate','finance.student.view',])
                 <div class="menu-category" data-category="finance">
                     <i class="fas fa-money-bill-transfer"></i>
                     <div class="menu-category-text">Finance</div>
@@ -1585,6 +1585,12 @@
                             <span>Paiements</span>
                         </a>
                     @endcanany
+                    @can('finance.student.view') {{-- Utiliser la nouvelle permission --}}
+                        <a href="{{ route('finance.students.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('finance.students.*') ? 'active' : '' }}">
+                            <i class="fas fa-user-graduate"></i>
+                            <span>Élèves (Finances)</span>
+                        </a>
+                    @endcan
 
                     @canany(['finance.expense.create'])
                         <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('finance.expenses.*') ? 'active' : '' }}">
@@ -1599,6 +1605,7 @@
                             <span>Rapports</span>
                         </a>
                     @endcanany
+
                 </div>
             @endcanany
 

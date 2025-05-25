@@ -153,7 +153,13 @@ class RolesAndPermissionsSeeder extends Seeder
             'finance.report.view' => 'Consulter les bilans financiers',
             'finance.report.generate' => 'Générer un bilan financier',
             'finance.stats.view' => 'Consulter les statistiques financières',
-        ], 'Financial Management');
+            'finance.student.view' => 'Voir la liste des élèves (section finance)',
+            'finance.student.edit.details' => 'Modifier les détails de base d\'un élève (finance)', // Pour les corrections d'inscription
+            'finance.student.edit.contract' => 'Définir/Modifier les concours et le contrat d\'un élève',
+            'finance.student.activate' => 'Activer le compte d\'un élève (après contrat)',
+            'finance.student.reject' => 'Rejeter une inscription d\'élève',
+        ], 'Financial Management'); 
+     
 
         // Module Logistique
         $this->createPermissions([
@@ -529,6 +535,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'user.view.own',
             'user.update.own',
             'history.view.own'
+            
         ])->get();
         $respFinancier->givePermissionTo($respFinPermissions);
 
