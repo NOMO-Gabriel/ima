@@ -27,7 +27,6 @@ return new class extends Migration
             $table->enum('status', [
                 'pending_validation',
                 'pending_finalization',
-                'active',
                 'suspended',
                 'rejected',
                 'archived'
