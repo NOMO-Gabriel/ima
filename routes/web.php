@@ -27,6 +27,7 @@ use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransactionHistoryController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -96,7 +97,7 @@ Route::prefix('{locale}')
                 Route::resource('rooms', RoomController::class);
                 Route::resource('courses', CourseController::class);
                 Route::resource('entrance-exams', EntranceExamController::class);
-                Route::resource('mock-entrance-exams', MockExamController::class);
+                Route::resource('mock-exams', MockExamController::class);
 
                 // Planification
                 Route::resource('planning', TimetableController::class);
@@ -105,7 +106,7 @@ Route::prefix('{locale}')
                 // Finances
                 Route::resource('registrations', RegistrationController::class);
                 Route::resource('transactions', TransactionController::class);
-                Route::resource('finance-history', TransactionController::class);
+                Route::resource('transactions-history', TransactionHistoryController::class);
 
                 // Ressources
                 Route::resource('books', BookController::class);

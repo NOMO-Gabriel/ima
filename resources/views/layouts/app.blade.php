@@ -1445,18 +1445,18 @@
 
         <div class="sidebar-menu">
             <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-                <i class="fas fa-th-large"></i>
+                <i class="fas fa-home"></i>
                 <span>Tableau de bord</span>
             </a>
 
             <div class="menu-category" data-category="administration">
-                <i class="fas fa-dashboard"></i>
+                <i class="fas fa-cogs"></i>
                 <div class="menu-category-text">Administration</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-administration">
                 <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-id-badge"></i>
                     <span>Personnel</span>
                 </a>
                 <a href="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
@@ -1470,7 +1470,7 @@
             </div>
 
             <div class="menu-category" data-category="management">
-                <i class="fas fa-dashboard"></i>
+                <i class="fas fa-tasks"></i>
                 <div class="menu-category-text">Gestion</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
@@ -1484,45 +1484,45 @@
                     <span>Academies</span>
                 </a>
                 <a href="{{ route('admin.cities.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.cities.*') ? 'active' : '' }}">
-                    <i class="fas fa-map-marker-alt"></i>
+                    <i class="fas fa-city"></i>
                     <span>Villes</span>
                 </a>
                 <a href="{{ route('admin.centers.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.centers.*') ? 'active' : '' }}">
-                    <i class="fas fa-building"></i>
+                    <i class="fas fa-school"></i>
                     <span>Centres</span>
                 </a>
                 <a href="{{ route('admin.departments.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
-                    <i class="fas fa-university"></i>
+                    <i class="fas fa-building"></i>
                     <span>Départements</span>
                 </a>
                 <a href="{{ route('admin.phases.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.phases.*') ? 'active' : '' }}">
-                    <i class="fas fa-graduation-cap"></i>
+                    <i class="fas fa-layer-group"></i>
                     <span>Phases</span>
                 </a>
                 <a href="{{ route('admin.formations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.formations.*') ? 'active' : '' }}">
-                    <i class="fas fa-graduation-cap"></i>
+                    <i class="fas fa-book-reader"></i>
                     <span>Formations</span>
                 </a>
                 <a href="{{ route('admin.rooms.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
-                    <i class="fas fa-graduation-cap"></i>
+                    <i class="fas fa-door-open"></i>
                     <span>Classes</span>
                 </a>
                 <a href="{{ route('admin.courses.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.courses.*') ? 'active' : '' }}">
-                    <i class="fas fa-graduation-cap"></i>
+                    <i class="fas fa-book-open"></i>
                     <span>Cours</span>
                 </a>
                 <a href="{{ route('admin.entrance-exams.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.entrance-exams.*') ? 'active' : '' }}">
-                    <i class="fas fa-graduation-cap"></i>
+                    <i class="fas fa-pencil-alt"></i>
                     <span>Concours</span>
                 </a>
-                <a href="{{ route('admin.mock-entrance-exams.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.mock-entrance-exams.*') ? 'active' : '' }}">
-                    <i class="fas fa-graduation-cap"></i>
+                <a href="{{ route('admin.mock-exams.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.mock-exams.*') ? 'active' : '' }}">
+                    <i class="fas fa-edit"></i>
                     <span>Concours blanc</span>
                 </a>
             </div>
 
             <div class="menu-category" data-category="planification">
-                <i class="fas fa-dashboard"></i>
+                <i class="fas fa-calendar-check"></i>
                 <div class="menu-category-text">Planification</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
@@ -1532,59 +1532,59 @@
                     <span>Planning</span>
                 </a>
                 <a href="{{ route('admin.absences.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.absences.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
+                    <i class="fas fa-user-times"></i>
                     <span>Absences</span>
                 </a>
             </div>
 
             <div class="menu-category" data-category="finance">
-                <i class="fas fa-dashboard"></i>
+                <i class="fas fa-wallet"></i>
                 <div class="menu-category-text">Finances</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-finance">
                 <a href="{{ route('admin.registrations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.registrations.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
+                    <i class="fas fa-clipboard-list"></i>
                     <span>Inscriptions</span>
                 </a>
                 <a href="{{ route('admin.transactions.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
+                    <i class="fas fa-money-check-alt"></i>
                     <span>Transactions</span>
                 </a>
-                <a href="{{ route('admin.finance-history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.finance-history.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
+                <a href="{{ route('admin.transactions-history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.transactions-history.*') ? 'active' : '' }}">
+                    <i class="fas fa-history"></i>
                     <span>Historique</span>
                 </a>
             </div>
 
             <div class="menu-category" data-category="resources">
-                <i class="fas fa-dashboard"></i>
+                <i class="fas fa-archive"></i>
                 <div class="menu-category-text">Ressources</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-resources">
                 <a href="{{ route('admin.books.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
+                    <i class="fas fa-book"></i>
                     <span>Livres</span>
                 </a>
                 <a href="{{ route('admin.materials.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
+                    <i class="fas fa-tools"></i>
                     <span>Materiels</span>
                 </a>
             </div>
 
             <div class="menu-category" data-category="account">
-                <i class="fas fa-dashboard"></i>
+                <i class="fas fa-user-cog"></i>
                 <div class="menu-category-text">Compte</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-account">
                 <a href="{{ route('admin.profile.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
+                    <i class="fas fa-user-circle"></i>
                     <span>Profil</span>
                 </a>
                 <a href="{{ route('admin.history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.history.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
+                    <i class="fas fa-history"></i>
                     <span>Historique</span>
                 </a>
             </div>
