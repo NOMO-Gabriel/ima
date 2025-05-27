@@ -35,7 +35,7 @@ class SlotController extends Controller
         $slot->update($validated);
 
         return redirect()
-            ->route('admin.timetables.index',
+            ->route('admin.planning.index',
                 [
                     'locale' => app()->getLocale(),
                     'week_start_date' => $slot->timetable->week_start_date,

@@ -3,7 +3,7 @@
 @section('content')
     <h2>Veuillez d'abord sélectionner un centre</h2>
 
-    <form method="GET" action="{{ route('admin.timetables.index', app()->getLocale()) }}">
+    <form method="GET" action="{{ route('admin.planning.index', app()->getLocale()) }}">
         <div class="form-group">
             <label for="center_id">Centre</label>
             <select name="center_id" id="center_id" class="form-control" required>

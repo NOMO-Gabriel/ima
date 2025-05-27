@@ -49,6 +49,6 @@
         </div>
 
         <button type="submit" class="btn btn-success">Enregistrer</button>
-        <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'week_start_date' => $slot->timetable->week_start_date, 'center_id' => $center->id]) }}" class="btn btn-secondary">Annuler</a>
+        <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'week_start_date' => $slot->timetable->week_start_date, 'center_id' => $center->id]) }}" class="btn btn-secondary">Annuler</a>
     </form>
 @endsection

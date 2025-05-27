@@ -15,7 +15,7 @@ class TimetableController extends Controller
         $centerId = $request->query('center_id');
         if (!$centerId) {
             $centers = Center::all();
-            return view('admin.timetables.select_center', compact('centers'));
+            return view('admin.planning.select_center', compact('centers'));
         }
 
         $center = Center::findOrFail($centerId);
@@ -94,7 +94,7 @@ class TimetableController extends Controller
         $prevWeek = $weekStart->copy()->subWeek()->toDateString();
         $nextWeek = $weekStart->copy()->addWeek()->toDateString();
 
-        return view('admin.timetables.index', [
+        return view('admin.planning.index', [
             'timetable' => $timetable,
             'formations' => $formations,
             'days' => $days,

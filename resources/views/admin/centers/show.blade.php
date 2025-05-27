@@ -55,7 +55,7 @@
                     </svg>
                     Modifier
                 </a>
-                <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'center_id' => $center->id]) }}" class="inline-flex items-center justify-center px-4 py-2 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id]) }}" class="inline-flex items-center justify-center px-4 py-2 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
@@ -248,7 +248,7 @@
                     </div>
                     <div class="p-4">
                         <div class="space-y-3">
-                            <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'center_id' => $center->id]) }}" class="flex items-center p-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id]) }}" class="flex items-center p-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-[#4CA3DD]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>

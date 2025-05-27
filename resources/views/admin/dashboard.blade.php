@@ -498,7 +498,7 @@
                 </a>
 
                 <!-- Planning -->
-                <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale()]) }}"
+                <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale()]) }}"
                    class="management-card p-6 rounded-xl shadow-md hover:shadow-lg border transition-all duration-200 group hover:-translate-y-1 relative"
                    :class="darkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'">
                     <div class="flex items-center justify-between mb-4">
