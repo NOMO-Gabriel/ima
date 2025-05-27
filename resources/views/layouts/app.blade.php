@@ -1449,208 +1449,145 @@
                 <span>Tableau de bord</span>
             </a>
 
-            @canany(['user.view.any', 'user.create', 'user.update.any', 'user.delete.any', 'academy.view', 'academy.create', 'academy.update', 'academy.delete', 'department.view', 'department.create', 'department.update', 'department.delete', 'center.view', 'center.create', 'center.update', 'center.delete'])
-                <div class="menu-category" data-category="administration">
-                    <i class="fas fa-dashboard"></i>
-                    <div class="menu-category-text">Administration</div>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-                <div class="menu-group" id="group-administration">
-                    @canany(['user.view.any', 'user.create', 'user.update.any', 'user.delete.any'])
-                        <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                            <i class="fas fa-users"></i>
-                            <span>Utilisateurs</span>
-                        </a>
-                    @endcanany
+            <div class="menu-category" data-category="administration">
+                <i class="fas fa-dashboard"></i>
+                <div class="menu-category-text">Administration</div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="menu-group" id="group-administration">
+                <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Personnel</span>
+                </a>
+                <a href="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}">
+                    <i class="fas fa-chalkboard-teacher"></i>
+                    <span>Enseignants</span>
+                </a>
+                <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Élèves</span>
+                </a>
+            </div>
 
-                    @canany(['academy.view', 'academy.create', 'academy.update', 'academy.delete', 'department.view', 'department.create', 'department.update', 'department.delete'])
-                        <a href="{{ route('admin.academies.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.academies.*', 'admin.departments.*') ? 'active' : '' }}">
-                            <i class="fas fa-university"></i>
-                            <span>Académies</span>
-                        </a>
-                    @endcanany
+            <div class="menu-category" data-category="management">
+                <i class="fas fa-dashboard"></i>
+                <div class="menu-category-text">Gestion</div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="menu-group" id="group-management">
+                <a href="{{ route('admin.academic-years.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.academic-years.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Années académiques</span>
+                </a>
+                <a href="{{ route('admin.academies.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.academies.*') ? 'active' : '' }}">
+                    <i class="fas fa-university"></i>
+                    <span>Academies</span>
+                </a>
+                <a href="{{ route('admin.cities.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.cities.*') ? 'active' : '' }}">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Villes</span>
+                </a>
+                <a href="{{ route('admin.centers.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.centers.*') ? 'active' : '' }}">
+                    <i class="fas fa-building"></i>
+                    <span>Centres</span>
+                </a>
+                <a href="{{ route('admin.departments.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.departments.*') ? 'active' : '' }}">
+                    <i class="fas fa-university"></i>
+                    <span>Départements</span>
+                </a>
+                <a href="{{ route('admin.phases.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.phases.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Phases</span>
+                </a>
+                <a href="{{ route('admin.formations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.formations.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Formations</span>
+                </a>
+                <a href="{{ route('admin.rooms.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.rooms.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Classes</span>
+                </a>
+                <a href="{{ route('admin.courses.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.courses.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Cours</span>
+                </a>
+                <a href="{{ route('admin.entrance-exams.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.entrance-exams.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Concours</span>
+                </a>
+                <a href="{{ route('admin.mock-entrance-exams.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.mock-entrance-exams.*') ? 'active' : '' }}">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>Concours blanc</span>
+                </a>
+            </div>
 
-                    @canany(['department.view', 'department.create', 'department.update', 'department.delete'])
-                        <a href="{{ route('admin.departments.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('departments.*') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Départements</span>
-                        </a>
-                    @endcanany
+            <div class="menu-category" data-category="planification">
+                <i class="fas fa-dashboard"></i>
+                <div class="menu-category-text">Planification</div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="menu-group" id="group-planification">
+                <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.planning.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Planning</span>
+                </a>
+                <a href="{{ route('admin.absences.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.absences.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Absences</span>
+                </a>
+            </div>
 
-                    @canany(['center.view', 'center.create', 'center.update', 'center.delete'])
-                        <a href="{{ route('admin.centers.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.centers.*') ? 'active' : '' }}">
-                            <i class="fas fa-building"></i>
-                            <span>Centres</span>
-                        </a>
-                    @endcanany
-
-                    {{-- @canany(['entrance_exam.view', 'entrance_exam.create', 'entrance_exam.update', 'entrance_exam.delete']) --}}
-                        <a href="{{ route('admin.entrance-exams.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.entrance-exams.*') ? 'active' : '' }}">
-                            <i class="fas fa-graduation-cap"></i>
-                            <span>Concours</span>
-                        </a>
-                    {{-- @endcanany --}}
-
-                    @canany(['formation.view', 'formation.create', 'formation.update', 'formation.delete'])
-                        <a href="{{ route('admin.formations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.formations.*') ? 'active' : '' }}">
-                            <i class="fas fa-graduation-cap"></i>
-                            <span>Formations</span>
-                        </a>
-                    @endcanany
-
-                    @canany(['course.view', 'course.create', 'course.update', 'course.delete'])
-                        <a href="{{ route('admin.courses.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.courses.*') ? 'active' : '' }}">
-                            <i class="fas fa-graduation-cap"></i>
-                            <span>Cours</span>
-                        </a>
-                    @endcanany
-                </div>
-            @endcanany
-
-            @canany(['teacher.register.validate', 'teacher.contract.create', 'teacher.contract.view', 'student.view', 'student.register', 'course.view', 'course.create', 'schedule.view', 'schedule.create'])
-                <div class="menu-category" data-category="gestion">
-                    <i class="fas fa-person-chalkboard"></i>
-                    <div class="menu-category-text">Gestion</div>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-                <div class="menu-group" id="group-gestion">
-                    @canany(['teacher.register.validate', 'teacher.contract.create', 'teacher.contract.view', 'teacher.contract.update', 'teacher.assign'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('teachers.*') ? 'active' : '' }}">
-                            <i class="fas fa-chalkboard-teacher"></i>
-                            <span>Enseignants</span>
-                        </a>
-                    @endcanany
-
-                    @canany(['student.view', 'student.register', 'student.update', 'student.delete', 'student.contract.create'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('students.*') ? 'active' : '' }}">
-                            <i class="fas fa-user-graduate"></i>
-                            <span>Élèves</span>
-                        </a>
-                    @endcanany
-
-                    {{-- @canany(['room.view', 'room.create', 'room.update', 'room.delete']) --}}
-                        <a href="{{ route('admin.rooms.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('classes.*') ? 'active' : '' }}">
-                            <i class="fas fa-chalkboard"></i>
-                            <span>Classes</span>
-                        </a>
-                    {{-- @endcanany --}}
-
-                    {{-- @canany(['phase.view', 'phase.create', 'phase.update', 'phase.delete']) --}}
-                        <a href="{{ route('admin.phases.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('phases.*') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Phases</span>
-                        </a>
-                    {{-- @endcanany --}}
-
-                    {{-- @canany(['city.view', 'city.create', 'city.update', 'city.delete']) --}}
-                        <a href="{{ route('admin.cities.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('cities.*') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Villes</span>
-                        </a>
-                    {{-- @endcanany --}}
-
-                    @canany(['schedule.view', 'schedule.create'])
-                        <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('planning.*') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-alt"></i>
-                            <span>Planification</span>
-                        </a>
-                    @endcanany
-
-                    {{-- @canany(['student.attendance']) --}}
-                        <a href="{{ route('admin.absences.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('absences.*') ? 'active' : '' }}">
-                            <i class="fas fa-calendar-times"></i>
-                            <span>Absences</span>
-                        </a>
-                    {{-- @endcanany --}}
-                </div>
-            @endcanany
-
-            @canany(['finance.transaction.view', 'finance.balance.view', 'finance.payment.student.view', 'finance.payment.student.create', 'finance.payment.teacher.calculate', 'finance.payment.teacher.validate', 'finance.expense.create', 'finance.receipt.generate', 'finance.report.view', 'finance.report.generate'])
-                <div class="menu-category" data-category="finance">
-                    <i class="fas fa-money-bill-transfer"></i>
-                    <div class="menu-category-text">Finance</div>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-                <div class="menu-group" id="group-finance">
-                    @canany(['finance.transaction.view', 'finance.balance.view'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('finance.transactions.*') ? 'active' : '' }}">
-                            <i class="fas fa-money-bill-wave"></i>
-                            <span>Transactions</span>
-                        </a>
-                    @endcanany
-
-                    @canany(['finance.payment.student.view', 'finance.payment.student.create', 'finance.payment.teacher.calculate', 'finance.payment.teacher.validate'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('finance.payments.*') ? 'active' : '' }}">
-                            <i class="fas fa-credit-card"></i>
-                            <span>Paiements</span>
-                        </a>
-                    @endcanany
-
-                    @canany(['finance.expense.create'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('finance.expenses.*') ? 'active' : '' }}">
-                            <i class="fas fa-file-invoice-dollar"></i>
-                            <span>Dépenses</span>
-                        </a>
-                    @endcanany
-
-                    @canany(['finance.report.view', 'finance.report.generate'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('finance.reports.*') ? 'active' : '' }}">
-                            <i class="fas fa-chart-line"></i>
-                            <span>Rapports</span>
-                        </a>
-                    @endcanany
-                </div>
-            @endcanany
-
-            @canany(['logistics.order.create', 'logistics.order.view', 'logistics.inventory.view', 'book.catalog.view', 'book.catalog.add', 'document.view', 'document.create'])
-                <div class="menu-category" data-category="ressources">
-                    <i class="fas fa-tools"></i>
-                    <div class="menu-category-text">Ressources</div>
-                    <i class="fas fa-chevron-down toggle-icon"></i>
-                </div>
-                <div class="menu-group" id="group-ressources">
-                    @canany(['document.view', 'document.create', 'document.update', 'document.delete'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('resources.documents.*') ? 'active' : '' }}">
-                            <i class="fas fa-file-alt"></i>
-                            <span>Documents</span>
-                        </a>
-                    @endcanany
-
-                    @canany(['book.catalog.view', 'book.catalog.add', 'book.catalog.update', 'book.catalog.remove'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('resources.books.*') ? 'active' : '' }}">
-                            <i class="fas fa-book"></i>
-                            <span>Livres</span>
-                        </a>
-                    @endcanany
-
-                    @canany(['logistics.inventory.view', 'logistics.inventory.update'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('resources.inventory.*') ? 'active' : '' }}">
-                            <i class="fas fa-boxes"></i>
-                            <span>Inventaire</span>
-                        </a>
-                    @endcanany
-
-                    @canany(['competition.view', 'competition.create', 'competition.update', 'competition.supervise', 'competition.grade.record', 'competition.results.publish'])
-                        <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('resources.contests.*') ? 'active' : '' }}">
-                            <i class="fas fa-medal"></i>
-                            <span>Concours</span>
-                        </a>
-                    @endcanany
-                </div>
-            @endcanany
-
-            <div class="menu-header">Personnel</div>
-            <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('profile.*') ? 'active' : '' }}">
-                <i class="fas fa-user-cog"></i>
-                <span>Mon profil</span>
-            </a>
-
-            @canany('history.view.own')
-                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('history.*') ? 'active' : '' }}">
-                    <i class="fas fa-history"></i>
+            <div class="menu-category" data-category="finance">
+                <i class="fas fa-dashboard"></i>
+                <div class="menu-category-text">Finances</div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="menu-group" id="group-finance">
+                <a href="{{ route('admin.registrations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.registrations.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Inscriptions</span>
+                </a>
+                <a href="{{ route('admin.transactions.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.transactions.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="{{ route('admin.finance-history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.finance-history.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
                     <span>Historique</span>
                 </a>
-            @endcanany
+            </div>
+
+            <div class="menu-category" data-category="resources">
+                <i class="fas fa-dashboard"></i>
+                <div class="menu-category-text">Ressources</div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="menu-group" id="group-resources">
+                <a href="{{ route('admin.books.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Livres</span>
+                </a>
+                <a href="{{ route('admin.materials.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Materiels</span>
+                </a>
+            </div>
+
+            <div class="menu-category" data-category="account">
+                <i class="fas fa-dashboard"></i>
+                <div class="menu-category-text">Compte</div>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </div>
+            <div class="menu-group" id="group-account">
+                <a href="{{ route('admin.profile.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Profil</span>
+                </a>
+                <a href="{{ route('admin.history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.history.*') ? 'active' : '' }}">
+                    <i class="fas fa-calendar-alt"></i>
+                    <span>Historique</span>
+                </a>
+            </div>
         </div>
 
         <!-- Logout button -->

@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\AbsencesController;
+use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CenterController;
 use App\Http\Controllers\DepartmentController;
@@ -10,115 +12,45 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProfilePhotoController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\ContactController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EntranceExamController;
 use App\Http\Controllers\FormationController;
+use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\MockExamController;
 use App\Http\Controllers\PhaseController;
+use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SlotController;
-use App\Http\Controllers\StudentFinancialController;
+use App\Http\Controllers\StaffController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\TransactionController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
-// Route de redirection pour la page d'accueil
-Route::get('/', function () {
-    // Rediriger vers la langue par défaut ou celle en session
-    $locale = Session::get('locale', 'en');
-    return redirect("/{$locale}");
-});
+Route::get('/', fn () => redirect('/' . Session::get('locale', 'en')));
+Route::get('/dashboard', fn () => redirect()->route('dashboard', ['locale' => app()->getLocale()]))->name('dashboard.redirect');
 
-Route::get('/dashboard', function () {
-    $locale = app()->getLocale();
-    return redirect()->route('dashboard', ['locale' => $locale]);
-})->name('dashboard.redirect');
-
-// Groupe de routes avec préfixe de langue
-Route::prefix('{locale}')
-    ->where(['locale' => 'en|fr'])
-    ->middleware('set.locale')
-    ->group(function () {
-        // Route de la landing page
-        Route::get('/', [HomeController::class, 'index'])->name('welcome');
-
-        // Contact form submission route
-        Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
-
-        // Routes d'authentification gérées par Breeze
-        Route::middleware('auth')->group(function () {
-            // Routes du profil utilisateur
-            Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-            Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-            Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-            // Routes pour la gestion des photos de profil
-            Route::post('/profile/photo', [ProfilePhotoController::class, 'store'])->name('profile.photo.store');
-            Route::delete('/profile/photo', [ProfilePhotoController::class, 'destroy'])->name('profile.photo.destroy');
-
-            // Route du dashboard
-            Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-
-            // Routes pour l'administration (protégées par middleware de permission)
-            Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
-                Route::resource('academies', AcademyController::class);
-                Route::resource('departments', DepartmentController::class);
-                Route::resource('centers', CenterController::class);
-                Route::resource('formations', FormationController::class);
-                Route::resource('courses', CourseController::class);
-                Route::resource('timetables', TimetableController::class);
-                Route::resource('slots', SlotController::class);
-                Route::resource('absences', AbsencesController::class);
-                Route::resource('rooms', RoomController::class);
-                Route::resource('phases', PhaseController::class);
-                Route::resource('cities', CityController::class);
-                Route::resource('entrance-exams', EntranceExamController::class);
-                Route::resource('transactions', TransactionController::class);
-            });
-
-            // Routes pour la gestion des utilisateurs
-            Route::prefix('admin/users')->name('admin.users.')->middleware('permission:user.view.any')->group(function () {
-                Route::get('/', [UserController::class, 'index'])->name('index');
-                Route::post('/', [UserController::class, 'store'])->name('store');
-                Route::get('/create', [UserController::class, 'create'])->name('create');
-                Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
-                Route::put('/{user}', [UserController::class, 'update'])->name('update');
-                Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
-                Route::get('/{user}', [UserController::class, 'show'])->name('show');
-
-                Route::put('/{user}/roles', [UserController::class, 'updateRoles'])
-                    ->middleware('permission:user.role.assign')
-                    ->name('update-roles');
-            });
-            Route::put('/admin/users/{user}/roles', [UserController::class, 'updateRoles'])
-                ->middleware('permission:user.role.assign')
-                ->name('admin.users.update-roles');
-        });
-    });
-
-Route::get('{locale}/admin/slots/{slot}/absences', [AbsencesController::class, 'list'])
-->name('admin.absences.list');
-
-// Route pour changer de langue
+// Change language
 Route::get('/language/{locale}', function ($locale) {
     if (!in_array($locale, ['en', 'fr'])) {
         abort(400);
     }
 
-    // Stocker la langue dans la session
+    // Save the selected language in the session
     Session::put('locale', $locale);
 
-    // Rediriger vers la page équivalente dans la nouvelle langue
+    // Reconstruct the URL
     $previousUrl = url()->previous();
     $segments = explode('/', parse_url($previousUrl, PHP_URL_PATH));
 
-    // Si le premier segment après la racine est une langue
+    // Remplace language segment
     if (isset($segments[1]) && in_array($segments[1], ['en', 'fr'])) {
-        // Remplacer le segment de langue
         $segments[1] = $locale;
     } else {
-        // Ajouter le segment de langue au début
+        // Add lang segment at the beginning
         array_splice($segments, 1, 0, [$locale]);
     }
 
@@ -129,35 +61,72 @@ Route::get('/language/{locale}', function ($locale) {
 })->name('language');
 
 
-// Routes pour la gestion financière des élèves
-Route::prefix('finance')->name('finance.')->middleware(['role:resp-financier|df-ville|df-national'])->group(function () {
-    // Élèves en attente de validation
-    Route::get('/students/pending', [StudentFinancialController::class, 'pendingStudents'])
-        ->name('students.pending');
-    
-    // Élèves en attente d'assignation de contrat
-    Route::get('/students/pending-contract', [StudentFinancialController::class, 'pendingContract'])
-        ->name('students.pending-contract');
-    
-    // Valider un élève (première étape)
-    Route::post('/students/{student}/validate', [StudentFinancialController::class, 'validateStudent'])
-        ->name('students.validate');
-    
-    // Rejeter un élève
-    Route::post('/students/{student}/reject', [StudentFinancialController::class, 'rejectStudent'])
-        ->name('students.reject');
-    
-    // Formulaire d'assignation de contrat
-    Route::get('/students/{student}/assign-contract', [StudentFinancialController::class, 'showContractForm'])
-        ->name('students.assign-contract-form');
-    
-    // Assigner contrat et concours
-    Route::post('/students/{student}/assign-contract', [StudentFinancialController::class, 'assignContract'])
-        ->name('students.assign-contract');
-    
-    // Détails d'un élève
-    Route::get('/students/{student}', [StudentFinancialController::class, 'showStudent'])
-        ->name('students.show');
-});
+Route::prefix('{locale}')
+    ->where(['locale' => 'en|fr'])
+    ->middleware('set.locale')
+    ->group(function () {
+        Route::get('/', [HomeController::class, 'index'])->name('welcome');
+
+        // Authentification
+        Route::middleware('auth')->group(function () {
+            Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+            // Profile
+            Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+            Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+            Route::post('/profile/photo', [ProfilePhotoController::class, 'store'])->name('profile.photo.store');
+            Route::delete('/profile/photo', [ProfilePhotoController::class, 'destroy'])->name('profile.photo.destroy');
+
+            // Protected by admin role
+            Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
+                // Administration
+                Route::resource('staff', StaffController::class);
+                Route::resource('teachers', TeacherController::class);
+                Route::resource('students', StudentController::class);
+
+                // Gestion
+                Route::resource('academic-years', AcademicYearController::class);
+                Route::resource('academies', AcademyController::class);
+                Route::resource('cities', CityController::class);
+                Route::resource('centers', CenterController::class);
+                Route::resource('departments', DepartmentController::class);
+                Route::resource('phases', PhaseController::class);
+                Route::resource('formations', FormationController::class);
+                Route::resource('rooms', RoomController::class);
+                Route::resource('courses', CourseController::class);
+                Route::resource('entrance-exams', EntranceExamController::class);
+                Route::resource('mock-entrance-exams', MockExamController::class);
+
+                // Planification
+                Route::resource('planning', TimetableController::class);
+                Route::resource('absences', AbsencesController::class);
+
+                // Finances
+                Route::resource('registrations', RegistrationController::class);
+                Route::resource('transactions', TransactionController::class);
+                Route::resource('finance-history', TransactionController::class);
+
+                // Ressources
+                Route::resource('books', BookController::class);
+                Route::resource('materials', MaterialController::class);
+
+                // Compte
+                Route::resource('profile', ProfileController::class);
+                Route::resource('history', HistoryController::class);
+
+                // Others
+                Route::resource('slots', SlotController::class);
+            });
+
+            // User only
+            Route::prefix('admin/users')->name('admin.users.')->middleware('permission:user.view.any')->group(function () {
+                Route::resource('/', UserController::class)->parameters(['' => 'user']);
+                Route::put('{user}/roles', [UserController::class, 'updateRoles'])
+                    ->middleware('permission:user.role.assign')
+                    ->name('update-roles');
+            });
+        });
+    });
 
 require __DIR__.'/auth.php';
