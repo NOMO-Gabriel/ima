@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AbsencesController;
-use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\BookController;
@@ -87,7 +86,6 @@ Route::prefix('{locale}')
                 Route::resource('students', StudentController::class);
 
                 // Gestion
-                Route::resource('academic-years', AcademicYearController::class);
                 Route::resource('academies', AcademyController::class);
                 Route::resource('cities', CityController::class);
                 Route::resource('centers', CenterController::class);

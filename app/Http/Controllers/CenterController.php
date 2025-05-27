@@ -6,9 +6,6 @@ use App\Models\Center;
 use App\Models\User;
 use App\Models\Academy;
 use App\Models\City;
-use App\Models\Slot;
-use App\Models\Timetable;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 

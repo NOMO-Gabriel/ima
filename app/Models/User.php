@@ -55,131 +55,27 @@ class User extends Authenticatable
     const STATUS_REJECTED = 'rejected';
     const STATUS_ARCHIVED = 'archived';
 
-    /**
-     * Vérifie si le compte est en attente de validation financière
-     */
-    public function isPendingFinancialValidation(): bool
-    {
-        return $this->status === self::STATUS_PENDING_VALIDATION;
+    public function staff() {
+        return $this->hasOne(Staff::class);
     }
 
-    /**
-     * Vérifie si le compte est en attente d'assignation de contrat
-     */
-    public function isPendingContract(): bool
-    {
-        return $this->status === self::STATUS_PENDING_CONTRACT;
+    public function teacher() {
+        return $this->hasOne(Teacher::class);
     }
 
-    /**
-     * Vérifie si le compte est actif
-     */
-    public function isActive(): bool
-    {
-        return $this->status === self::STATUS_ACTIVE;
+    public function student() {
+        return $this->hasOne(Student::class);
     }
 
-    /**
-     * Valide le compte par la responsable financière
-     */
-    public function validateByFinancial(User $financialResponsible): void
-    {
-        $this->status = self::STATUS_PENDING_CONTRACT;
-        $this->validated_by_financial = $financialResponsible->id;
-        $this->financial_validation_date = now();
-        $this->save();
+    public function isStaff() {
+        return $this->staff !== null;
     }
 
-    /**
-     * Assigne les concours et contrat puis active le compte
-     */
-    public function assignContractAndExams(array $entranceExams, array $contractDetails, User $assignedBy): void
-    {
-        $this->wanted_entrance_exams = $entranceExams;
-        $this->contract_details = $contractDetails;
-        $this->entrance_exam_assigned = true;
-        $this->contract_assigned = true;
-        $this->status = self::STATUS_ACTIVE;
-        $this->finalized_by = $assignedBy->id;
-        $this->finalized_at = now();
-        $this->save();
+    public function isTeacher() {
+        return $this->teacher !== null;
     }
 
-    // Ajouter ces méthodes pour faciliter l'accès aux informations
-    public function getFullNameAttribute()
-    {
-        return "{$this->first_name} {$this->last_name}";
-    }
-
-    public function getProfilePhotoUrlAttribute()
-    {
-        if ($this->profile_photo_path) {
-            return asset('storage/' . $this->profile_photo_path);
-        }
-        
-        // Fallback sur Gravatar
-        $hash = md5(strtolower(trim($this->email)));
-        return "https://www.gravatar.com/avatar/{$hash}?s=200&d=mp";
-    }
-
-    /**
-     * Get the academies directed by the user.
-     */
-    public function directedAcademies()
-    {
-        return $this->hasMany(Academy::class, 'director_id');
-    }
-
-    /**
-     * Get the departments headed by the user.
-     */
-    public function headedDepartments()
-    {
-        return $this->hasMany(Department::class, 'head_id');
-    }
-
-    /**
-     * Get the centers directed by the user.
-     */
-    public function directedCenters()
-    {
-        return $this->hasMany(Center::class, 'director_id');
-    }
-
-    /**
-     * Relation avec la ville
-     */
-    public function city()
-    {
-        return $this->belongsTo(City::class);
-    }
-
-    /**
-     * Relation avec la responsable financière qui a validé
-     */
-    public function financialValidator()
-    {
-        return $this->belongsTo(User::class, 'validated_by_financial');
-    }
-
-    /**
-     * Override de la méthode assignRole pour mettre à jour le account_type
-     */
-    public function myAssignRole($roles)
-    {
-        // Appel à la méthode du trait
-        $this->assignRole($roles);
-        
-        // Mettre à jour le account_type
-        if (is_array($roles) || $roles instanceof \Illuminate\Support\Collection) {
-            $this->account_type = $roles[0];
-        } else {
-            $this->account_type = $roles;
-        }
-        
-        // Sauvegarder sans déclencher les events pour éviter les boucles
-        $this->saveQuietly();
-        
-        return $this;
+    public function isStudent() {
+        return $this->student !== null;
     }
 }

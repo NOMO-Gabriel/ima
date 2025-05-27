@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
             $table->string('first_name');
             $table->string('last_name')->nullable();
             $table->string('email')->unique();
@@ -20,11 +21,9 @@ return new class extends Migration
             $table->string('password');
             $table->string('phone_number')->nullable()->unique();
             $table->string('profile_photo_path')->nullable();
-            $table->enum('gender', ['male', 'female'])->nullable();
-            $table->unsignedBigInteger('city_id')->nullable()->default(null);
+            $table->integer('gender')->default(0);
             $table->string('address')->nullable()->default('cradat');
-            $table->string('enrollmentDate')->nullable();
-            $table->string('account_type', 30)->default('eleve');
+            $table->enum('role', ['staff', 'teacher', 'student'])->default('student');
             $table->enum('status', [
                 'pending_validation',
                 'pending_finalization',
@@ -33,6 +32,13 @@ return new class extends Migration
                 'rejected',
                 'archived'
             ])->default('pending_validation');
+
+            $table->timestamp('last_login_at')->nullable();
+            $table->unsignedBigInteger('validated_by')->nullable();
+            $table->timestamp('validated_at')->nullable();
+            $table->unsignedBigInteger('finalized_by')->nullable();
+            $table->timestamp('finalized_at')->nullable();
+            $table->text('rejection_reason')->nullable();
 
             $table->rememberToken();
             $table->timestamps();
