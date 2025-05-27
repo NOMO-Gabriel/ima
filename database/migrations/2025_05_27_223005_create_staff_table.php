@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('staff', function (Blueprint $table) {
             $table->id();
 
+            $table->enum('rank', ['all', 'academy', 'sector', 'city', 'department', 'center'])->default('all');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 
             $table->timestamps();
