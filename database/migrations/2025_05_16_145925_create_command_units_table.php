@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('command_units', function (Blueprint $table) {
             $table->id();
-            $table->integer('quantity');
-            $table->decimal('amount', 10, 2);
+
+            $table->integer('quantity')->default(0);
+
             $table->foreignId('material_id')->constrained('materials')->onDelete('cascade');
             $table->foreignId('command_id')->constrained('commands')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

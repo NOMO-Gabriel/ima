@@ -1567,6 +1567,10 @@
                     <i class="fas fa-tools"></i>
                     <span>Materiels</span>
                 </a>
+                <a href="{{ route('admin.commands.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.commands.*') ? 'active' : '' }}">
+                    <i class="fas fa-box-open"></i>
+                    <span>Commandes</span>
+                </a>
             </div>
 
             <div class="menu-category" data-category="account">
