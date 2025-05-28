@@ -1,4 +1,5 @@
- a<?php
+<?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -22,7 +23,8 @@ class DatabaseSeeder extends Seeder
             EntranceExamSeeder::class,
             EntranceExamFormationSeeder::class,
             RoomSeeder::class,
-            TransactionSeeder::class
+            TransactionSeeder::class,
+            PaymentSeeder::class,
         ]);
 
 

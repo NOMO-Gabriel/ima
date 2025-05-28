@@ -82,7 +82,7 @@ class User extends Authenticatable
     }
 
     public function hasRoleLevel(string $level) {
-        return $$this->roles()->where('level', $level)->exists();
+        return $this->roles()->where('level', $level)->exists();
     }
 
     /**

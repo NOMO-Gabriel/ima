@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('transaction_histories', function (Blueprint $table) {
             $table->id();
+
             $table->timestamps();
         });
     }

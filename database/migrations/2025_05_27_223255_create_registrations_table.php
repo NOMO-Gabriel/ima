@@ -21,13 +21,13 @@ return new class extends Migration
                 'united credit',
                 'uba',
                 ''
-            ])
+            ]);
 
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
             $table->foreignId('formation_id')->constrained('formations')->onDelete('cascade');
 
             $table->foreignId('payment_mode_id')->constrained('payment_modes')->onDelete('cascade');
-            $table->foreignId('academy_id')->constrained('academies')->onDelete('cascade');
+            $table->foreignId('center_id')->constrained('centers')->onDelete('cascade');
 
             $table->timestamps();
         });

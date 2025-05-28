@@ -9,4 +9,9 @@ class Registration extends Model
 {
     /** @use HasFactory<\Database\Factories\RegistrationFactory> */
     use HasFactory;
+
+    public function formations()
+    {
+        return $this->belongsToMany(Formation::class, 'formation_registration');
+    }
 }

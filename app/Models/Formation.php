@@ -42,4 +42,9 @@ class Formation extends Model
     {
         return $this->hasMany(EntranceExam::class);
     }
+
+    public function registrations()
+    {
+        return $this->belongsToMany(Registration::class, 'formation_registration');
+    }
 }
