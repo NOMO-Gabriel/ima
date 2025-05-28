@@ -1,4 +1,4 @@
-<?php
+ a<?php
 namespace Database\Seeders;
 
 use App\Models\User;
@@ -25,6 +25,6 @@ class DatabaseSeeder extends Seeder
             RoomSeeder::class,
         ]);
 
-        
+
     }
 }
