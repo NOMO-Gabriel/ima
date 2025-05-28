@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\History;
+use Illuminate\Support\Facades\Auth;
 
 if (!function_exists('log_history')) {
 
@@ -15,8 +16,10 @@ if (!function_exists('log_history')) {
      */
     function log_history(string $action, $subject, array $changes = [], string $description = "")
     {
+        $userId = Auth::user()->id;
+
         return History::create([
-            'user_id'      => auth()->id(),
+            'user_id'      => $userId,
             'subject_type' => get_class($subject),
             'subject_id'   => $subject->id,
             'action'       => $action,
