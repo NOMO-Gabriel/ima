@@ -104,10 +104,17 @@ class StudentFinancialController extends Controller
         return view('finance.students.index', compact('students', 'cities', 'centersForFilter', 'statuses', 'request'));
     }
 
-    public function editFinancials(Request $request, User $student)
+    public function editFinancials($locale, $user)
     {
+        $student = User::find($user);
+        if (!$student) {
+            abort(404, 'Élève non trouvé');
+        }
+        
         $currentUser = Auth::user();
-        if (!$student->hasRole('eleve')) { abort(404); }
+        if (!$student->hasRole('eleve')) { 
+            abort(404); 
+        }
 
         // Vérifier si l'utilisateur a le droit de voir cet élève (scope basé sur le scope de l'index)
         // Cette vérification est simplifiée ici, en assumant que si on arrive ici,
@@ -160,10 +167,17 @@ class StudentFinancialController extends Controller
         ));
     }
 
-    public function updateFinancials(Request $request, User $student)
+    public function updateFinancials(Request $request, $locale, $user)
     {
+        $student = User::find($user);
+        if (!$student) {
+            abort(404, 'Élève non trouvé');
+        }
+        
         $currentUser = Auth::user();
-        if (!$student->hasRole('eleve')) { abort(404); }
+        if (!$student->hasRole('eleve')) { 
+            abort(404); 
+        }
 
         $canEditDetails = $currentUser->can('finance.student.edit.details');
         $canEditContract = $currentUser->can('finance.student.edit.contract') &&
@@ -219,7 +233,7 @@ class StudentFinancialController extends Controller
             $student->fill([
                 'first_name' => strtoupper($validatedData['first_name']),
                 'last_name' => strtoupper($validatedData['last_name']),
-                'gender' => $validatedData['gender'],
+                'gender' => $validatedData['gender'] ?? $student->gender,
                 'email' => $validatedData['email'],
                 'phone_number' => $validatedData['phone_number'],
                 'parent_phone_number' => $validatedData['parent_phone_number'] ?? null,

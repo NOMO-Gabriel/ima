@@ -176,7 +176,7 @@
                                         @endphp
 
                                         @if($canShowEditButton)
-                                            <a href="{{ route('finance.students.editFinancials', [, 'user' => $student->id]) }}" class="btn btn-sm btn-outline-primary btn-icon" title="Modifier les infos financières">
+                                            <a href="{{ route('finance.students.editFinancials', ['locale' => app()->getLocale(), 'user' => $student->id]) }}" class="btn btn-sm btn-outline-primary btn-icon" title="Modifier les infos financières">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                         @else
