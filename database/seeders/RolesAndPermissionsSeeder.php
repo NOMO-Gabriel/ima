@@ -25,6 +25,10 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Création des rôles et attribution des permissions
         $this->createAllRoles();
+
+        // Message de confirmation
+        $this->command->info('✅ Rôles et permissions créés avec succès');
+       
     }
 
     /**
@@ -643,4 +647,5 @@ class RolesAndPermissionsSeeder extends Seeder
             'profile.update', 'history.read'
         ]);
     }
+    
 }
