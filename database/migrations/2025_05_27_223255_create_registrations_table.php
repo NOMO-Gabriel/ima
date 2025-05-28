@@ -6,20 +6,33 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('registrations', function (Blueprint $table) {
             $table->id();
+
+            $table->string('receipt_number');
+            $table->decimal('contract', 10, 2)->default(0);
+            $table->enum('payment_method', [
+                'om',
+                'momo',
+                'cca bank yde',
+                'cca bank dla',
+                'united credit',
+                'uba',
+                ''
+            ])
+
+            $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
+            $table->foreignId('formation_id')->constrained('formations')->onDelete('cascade');
+
+            $table->foreignId('payment_mode_id')->constrained('payment_modes')->onDelete('cascade');
+            $table->foreignId('academy_id')->constrained('academies')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('registrations');

@@ -28,7 +28,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Message de confirmation
         $this->command->info('✅ Rôles et permissions créés avec succès');
-       
+
     }
 
     /**
@@ -195,8 +195,8 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Contrôleur
         $controleur = Role::create([
-            'name' => 'controleur',
-            'description' => 'Contrôleur',
+            'name' => 'cn',
+            'description' => 'Comptable',
             'guard_name' => 'web',
             'level' => 'national',
         ]);
@@ -293,7 +293,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Responsable Livres National
         $responsable_livres = Role::create([
-            'name' => 'responsable-livres',
+            'name' => 'rl',
             'description' => 'Responsable Livres',
             'guard_name' => 'web',
             'level' => 'national',
@@ -312,7 +312,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // DF National - Directeur Financier National
         $df_national = Role::create([
-            'name' => 'df-national',
+            'name' => 'df-n',
             'description' => 'Directeur Financier National',
             'guard_name' => 'web',
             'level' => 'national',
@@ -334,7 +334,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // DL National - Directeur Logistique National
         $dl_national = Role::create([
-            'name' => 'dl-national',
+            'name' => 'dl-n',
             'description' => 'Directeur Logistique National',
             'guard_name' => 'web',
             'level' => 'national',
@@ -359,7 +359,7 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         // DDO Ville - Directeur Délégué Opérationnel
         $ddo_ville = Role::create([
-            'name' => 'ddo-ville',
+            'name' => 'ddo',
             'description' => 'Directeur Délégué Opérationnel de Ville',
             'guard_name' => 'web',
             'level' => 'city',
@@ -379,7 +379,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // SUP Ville - Superviseur
         $superviseur_ville = Role::create([
-            'name' => 'superviseur-ville',
+            'name' => 'sup',
             'description' => 'Superviseur de Ville',
             'guard_name' => 'web',
             'level' => 'city',
@@ -399,7 +399,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // DF Ville - Directeur Financier de Ville
         $df_ville = Role::create([
-            'name' => 'df-ville',
+            'name' => 'df-v',
             'description' => 'Directeur Financier de Ville',
             'guard_name' => 'web',
             'level' => 'city',
@@ -424,7 +424,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // DL Ville - Directeur Logistique de Ville
         $dl_ville = Role::create([
-            'name' => 'dl-ville',
+            'name' => 'dl-v',
             'description' => 'Directeur Logistique de Ville',
             'guard_name' => 'web',
             'level' => 'city',
@@ -443,7 +443,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // AF - Agent Financier
         $agent_financier = Role::create([
-            'name' => 'agent-financier',
+            'name' => 'af',
             'description' => 'Agent Financier',
             'guard_name' => 'web',
             'level' => 'city',
@@ -461,14 +461,31 @@ class RolesAndPermissionsSeeder extends Seeder
         ]);
 
         // CD - Chef de Département
-        $chef_departement = Role::create([
-            'name' => 'chef-departement',
-            'description' => 'Chef de Département',
+        $chef_departement_national = Role::create([
+            'name' => 'cd-n',
+            'description' => 'Chef de Département National',
             'guard_name' => 'web',
             'level' => 'city',
         ]);
 
-        $chef_departement->givePermissionTo([
+        $chef_departement_national->givePermissionTo([
+            'admin.teacher.read', 'gestion.academy.read', 'gestion.city.read',
+            'gestion.center.read', 'gestion.department.read', 'gestion.phase.read',
+            'gestion.formation.read', 'gestion.course.read', 'gestion.class.read',
+            'gestion.exam.read', 'gestion.entrance-exam.read',
+            'plannification.planning.read', 'plannification.slot.read',
+            'plannification.absence.read', 'profile.update', 'history.read'
+        ]);
+
+        // CD - Chef de Département
+        $chef_departement_ville = Role::create([
+            'name' => 'cd-v',
+            'description' => 'Chef de Département de Ville',
+            'guard_name' => 'web',
+            'level' => 'city',
+        ]);
+
+        $chef_departement_ville->givePermissionTo([
             'admin.teacher.read', 'gestion.academy.read', 'gestion.city.read',
             'gestion.center.read', 'gestion.department.read', 'gestion.phase.read',
             'gestion.formation.read', 'gestion.course.read', 'gestion.class.read',
@@ -479,7 +496,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // RA Ville - Responsable Académique de Ville
         $ra_ville = Role::create([
-            'name' => 'responsable-academique-ville',
+            'name' => 'ra-v',
             'description' => 'Responsable Académique de Ville',
             'guard_name' => 'web',
             'level' => 'city',
@@ -523,7 +540,7 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         // CC - Chef de Centre
         $chef_centre = Role::create([
-            'name' => 'chef-centre',
+            'name' => 'cc',
             'description' => 'Chef de Centre',
             'guard_name' => 'web',
             'level' => 'center',
@@ -544,7 +561,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // RA Centre - Responsable Académique de Centre
         $ra_centre = Role::create([
-            'name' => 'responsable-academique-centre',
+            'name' => 'ra-c',
             'description' => 'Responsable Académique de Centre',
             'guard_name' => 'web',
             'level' => 'center',
@@ -565,7 +582,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // RF Centre - Responsable Financier de Centre
         $rf_centre = Role::create([
-            'name' => 'responsable-financier-centre',
+            'name' => 'rf-c',
             'description' => 'Responsable Financier de Centre',
             'guard_name' => 'web',
             'level' => 'center',
@@ -586,7 +603,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // RL Centre - Responsable Logistique de Centre
         $rl_centre = Role::create([
-            'name' => 'responsable-logistique-centre',
+            'name' => 'RL-C',
             'description' => 'Responsable Logistique de Centre',
             'guard_name' => 'web',
             'level' => 'center',
@@ -607,7 +624,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Personnel de Centre
         $personnel_centre = Role::create([
-            'name' => 'personnel-centre',
+            'name' => 'pc',
             'description' => 'Personnel de Centre',
             'guard_name' => 'web',
             'level' => 'center',
@@ -637,7 +654,7 @@ class RolesAndPermissionsSeeder extends Seeder
             'name' => 'eleve',
             'description' => 'Élève',
             'guard_name' => 'web',
-            'level' => 'basic',
+            'level' => 'center',
         ]);
 
         $eleve->givePermissionTo([
@@ -647,5 +664,5 @@ class RolesAndPermissionsSeeder extends Seeder
             'profile.update', 'history.read'
         ]);
     }
-    
+
 }
