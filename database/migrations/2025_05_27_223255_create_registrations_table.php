@@ -13,20 +13,10 @@ return new class extends Migration
 
             $table->string('receipt_number');
             $table->decimal('contract', 10, 2)->default(0);
-            $table->enum('payment_method', [
-                'om',
-                'momo',
-                'cca bank yde',
-                'cca bank dla',
-                'united credit',
-                'uba',
-                ''
-            ]);
 
+            $table->foreignId('payment_method_id')->nullable()->constrained('payment_methods')->onDelete('set null');
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
             $table->foreignId('formation_id')->constrained('formations')->onDelete('cascade');
-
-            $table->foreignId('payment_mode_id')->constrained('payment_modes')->onDelete('cascade');
             $table->foreignId('center_id')->constrained('centers')->onDelete('cascade');
 
             $table->timestamps();
