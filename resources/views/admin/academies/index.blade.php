@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
+        <!-- <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
             <div class="flex items-center justify-between mb-3">
                 <div class="stats-icon success bg-green-100 text-green-600 p-3 rounded-full">
                     <i class="fas fa-check-circle"></i>
@@ -76,9 +76,9 @@
                     <div class="progress-bar h-full bg-green-500" style="width: {{ $activePercentage }}%"></div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
+        <!-- <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
             <div class="flex items-center justify-between mb-3">
                 <div class="stats-icon warning bg-blue-100 text-blue-600 p-3 rounded-full">
                     <i class="fas fa-language"></i>
@@ -96,8 +96,8 @@
                 <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
                     <div class="progress-bar h-full bg-blue-500" style="width: {{ $frPercentage }}%"></div>
                 </div>
-            </div>
-        </div>
+            </div> -->
+        <!-- </div>
 
         <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
             <div class="flex items-center justify-between mb-3">
@@ -118,7 +118,7 @@
                     <div class="progress-bar h-full bg-red-500" style="width: {{ $enPercentage }}%"></div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </div>
 
     <!-- Barre de recherche et filtres -->

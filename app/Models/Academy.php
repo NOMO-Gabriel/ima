@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Academy extends Model
 {
@@ -20,27 +20,15 @@ class Academy extends Model
         'name',
         'code',
         'description',
-        'location',
-        'contact_email',
-        'contact_phone',
-        'lang',
         'director_id',
-        'is_active',
         'created_by',
-        'updated_by'
-    ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'is_active' => 'boolean',
+        'updated_by',
     ];
 
     /**
      * Get the director of the academy.
+     *
+     * @return BelongsTo
      */
     public function director(): BelongsTo
     {
@@ -48,23 +36,9 @@ class Academy extends Model
     }
 
     /**
-     * Get the departments of the academy.
-     */
-    public function departments(): HasMany
-    {
-        return $this->hasMany(Department::class);
-    }
-
-    /**
-     * Get the centers of the academy.
-     */
-    public function centers(): HasMany
-    {
-        return $this->hasMany(Center::class);
-    }
-
-    /**
      * Get the user who created the academy.
+     *
+     * @return BelongsTo
      */
     public function creator(): BelongsTo
     {
@@ -73,9 +47,34 @@ class Academy extends Model
 
     /**
      * Get the user who last updated the academy.
+     *
+     * @return BelongsTo
      */
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * The users that belong to the academy.
+     *
+     * @return BelongsToMany
+     */
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get users with a specific role in the academy.
+     *
+     * @param string $role
+     * @return BelongsToMany
+     */
+    public function getUsersByRole(string $role): BelongsToMany
+    {
+        return $this->users()->wherePivot('role', $role);
     }
 }

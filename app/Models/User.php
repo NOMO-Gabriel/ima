@@ -2,6 +2,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -96,5 +98,75 @@ class User extends Authenticatable
             default:
                 return 0;
         }
+    }
+
+    /**
+     * The academies that the user belongs to.
+     *
+     * @return BelongsToMany
+     */
+    public function academies(): BelongsToMany
+    {
+        return $this->belongsToMany(Academy::class)
+                    ->withPivot('role')
+                    ->withTimestamps();
+    }
+
+
+    /**
+     * Get academies where the user is the director.
+     *
+     * @return HasMany
+     */
+    public function directedAcademies(): HasMany
+    {
+        return $this->hasMany(Academy::class, 'director_id');
+    }
+
+    /**
+     * Get academies created by the user.
+     *
+     * @return HasMany
+     */
+    public function createdAcademies(): HasMany
+    {
+        return $this->hasMany(Academy::class, 'created_by');
+    }
+
+    /**
+     * Get academies where the user has a specific role.
+     *
+     * @param string $role
+     * @return BelongsToMany
+     */
+    public function getAcademiesByRole(string $role): BelongsToMany
+    {
+        return $this->academies()->wherePivot('role', $role);
+    }
+
+    /**
+     * Check if user belongs to a specific academy.
+     *
+     * @param int $academyId
+     * @return bool
+     */
+    public function belongsToAcademy(int $academyId): bool
+    {
+        return $this->academies()->where('academy_id', $academyId)->exists();
+    }
+
+    /**
+     * Check if user has a specific role in an academy.
+     *
+     * @param int $academyId
+     * @param string $role
+     * @return bool
+     */
+    public function hasRoleInAcademy(int $academyId, string $role): bool
+    {
+        return $this->academies()
+                    ->where('academy_id', $academyId)
+                    ->wherePivot('role', $role)
+                    ->exists();
     }
 }

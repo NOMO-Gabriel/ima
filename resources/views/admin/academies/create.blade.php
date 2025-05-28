@@ -72,7 +72,7 @@
                     @enderror
                 </div>
 
-                <h3 class="text-lg font-medium text-gray-800 mt-6 mb-4">Coordonnées</h3>
+                <!-- <h3 class="text-lg font-medium text-gray-800 mt-6 mb-4">Coordonnées</h3>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div>
                         <label for="location" class="block text-sm font-medium text-gray-700 mb-1">Localisation</label>
@@ -81,9 +81,9 @@
                         @error('location')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> -->
 
-                    <div>
+                    <!-- <div>
                         <label for="contact_email" class="block text-sm font-medium text-gray-700 mb-1">Email de contact</label>
                         <input type="email" name="contact_email" id="contact_email" value="{{ old('contact_email') }}"
                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#4CA3DD] focus:ring focus:ring-[#4CA3DD] focus:ring-opacity-50">
@@ -99,10 +99,10 @@
                         @error('contact_phone')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> -->
                 </div>
 
-                <h3 class="text-lg font-medium text-gray-800 mt-6 mb-4">Configuration</h3>
+                <!-- <h3 class="text-lg font-medium text-gray-800 mt-6 mb-4">Configuration</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label for="lang" class="block text-sm font-medium text-gray-700 mb-1">Langue</label>
@@ -115,7 +115,7 @@
                         @error('lang')
                         <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
-                    </div>
+                    </div> -->
 
                     <div>
                         <label for="director_id" class="block text-sm font-medium text-gray-700 mb-1">Directeur</label>
@@ -134,14 +134,14 @@
                     </div>
                 </div>
 
-                <div class="mb-6">
+                <!-- <div class="mb-6">
                     <label for="is_active" class="flex items-center">
                         <input type="checkbox" name="is_active" id="is_active" value="1"
                                {{ old('is_active', '1') ? 'checked' : '' }}
                                class="h-4 w-4 text-[#4CA3DD] border-gray-300 rounded focus:ring-[#4CA3DD]">
                         <span class="ml-2 text-sm text-gray-700">Activer cette académie</span>
                     </label>
-                </div>
+                </div> -->
 
                 <div class="flex justify-end space-x-3 border-t pt-4">
                     <a href="{{ route('admin.academies.index', ['locale' => app()->getLocale()]) }}"
