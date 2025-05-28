@@ -24,7 +24,7 @@ return new class extends Migration
             $table->integer('gender')->default(0);
             $table->string('city')->nullable();
             $table->string('address')->nullable()->default('cradat');
-            $table->enum('role', ['staff', 'teacher', 'student'])->default('student');
+            $table->enum('account_type', ['staff', 'teacher', 'student'])->default('student');
             $table->enum('status', [
                 'pending_validation',
                 'pending_finalization',
