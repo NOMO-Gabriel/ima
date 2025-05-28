@@ -21,7 +21,7 @@ return new class extends Migration
                 'united credit',
                 'uba',
                 ''
-            ])
+            ]);
 
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
             $table->foreignId('formation_id')->constrained('formations')->onDelete('cascade');
