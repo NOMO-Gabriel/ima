@@ -15,19 +15,19 @@ class TransactionSeeder extends Seeder
     {
         $reasons = [
             // Revenues (IN)
-            ['type' => 'IN', 'label' => 'DOCUMENTS'],
-            ['type' => 'IN', 'label' => 'PARTNERS'],
-            ['type' => 'IN', 'label' => 'OTHER'],
+            ['direction' => 'IN', 'label' => 'DOCUMENTS'],
+            ['direction' => 'IN', 'label' => 'PARTNERS'],
+            ['direction' => 'IN', 'label' => 'OTHER'],
 
             // Expenses (OUT)
-            ['type' => 'OUT', 'label' => 'STAFF FUNCTIONING'],
-            ['type' => 'OUT', 'label' => 'TEACHER PAYMENT'],
-            ['type' => 'OUT', 'label' => 'PURCHASE'],
-            ['type' => 'OUT', 'label' => 'DOCUMENTS PRODUCTION'],
-            ['type' => 'OUT', 'label' => 'PUBLICATION AND MARKETING'],
-            ['type' => 'OUT', 'label' => 'ROOM MAINTENANCE'],
-            ['type' => 'OUT', 'label' => 'CLASS_LOCATION'],
-            ['type' => 'OUT', 'label' => 'OTHER'],
+            ['direction' => 'OUT', 'label' => 'STAFF FUNCTIONING'],
+            ['direction' => 'OUT', 'label' => 'TEACHER PAYMENT'],
+            ['direction' => 'OUT', 'label' => 'PURCHASE'],
+            ['direction' => 'OUT', 'label' => 'DOCUMENTS PRODUCTION'],
+            ['direction' => 'OUT', 'label' => 'PUBLICATION AND MARKETING'],
+            ['direction' => 'OUT', 'label' => 'ROOM MAINTENANCE'],
+            ['direction' => 'OUT', 'label' => 'CLASS_LOCATION'],
+            ['direction' => 'OUT', 'label' => 'OTHER'],
         ];
 
         DB::table('transaction_reasons')->insert($reasons);

@@ -13,42 +13,21 @@ class City extends Model
     protected $fillable = [
         'name',
         'code',
+        'is_active',
     ];
 
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    // Relations
     public function centers(): HasMany
     {
         return $this->hasMany(Center::class);
     }
 
-    /**
-     * Obtenir les utilisateurs associés à cette ville.
-     */
-    public function users(): HasMany
+    public function cityAssignments(): HasMany
     {
-        return $this->hasMany(User::class);
-    }
-
-    /**
-     * Obtenir les directeurs financiers de cette ville.
-     */
-    public function financialDirectors()
-    {
-        return $this->users()->role('DF-Ville');
-    }
-
-    /**
-     * Obtenir les directeurs logistiques de cette ville.
-     */
-    public function logisticsDirectors()
-    {
-        return $this->users()->role('DL-Ville');
-    }
-
-    /**
-     * Obtenir les agents financiers de cette ville.
-     */
-    public function financialAgents()
-    {
-        return $this->users()->role('Agent-Financier');
+        return $this->hasMany(CityAssignment::class);
     }
 }

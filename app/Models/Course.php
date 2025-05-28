@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
-    /** @use HasFactory<\Database\Factories\CourseFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -16,24 +17,26 @@ class Course extends Model
         'description',
     ];
 
-    public function formations()
+    // Relations
+    public function formations(): BelongsToMany
     {
         return $this->belongsToMany(Formation::class, 'course_formations');
     }
 
-    public function enrolledStudents()
+    public function mockExams(): BelongsToMany
     {
-        return $this->formations
-            ->flatMap(fn($formation) => $formation->entranceExams)
-            ->flatMap(fn($exam) => $exam->students)
-            ->unique('id')
-            ->values();
-    }
-
-    public function exams()
-    {
-        return $this->belongsToMany(Exam::class, 'course_exams')
+        return $this->belongsToMany(MockExam::class, 'course_mock_exams')
                     ->withPivot('max_note')
                     ->withTimestamps();
+    }
+
+    public function slots(): HasMany
+    {
+        return $this->hasMany(Slot::class);
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class);
     }
 }

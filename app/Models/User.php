@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -24,6 +25,7 @@ class User extends Authenticatable
         'account_type',
         'profile_photo_path',
         'status',
+        'city ',
         'establishment', // Pour les élèves
         'wanted_entrance_exams', // Pour les élèves
         'contract_details', // Détails du contrat
@@ -57,101 +59,103 @@ class User extends Authenticatable
     const STATUS_REJECTED = 'rejected';
     const STATUS_ARCHIVED = 'archived';
 
-    public function staff() {
-        return $this->hasOne(Staff::class);
-    }
-
-    public function teacher() {
-        return $this->hasOne(Teacher::class);
-    }
-
-    public function student() {
-        return $this->hasOne(Student::class);
-    }
-
-    public function isStaff() {
-        return $this->staff !== null;
-    }
-
-    public function isTeacher() {
-        return $this->teacher !== null;
-    }
-
-    public function isStudent() {
-        return $this->student !== null;
-    }
 
     public function hasRoleLevel(string $level) {
         return $this->roles()->where('level', $level)->exists();
     }
-
-    /**
-     * The academies that the user belongs to.
-     *
-     * @return BelongsToMany
-     */
-    public function academies(): BelongsToMany
+// Relations
+    public function validator(): BelongsTo
     {
-        return $this->belongsToMany(Academy::class)
-                    ->withPivot('role')
-                    ->withTimestamps();
+        return $this->belongsTo(User::class, 'validated_by');
     }
 
+    public function finalizer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'finalized_by');
+    }
 
-    /**
-     * Get academies where the user is the director.
-     *
-     * @return HasMany
-     */
+    public function academies(): BelongsToMany
+    {
+        return $this->belongsToMany(Academy::class)->withPivot('role')->withTimestamps();
+    }
+
     public function directedAcademies(): HasMany
     {
         return $this->hasMany(Academy::class, 'director_id');
     }
 
-    /**
-     * Get academies created by the user.
-     *
-     * @return HasMany
-     */
     public function createdAcademies(): HasMany
     {
         return $this->hasMany(Academy::class, 'created_by');
     }
 
-    /**
-     * Get academies where the user has a specific role.
-     *
-     * @param string $role
-     * @return BelongsToMany
-     */
-    public function getAcademiesByRole(string $role): BelongsToMany
+    public function directedCenters(): HasMany
     {
-        return $this->academies()->wherePivot('role', $role);
+        return $this->hasMany(Center::class, 'director_id');
     }
 
-    /**
-     * Check if user belongs to a specific academy.
-     *
-     * @param int $academyId
-     * @return bool
-     */
-    public function belongsToAcademy(int $academyId): bool
+    public function headedDepartments(): HasMany
     {
-        return $this->academies()->where('academy_id', $academyId)->exists();
+        return $this->hasMany(Department::class, 'head_id');
     }
 
-    /**
-     * Check if user has a specific role in an academy.
-     *
-     * @param int $academyId
-     * @param string $role
-     * @return bool
-     */
-    public function hasRoleInAcademy(int $academyId, string $role): bool
+    public function teacherAssignations(): HasMany
     {
-        return $this->academies()
-                    ->where('academy_id', $academyId)
-                    ->wherePivot('role', $role)
-                    ->exists();
+        return $this->hasMany(Assignation::class, 'teacher_id');
+    }
+
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class, 'student_id');
+    }
+
+    public function absences(): HasMany
+    {
+        return $this->hasMany(Absences::class, 'student_id');
+    }
+
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class, 'student_id');
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class, 'author_id');
+    }
+
+    public function commands(): HasMany
+    {
+        return $this->hasMany(Command::class, 'user_id');
+    }
+
+    public function cityAssignments(): HasMany
+    {
+        return $this->hasMany(CityAssignment::class, 'user_id');
+    }
+
+    public function staff(): HasMany
+    {
+        return $this->hasMany(Staff::class, 'user_id');
+    }
+
+    public function teachers(): HasMany
+    {
+        return $this->hasMany(Teacher::class, 'user_id');
+    }
+
+    public function students(): HasMany
+    {
+        return $this->hasMany(Student::class, 'user_id');
+    }
+
+    public function timetableSlots(): HasMany
+    {
+        return $this->hasMany(Slot::class, 'teacher_id');
+    }
+
+    public function histories(): HasMany
+    {
+        return $this->hasMany(History::class, 'user_id');
     }
 }

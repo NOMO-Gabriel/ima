@@ -11,77 +11,86 @@ class Center extends Model
 {
     use HasFactory;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
-        'code',
-        'description',
-        'academy_id',
+        'location',
         'city_id',
-        'address',
-        'contact_email',
-        'contact_phone',
+        'nb_students',
         'director_id',
+        'head_id',
+        'logistics_director_id',
+        'finance_director_id',
+        'academic_manager_id',
+        'staff_ids',
         'is_active',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
+        'staff_ids' => 'array',
         'is_active' => 'boolean',
+        'nb_students' => 'integer',
     ];
 
-    /**
-     * Get the academy of the center.
-     */
-    public function academy(): BelongsTo
+    // Relations
+    public function city(): BelongsTo
     {
-        return $this->belongsTo(Academy::class);
+        return $this->belongsTo(City::class);
     }
 
-    /**
-     * Get the director of the center.
-     */
     public function director(): BelongsTo
     {
         return $this->belongsTo(User::class, 'director_id');
     }
 
-    /**
-     * Get the user who created the center.
-     */
+    public function head(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'head_id');
+    }
+
+    public function logisticsDirector(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'logistics_director_id');
+    }
+
+    public function financeDirector(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'finance_director_id');
+    }
+
+    public function academicManager(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'academic_manager_id');
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the staff of the center
-     */
-    public function staff(): HasMany
-    {
-        return $this->hasMany(User::class, 'center_id');
-    }
-
-    /**
-     * Get the user who last updated the center.
-     */
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function assignations(): HasMany
+    {
+        return $this->hasMany(Assignation::class);
+    }
+
     public function timetables(): HasMany
     {
         return $this->hasMany(Timetable::class);
+    }
+
+    public function materials(): HasMany
+    {
+        return $this->hasMany(Material::class);
+    }
+
+    public function teachers(): HasMany
+    {
+        return $this->hasMany(Teacher::class);
     }
 }
