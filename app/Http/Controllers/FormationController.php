@@ -49,6 +49,7 @@ class FormationController extends Controller
             'price' => 'nullable|integer',
             'hours' => 'nullable|integer',
             'phase_id' => 'nullable|integer|exists:phases,id',
+            'academy_id' => 'nullable|integer|exists:academies,id',
         ]);
 
         Formation::create($validated);
@@ -98,6 +99,7 @@ class FormationController extends Controller
             'price' => 'nullable|integer',
             'hours' => 'nullable|integer',
             'phase_id' => 'nullable|integer|exists:phases,id',
+            'academy_id' => 'nullable|integer|exists:academies,id',
         ]);
 
         $formation->update($validated);
