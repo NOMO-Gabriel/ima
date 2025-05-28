@@ -1,551 +1,457 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Académies')
+@section('title', 'Catalogue des Livres')
 
 @section('content')
     <!-- Fil d'Ariane -->
-    <nav class="flex mb-5 text-sm" aria-label="Breadcrumb">
+    <nav class="flex mb-5" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center text-gray-600 hover:text-[#4CA3DD]">
-                    <i class="fas fa-home mr-2"></i> Accueil
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-[#4CA3DD] dark:text-gray-400 dark:hover:text-white">
+                    <svg class="w-3 h-3 mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+                    </svg>
+                    Tableau de bord
                 </a>
             </li>
             <li aria-current="page">
                 <div class="flex items-center">
-                    <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-                    <span class="text-[#4CA3DD] font-medium">Académies</span>
+                    <svg class="w-3 h-3 mx-1 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">Catalogue des Livres</span>
                 </div>
             </li>
         </ol>
     </nav>
 
-    <!-- En-tête de page -->
-    <div class="mb-6">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-            <h1 class="text-2xl font-bold text-gray-800 mb-3 md:mb-0">
-                <i class="fas fa-university text-[#4CA3DD] mr-2"></i>Gestion des Académies
+    <div class="bg-white shadow-md rounded-lg p-5 mb-8">
+        <!-- En-tête avec titre et bouton d'ajout -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <h1 class="text-2xl font-bold text-gray-700 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2 text-[#4CA3DD]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+                Catalogue des livres
             </h1>
-            <div class="flex items-center space-x-2">
-                <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                   class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                    <i class="fas fa-plus mr-2"></i> Ajouter une académie
-                </a>
-            </div>
+            <a href="{{ route('admin.books.create', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Ajouter un livre
+            </a>
         </div>
 
-        <p class="text-gray-600 mb-6">Gérez les académies, leurs informations et leurs paramètres.</p>
-    </div>
-
-    <!-- Section des statistiques -->
-    <div class="stats-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon primary bg-blue-100 text-[#4CA3DD] p-3 rounded-full">
-                    <i class="fas fa-university"></i>
+        <!-- Messages d'alerte -->
+        @if(session('success'))
+            <div id="alert-success" class="flex p-4 mb-6 text-[#34D399] border-l-4 border-[#34D399] bg-[#F0FDF4] rounded-md fade-in-down" role="alert">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div class="ml-3 text-sm font-medium">
+                    {{ session('success') }}
                 </div>
-                <span class="text-sm text-gray-500">Total</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->total() ?? count($academies) }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies</p>
-            </div>
-            <div class="stats-trend mt-3">
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-[#4CA3DD]" style="width: 100%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon success bg-green-100 text-green-600 p-3 rounded-full">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <span class="text-sm text-gray-500">Actives</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('is_active', true)->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies actives</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $activePercentage = ($academies->total() > 0) ? ($academies->where('is_active', true)->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-green-500" style="width: {{ $activePercentage }}%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon warning bg-blue-100 text-blue-600 p-3 rounded-full">
-                    <i class="fas fa-language"></i>
-                </div>
-                <span class="text-sm text-gray-500">Françaises</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('lang', 'FR')->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies francophones</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $frPercentage = ($academies->total() > 0) ? ($academies->where('lang', 'FR')->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-blue-500" style="width: {{ $frPercentage }}%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon info bg-red-100 text-red-600 p-3 rounded-full">
-                    <i class="fas fa-globe-americas"></i>
-                </div>
-                <span class="text-sm text-gray-500">Anglaises</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('lang', 'EN')->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies anglophones</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $enPercentage = ($academies->total() > 0) ? ($academies->where('lang', 'EN')->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-red-500" style="width: {{ $enPercentage }}%"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Barre de recherche et filtres -->
-    <div class="mb-6 bg-white p-4 rounded-lg shadow">
-        <div class="flex flex-col md:flex-row md:items-end gap-4">
-            <div class="flex-grow">
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
-                    </div>
-                    <input type="text" id="search" name="search"
-                           class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#4CA3DD] focus:border-[#4CA3DD]"
-                           placeholder="Rechercher une académie...">
-                </div>
-            </div>
-            <div>
-                <label for="language-filter" class="block text-sm font-medium text-gray-700 mb-1">Langue</label>
-                <select id="language-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#4CA3DD] focus:border-[#4CA3DD]">
-                    <option value="all">Toutes les langues</option>
-                    <option value="FR">Français</option>
-                    <option value="EN">Anglais</option>
-                </select>
-            </div>
-            <div>
-                <button type="button" id="reset-filters" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    <i class="fas fa-redo-alt mr-1"></i> Réinitialiser
+                <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-[#F0FDF4] text-[#34D399] rounded-lg p-1.5 hover:bg-[#ECFDF5] inline-flex h-8 w-8" data-dismiss-target="#alert-success" aria-label="Close">
+                    <span class="sr-only">Fermer</span>
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
                 </button>
             </div>
-        </div>
-    </div>
+        @endif
 
-    <!-- Messages de succès ou d'erreur -->
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm flex items-start" role="alert">
-            <i class="fas fa-check-circle text-green-500 mt-0.5 mr-3 text-lg"></i>
-            <div>
-                <p class="font-medium">{{ session('success') }}</p>
+        <!-- Section des statistiques -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <!-- Statistique 1: Total des livres -->
+            <div class="bg-white rounded-lg p-5 shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-[#4CA3DD]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-500">Total</span>
+                </div>
+                <div class="mb-3">
+                    <h3 class="text-2xl font-bold text-gray-800">{{ count($books) }}</h3>
+                    <p class="text-sm text-gray-600">Livres au catalogue</p>
+                </div>
+                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-[#4CA3DD]" style="width: 100%"></div>
+                </div>
             </div>
-            <button class="ml-auto text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    @endif
 
-    @if (session('error'))
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow-sm flex items-start" role="alert">
-            <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3 text-lg"></i>
-            <div>
-                <p class="font-medium">{{ session('error') }}</p>
+            <!-- Statistique 2: Stock total -->
+            <div class="bg-white rounded-lg p-5 shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-[#34D399]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-gray-500">Stock</span>
+                </div>
+                <div class="mb-3">
+                    @php
+                        $totalQuantity = $books->sum('quantity');
+                    @endphp
+                    <h3 class="text-2xl font-bold text-gray-800">{{ $totalQuantity }}</h3>
+                    <p class="text-sm text-gray-600">Exemplaires total</p>
+                </div>
+                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-[#34D399]" style="width: 100%"></div>
+                </div>
             </div>
-            <button class="ml-auto text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    @endif
 
-    <!-- Liste des académies - Version desktop -->
-    <div class="bg-white rounded-lg shadow overflow-hidden hidden md:block">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-            <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Nom de l'académie
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
+            <!-- Statistique 3: Livres disponibles -->
+            <div class="bg-white rounded-lg p-5 shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center text-[#FBBF24]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
                     </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Langue
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
+                    <span class="text-sm font-medium text-gray-500">Disponibles</span>
+                </div>
+                <div class="mb-3">
+                    @php
+                        $availableBooks = $books->where('quantity', '>', 0)->count();
+                        $availabilityPercentage = count($books) > 0 ? ($availableBooks / count($books)) * 100 : 0;
+                    @endphp
+                    <h3 class="text-2xl font-bold text-gray-800">{{ $availableBooks }}</h3>
+                    <p class="text-sm text-gray-600">Livres en stock</p>
+                </div>
+                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-[#FBBF24]" style="width: {{ $availabilityPercentage }}%"></div>
+                </div>
+            </div>
+
+            <!-- Statistique 4: Catégories -->
+            <div class="bg-white rounded-lg p-5 shadow-sm border border-gray-200 transition-all duration-300 hover:shadow-md">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center text-[#A78BFA]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
                     </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Date de création
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
+                    <span class="text-sm font-medium text-gray-500">Catégories</span>
+                </div>
+                <div class="mb-3">
+                    @php
+                        $categoriesCount = $books->whereNotNull('category')->groupBy('category')->count();
+                    @endphp
+                    <h3 class="text-2xl font-bold text-gray-800">{{ $categoriesCount }}</h3>
+                    <p class="text-sm text-gray-600">Catégories actives</p>
+                </div>
+                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
+                    <div class="h-full bg-[#A78BFA]" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtres et recherche -->
+        <div class="mb-6">
+            <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+                <div class="relative w-full lg:w-80">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        </svg>
                     </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                </th>
-            </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-            @forelse ($academies as $academy)
-                <tr class="hover:bg-gray-50 transition duration-150">
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-[#4CA3DD]/10 text-[#4CA3DD]">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">
-                                    {{ $academy->name }}
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    Code: {{ $academy->code ?? 'Non défini' }}
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm text-gray-500 max-w-xs overflow-hidden text-ellipsis">
-                            {{ Str::limit($academy->description, 50) ?? '—' }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        @if($academy->lang === 'FR')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                    Français
-                                </span>
-                        @elseif($academy->lang === 'EN')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    Anglais
-                                </span>
-                        @else
-                            <span class="text-gray-500">—</span>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div class="flex items-center">
-                            <i class="far fa-calendar-alt mr-2 text-gray-400"></i>
-                            {{ $academy->created_at->format('d/m/Y') }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div class="flex justify-end space-x-3">
-                            <a href="{{ route('admin.academies.show', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                               class="text-[#4CA3DD] hover:text-[#2A7AB8] bg-[#4CA3DD]/10 p-2 rounded-full" title="Voir">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('admin.academies.edit', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                               class="text-amber-600 hover:text-amber-800 bg-amber-100 p-2 rounded-full" title="Modifier">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <form action="{{ route('admin.academies.destroy', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                                  method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800 bg-red-100 p-2 rounded-full" title="Supprimer"
-                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette académie ?')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            @empty
+                    <input type="search" id="search-books" class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD]" placeholder="Rechercher un livre, auteur, éditeur...">
+                </div>
+                <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
+                    <select name="category" id="filter-category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
+                        <option value="">Toutes les catégories</option>
+                        <option value="Mathématiques">Mathématiques</option>
+                        <option value="Physique">Physique</option>
+                        <option value="Chimie">Chimie</option>
+                        <option value="Biologie">Biologie</option>
+                        <option value="Français">Français</option>
+                        <option value="Anglais">Anglais</option>
+                        <option value="Histoire-Géographie">Histoire-Géographie</option>
+                        <option value="Philosophie">Philosophie</option>
+                        <option value="Préparation concours">Préparation concours</option>
+                        <option value="Autres">Autres</option>
+                    </select>
+                    <select name="lang" id="filter-lang" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
+                        <option value="">Toutes les langues</option>
+                        <option value="FR">Français</option>
+                        <option value="EN">Anglais</option>
+                        <option value="DE">Allemand</option>
+                        <option value="ES">Espagnol</option>
+                    </select>
+                    <select name="availability" id="filter-availability" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
+                        <option value="">Toute disponibilité</option>
+                        <option value="available">Disponible</option>
+                        <option value="unavailable">Indisponible</option>
+                    </select>
+                    <select name="sort" id="filter-sort" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5">
+                        <option value="title-asc">Titre (A-Z)</option>
+                        <option value="title-desc">Titre (Z-A)</option>
+                        <option value="author-asc">Auteur (A-Z)</option>
+                        <option value="author-desc">Auteur (Z-A)</option>
+                        <option value="quantity-desc">Stock (décroissant)</option>
+                        <option value="year-desc">Année (récent)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tableau des livres -->
+        <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50">
                 <tr>
-                    <td colspan="5" class="px-6 py-8 whitespace-nowrap text-center text-gray-500">
-                        <div class="flex flex-col items-center justify-center">
-                            <div class="bg-gray-100 rounded-full p-4 mb-4">
-                                <i class="fas fa-university text-gray-400 text-5xl"></i>
-                            </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-1">Aucune académie</h3>
-                            <p class="text-gray-500 mb-4">Vous n'avez pas encore enregistré d'académie.</p>
-                            <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                               class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                                <i class="fas fa-plus mr-2"></i> Créer une académie
-                            </a>
-                        </div>
-                    </td>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                        Livre
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                        Auteur & Éditeur
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                        Catégorie
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                        Stock
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                        Disponibilité
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                        Actions
+                    </th>
                 </tr>
-            @endforelse
-            </tbody>
-        </table>
-
-        <!-- Pagination améliorée -->
-        @if($academies->hasPages())
-            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 px-6 py-4 bg-white border-t border-gray-200">
-                <div class="pagination-info mb-4 sm:mb-0">
-                    Affichage de <span>{{ $academies->firstItem() ?? 0 }}</span> à <span>{{ $academies->lastItem() ?? 0 }}</span> sur <span>{{ $academies->total() }}</span> académies
-                </div>
-                <div class="pagination-controls">
-                    {{ $academies->links('vendor.pagination.tailwind') }}
-                </div>
-            </div>
-        @endif
-    </div>
-
-    <!-- Liste des académies - Version mobile -->
-    <div class="block md:hidden space-y-4">
-        @forelse ($academies as $academy)
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-[#4CA3DD]/10 text-[#4CA3DD]">
-                                <i class="fas fa-university"></i>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                @forelse($books as $book)
+                    <tr class="hover:bg-gray-100 transition-colors duration-150">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-16 w-12">
+                                    @if($book->coverImage)
+                                        <img class="h-16 w-12 object-cover rounded" src="{{ $book->cover_image_url }}" alt="{{ $book->title }}">
+                                    @else
+                                        <div class="h-16 w-12 bg-gray-100 rounded flex items-center justify-center text-[#4CA3DD]">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-gray-900">{{ $book->title }}</div>
+                                    <div class="text-sm text-gray-500">
+                                        @if($book->isbn)
+                                            ISBN: {{ $book->isbn }}
+                                        @endif
+                                        @if($book->publicationYear)
+                                            @if($book->isbn) | @endif
+                                            {{ $book->publicationYear }}
+                                        @endif
+                                    </div>
+                                    @if($book->nb_pages)
+                                        <div class="text-xs text-gray-400">{{ $book->nb_pages }} pages</div>
+                                    @endif
+                                </div>
                             </div>
-                            <div class="ml-3">
-                                <h3 class="text-sm font-medium text-gray-900">{{ $academy->name }}</h3>
-                                <p class="text-xs text-gray-500">Code: {{ $academy->code ?? 'Non défini' }}</p>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <div>
+                                @if($book->author)
+                                    <div class="font-medium text-gray-700">{{ $book->author }}</div>
+                                @else
+                                    <div class="text-gray-400 italic">Auteur non spécifié</div>
+                                @endif
+                                @if($book->publisher)
+                                    <div class="text-xs text-gray-500">{{ $book->publisher }}</div>
+                                @endif
+                                @if($book->lang)
+                                    <div class="text-xs text-gray-400">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
+                                            {{ $book->lang === 'FR' ? 'Français' : ($book->lang === 'EN' ? 'Anglais' : $book->lang) }}
+                                        </span>
+                                    </div>
+                                @endif
                             </div>
-                        </div>
-                        @if($academy->lang === 'FR')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                FR
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                            @if($book->category)
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    {{ $book->category }}
+                                </span>
+                            @else
+                                <span class="text-gray-400 italic">Non classé</span>
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                            <div class="text-lg font-semibold text-gray-700">{{ $book->quantity }}</div>
+                            <div class="text-xs text-gray-500">exemplaires</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $book->availability_color }}">
+                                {{ $book->availability_status }}
                             </span>
-                        @elseif($academy->lang === 'EN')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                EN
-                            </span>
-                        @endif
-                    </div>
-                </div>
-                <div class="px-4 py-3 bg-gray-50 text-xs">
-                    <div class="grid grid-cols-1">
-                        <div class="mb-2">
-                            <span class="font-medium text-gray-500">Description:</span>
-                            <span class="ml-2 text-gray-900">{{ Str::limit($academy->description, 50) ?? '—' }}</span>
-                        </div>
-                        <div class="mb-2">
-                            <span class="font-medium text-gray-500">Date de création:</span>
-                            <span class="ml-2 text-gray-900">{{ $academy->created_at->format('d/m/Y') }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-4 py-3 border-t border-gray-200 flex justify-between">
-                    <a href="{{ route('admin.academies.show', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                       class="inline-flex items-center px-3 py-1 bg-[#4CA3DD]/10 text-[#4CA3DD] rounded-md">
-                        <i class="fas fa-eye mr-1 text-xs"></i> Voir
-                    </a>
-                    <a href="{{ route('admin.academies.edit', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                       class="inline-flex items-center px-3 py-1 bg-amber-100 text-amber-600 rounded-md">
-                        <i class="fas fa-edit mr-1 text-xs"></i> Modifier
-                    </a>
-                    <form action="{{ route('admin.academies.destroy', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                          method="POST" class="inline-block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-100 text-red-600 rounded-md"
-                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette académie ?')">
-                            <i class="fas fa-trash mr-1 text-xs"></i> Supprimer
-                        </button>
-                    </form>
-                </div>
-            </div>
-        @empty
-            <div class="bg-white rounded-lg shadow p-6 text-center">
-                <div class="flex flex-col items-center justify-center">
-                    <div class="bg-gray-100 rounded-full p-4 mb-4">
-                        <i class="fas fa-university text-gray-400 text-4xl"></i>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-1">Aucune académie</h3>
-                    <p class="text-gray-500 mb-4">Vous n'avez pas encore enregistré d'académie.</p>
-                    <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                       class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                        <i class="fas fa-plus mr-2"></i> Créer une académie
-                    </a>
-                </div>
-            </div>
-        @endforelse
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                            <div class="flex justify-center space-x-3">
+                                <a href="{{ route('admin.books.show', ['locale' => app()->getLocale(), 'book' => $book->id]) }}"
+                                   class="text-[#4CA3DD] hover:text-[#2A7AB8] dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-150"
+                                   title="Voir détails">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </a>
+                                <a href="{{ route('admin.books.edit', ['locale' => app()->getLocale(), 'book' => $book->id]) }}"
+                                   class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors duration-150"
+                                   title="Modifier">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                    </svg>
+                                </a>
+                                <form action="{{ route('admin.books.destroy', ['locale' => app()->getLocale(), 'book' => $book->id]) }}"
+                                      method="POST"
+                                      class="inline-block"
+                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce livre du catalogue?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                            class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-150"
+                                            title="Supprimer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="px-6 py-10 text-center text-gray-500 dark:text-gray-400">
+                            <div class="flex flex-col items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                                <p class="text-lg font-medium">Aucun livre dans le catalogue</p>
+                                <p class="text-sm text-gray-500 mt-1">Commencez par ajouter un livre en utilisant le bouton ci-dessus</p>
+                            </div>
+                        </td>
+                    </tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
 
-        <!-- Pagination pour mobile -->
-        @if($academies->hasPages())
-            <div class="bg-white rounded-lg shadow p-4 my-4">
-                {{ $academies->links('vendor.pagination.tailwind') }}
-            </div>
-        @endif
+
     </div>
+@endsection
 
-    <!-- Styles pour la pagination -->
-    @push('styles')
-        <style>
-            /* Style pour l'info de pagination */
-            .pagination-info {
-                font-size: 0.875rem;
-                color: #64748B;
+@push('styles')
+    <style>
+        /* Style pour l'info de pagination */
+        .pagination-info {
+            font-size: 0.875rem;
+            color: #64748B;
+        }
+
+        .pagination-info span {
+            font-weight: 600;
+            color: #1E293B;
+        }
+
+        /* Animation pour les alertes */
+        .fade-in-down {
+            animation: fadeInDown 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-10px);
             }
-
-            .pagination-info span {
-                font-weight: 600;
-                color: #1E293B;
+            100% {
+                opacity: 1;
+                transform: translateY(0);
             }
+        }
+    </style>
+@endpush
 
-            /* Style pour les contrôles de pagination */
-            .pagination {
-                display: flex;
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
-
-            .pagination li {
-                margin: 0 2px;
-            }
-
-            .pagination li.disabled span,
-            .pagination li.disabled a {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
-
-            .pagination li a,
-            .pagination li span {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0.5rem 0.75rem;
-                border-radius: 0.375rem;
-                font-size: 0.875rem;
-                line-height: 1.25rem;
-                text-decoration: none;
-                transition: all 200ms;
-            }
-
-            .pagination li:not(.active) a {
-                background-color: #f3f4f6;
-                color: #374151;
-            }
-
-            .pagination li:not(.active) a:hover {
-                background-color: #e5e7eb;
-            }
-
-            .pagination li.active span {
-                background-color: #4CA3DD;
-                color: white;
-            }
-
-            /* Style pour les points de suspension */
-            .pagination li.dots span {
-                display: flex;
-                align-items: center;
-                color: #6b7280;
-                padding: 0 0.25rem;
-            }
-        </style>
-    @endpush
-
-    <!-- Script pour la fonctionnalité de recherche et tri -->
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Implémentation de la recherche en temps réel
-                const searchInput = document.getElementById('search');
-                const rows = document.querySelectorAll('tbody tr');
-                const cards = document.querySelectorAll('.block.md\\:hidden > div');
-
-                searchInput.addEventListener('keyup', function() {
-                    const searchText = this.value.toLowerCase();
-
-                    // Filtrer les lignes du tableau (desktop)
-                    rows.forEach(row => {
-                        const text = row.textContent.toLowerCase();
-                        if (text.includes(searchText)) {
-                            row.classList.remove('hidden');
-                        } else {
-                            row.classList.add('hidden');
-                        }
-                    });
-
-                    // Filtrer les cartes (mobile)
-                    cards.forEach(card => {
-                        const text = card.textContent.toLowerCase();
-                        if (text.includes(searchText)) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
-                });
-
-                // Réinitialisation des filtres
-                document.getElementById('reset-filters').addEventListener('click', function() {
-                    searchInput.value = '';
-                    document.getElementById('language-filter').value = 'all';
-
-                    // Réinitialiser l'affichage
-                    rows.forEach(row => row.classList.remove('hidden'));
-                    cards.forEach(card => card.classList.remove('hidden'));
-                });
-
-                // Filtrage par langue
-                document.getElementById('language-filter').addEventListener('change', function() {
-                    const lang = this.value;
-
-                    if (lang === 'all') {
-                        rows.forEach(row => row.classList.remove('hidden'));
-                        cards.forEach(card => card.classList.remove('hidden'));
-                        return;
-                    }
-
-                    // Filtrer les lignes du tableau (desktop)
-                    rows.forEach(row => {
-                        const hasLang = row.textContent.includes(lang === 'FR' ? 'Français' : 'Anglais');
-                        if (hasLang) {
-                            row.classList.remove('hidden');
-                        } else {
-                            row.classList.add('hidden');
-                        }
-                    });
-
-                    // Filtrer les cartes (mobile)
-                    cards.forEach(card => {
-                        const hasLang = card.textContent.includes(lang);
-                        if (hasLang) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
-                });
-
-                // Auto-dismiss pour les alertes
-                const alerts = document.querySelectorAll('[role="alert"]');
-                alerts.forEach(alert => {
-                    setTimeout(() => {
+@push('scripts')
+    <script>
+        // Auto-dismiss pour les alertes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Gestion des alertes
+            const alerts = document.querySelectorAll('[id^="alert-"]');
+            alerts.forEach(alert => {
+                // Ajout d'un gestionnaire pour le bouton de fermeture
+                const closeBtn = alert.querySelector('[data-dismiss-target]');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', () => {
                         alert.classList.add('opacity-0', 'transform', 'translate-y-[-10px]', 'transition-all', 'duration-500');
                         setTimeout(() => {
                             alert.remove();
                         }, 500);
-                    }, 5000);
-                });
+                    });
+                }
+
+                // Auto-dismiss après 8 secondes
+                setTimeout(() => {
+                    if (alert && alert.parentNode) {
+                        alert.classList.add('opacity-0', 'transform', 'translate-y-[-10px]', 'transition-all', 'duration-500');
+                        setTimeout(() => {
+                            if (alert && alert.parentNode) {
+                                alert.remove();
+                            }
+                        }, 500);
+                    }
+                }, 8000);
             });
-        </script>
-    @endpush
-@endsection
+
+            // Filtrage des livres (simulation)
+            const searchInput = document.getElementById('search-books');
+            const categoryFilter = document.getElementById('filter-category');
+            const langFilter = document.getElementById('filter-lang');
+            const availabilityFilter = document.getElementById('filter-availability');
+            const sortFilter = document.getElementById('filter-sort');
+
+            // Exemple de traitement des filtres
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    console.log('Recherche:', this.value);
+                    // Logique de filtrage à implémenter
+                });
+            }
+
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', function() {
+                    console.log('Filtre catégorie:', this.value);
+                    // Logique de filtrage à implémenter
+                });
+            }
+
+            if (langFilter) {
+                langFilter.addEventListener('change', function() {
+                    console.log('Filtre langue:', this.value);
+                    // Logique de filtrage à implémenter
+                });
+            }
+
+            if (availabilityFilter) {
+                availabilityFilter.addEventListener('change', function() {
+                    console.log('Filtre disponibilité:', this.value);
+                    // Logique de filtrage à implémenter
+                });
+            }
+
+            if (sortFilter) {
+                sortFilter.addEventListener('change', function() {
+                    console.log('Tri:', this.value);
+                    // Logique de tri à implémenter
+                });
+            }
+        });
+    </script>
+@endpush
