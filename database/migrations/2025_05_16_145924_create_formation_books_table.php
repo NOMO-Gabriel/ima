@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('formation_books', function (Blueprint $table) {
@@ -16,12 +13,16 @@ return new class extends Migration
             $table->foreignId('book_id')->constrained('books')->onDelete('cascade');
             $table->foreignId('formation_id')->constrained('formations')->onDelete('cascade');
             $table->timestamps();
+
+            // Contrainte d'unicité pour éviter les doublons
+            $table->unique(['book_id', 'formation_id']);
+
+            // Index pour optimiser les performances
+            $table->index('book_id');
+            $table->index('formation_id');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('formation_books');
