@@ -13,6 +13,7 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('code', 10)->unique();
+            $table->boolean('is_active')->default(true);
 
             $table->timestamps();
         });
@@ -22,4 +23,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('cities');
     }
-};  
+};

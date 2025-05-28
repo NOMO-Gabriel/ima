@@ -16,9 +16,7 @@ class AcademyController extends Controller
     public function index(Request $request)
     {
         // Vérifier les permissions
-        if (!$this->user->can('academy.view')) {
-            abort(403, 'Non autorisé');
-        }
+
 
         // Filtrage des académies
         $query = Academy::query();

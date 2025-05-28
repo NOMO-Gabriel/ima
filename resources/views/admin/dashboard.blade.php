@@ -72,7 +72,7 @@
             <div class="flex flex-col lg:flex-row justify-between items-center">
                 <div class="welcome-text mb-6 lg:mb-0 text-center lg:text-left">
                     <h1 class="text-3xl lg:text-4xl font-bold text-gray-600 mb-3">
-                        Bienvenue, {{ Auth::user()->first_name }} 👋
+                        Bienvenue, {{ Auth::user()?->first_name }} 👋
                     </h1>
                     <p class="text-gray-400 text-lg max-w-2xl">
                         Gérez efficacement votre personnel et vos services éducatifs. Suivez vos indicateurs en temps réel

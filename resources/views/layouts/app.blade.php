@@ -1475,10 +1475,6 @@
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-management">
-                <a href="{{ route('admin.academic-years.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.academic-years.*') ? 'active' : '' }}">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span>Années académiques</span>
-                </a>
                 <a href="{{ route('admin.academies.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.academies.*') ? 'active' : '' }}">
                     <i class="fas fa-university"></i>
                     <span>Academies</span>
@@ -1591,7 +1587,7 @@
         </div>
 
         <!-- Logout button -->
-        <div class="logout-container">
+        {{-- <div class="logout-container">
             <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
                 @csrf
                 <button type="submit" class="logout-btn">
@@ -1599,7 +1595,7 @@
                     <span class="logout-text">Déconnexion</span>
                 </button>
             </form>
-        </div>
+        </div> --}}
     </aside>
 
     <!-- Main Content -->
@@ -1650,19 +1646,19 @@
 
                 <div class="dropdown">
                     <button class="user-btn" id="user-toggle">
-                        <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->first_name }}" class="user-avatar">
+                        <img src="{{ Auth::user()?->profile_photo_url }}" alt="{{ Auth::user()?->first_name }}" class="user-avatar">
                         <div class="user-info">
-                            <span class="user-name">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</span>
-                            <span class="user-role">{{ Auth::user()->role }}</span>
+                            <span class="user-name">{{ Auth::user()?->first_name }} {{ Auth::user()?->last_name }}</span>
+                            <span class="user-role">{{ Auth::user()?->role }}</span>
                         </div>
                         <i class="fas fa-chevron-down"></i>
                     </button>
                     <div class="dropdown-menu user-dropdown" id="user-dropdown">
                         <div class="user-profile">
-                            <img src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->first_name }}" class="avatar">
+                            <img src="{{ Auth::user()?->profile_photo_url }}" alt="{{ Auth::user()?->first_name }}" class="avatar">
                             <div class="info">
-                                <div class="name">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
-                                <div class="email">{{ Auth::user()->email }}</div>
+                                <div class="name">{{ Auth::user()?->first_name }} {{ Auth::user()?->last_name }}</div>
+                                <div class="email">{{ Auth::user()?->email }}</div>
                             </div>
                         </div>
                         <div class="user-links">
@@ -1674,13 +1670,13 @@
                                 <i class="fas fa-cog"></i>
                                 <span>Paramètres</span>
                             </a>
-                            <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
+                            {{-- <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
                                 @csrf
                                 <button type="submit" class="user-link text-danger">
                                     <i class="fas fa-sign-out-alt"></i>
                                     <span>Déconnexion</span>
                                 </button>
-                            </form>
+                            </form> --}}
                         </div>
                     </div>
                 </div>

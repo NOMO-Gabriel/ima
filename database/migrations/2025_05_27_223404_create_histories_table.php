@@ -11,19 +11,23 @@ return new class extends Migration
         Schema::create('histories', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null'); // Author
+            // Author
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+
+            // Ressource
             $table->string('subject_type'); // Impact entity | ex: "App\Models\User"
-            $table->unsignedBigInteger('subject_id');
+            $table->unsignedBigInteger('subject_id'); // Impact entity id
 
-            // Description de l'action
-            $table->string('action'); // ex: "created", "updated", "deleted", "validated"
+            // Changes
+            $table->enum('action', ['created', 'updated', 'deleted', 'validated', 'suspended', 'rejected', 'archived'])->nullable();
+            $table->json('changes')->nullable(); // Array of updated fields
 
-            // Détails (optionnels)
-            $table->json('changes')->nullable(); // pour stocker les modifications ou contenu de l'action
-            $table->text('description')->nullable(); // Free message
+            // Free message
+            $table->text('description')->nullable();
 
+            // Configuration
             $table->ipAddress('ip_address')->nullable();
-            $table->string('user_agent')->nullable();
+            $table->string('user_agent')->nullable(); // System context dump
 
             $table->timestamps();
         });

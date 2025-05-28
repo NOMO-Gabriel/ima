@@ -22,10 +22,10 @@ class AdminController extends Controller
                 $q->whereNotIn('name', ['enseignant', 'eleve', 'parent']);
             })->count(),
         ];
-        
+
         // Derniers utilisateurs inscrits
         $latest_users = User::latest()->take(5)->get();
-        
+
         return view('admin.dashboard', compact('stats', 'latest_users'));
     }
 }

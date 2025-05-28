@@ -9,36 +9,15 @@ class HistoryController extends Controller
 {
     public function index()
     {
-        //
+        // Only the first 50 latest changes
+        $histories = History::with('user')->latest()->paginate(50);
+
+        return response()->json($histories);
     }
 
-    public function create()
+    public function show($id)
     {
-        //
-    }
-
-    public function store(Request $request)
-    {
-        //
-    }
-
-    public function show(History $history)
-    {
-        //
-    }
-
-    public function edit(History $history)
-    {
-        //
-    }
-
-    public function update(Request $request, History $history)
-    {
-        //
-    }
-
-    public function destroy(History $history)
-    {
-        //
+        $history = History::with('user')->findOrFail($id);
+        return response()->json($history);
     }
 }
