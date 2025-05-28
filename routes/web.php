@@ -6,6 +6,7 @@ use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CenterController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
@@ -66,6 +67,7 @@ Route::prefix('{locale}')
     ->middleware('set.locale')
     ->group(function () {
         Route::get('/', [HomeController::class, 'index'])->name('welcome');
+        Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
         // Authentification
         Route::middleware('auth')->group(function () {
