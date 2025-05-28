@@ -70,47 +70,47 @@
 
     <table class="absence">
         <thead>
-            <tr>
-                <th>Créneau / Jour</th>
-                @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as $day)
-                    <th>{{ \Carbon\Carbon::parse($day)->locale('fr')->isoFormat('dddd') }}</th>
-                @endforeach
-            </tr>
+        <tr>
+            <th>Créneau / Jour</th>
+            @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as $day)
+                <th>{{ \Carbon\Carbon::parse($day)->locale('fr')->isoFormat('dddd') }}</th>
+            @endforeach
+        </tr>
         </thead>
         <tbody>
-            @php
-                $slotsByDay = $timetable->slots->groupBy('week_day');
-                $timeSlots = [
-                    ['08:00:00', '10:30:00'],
-                    ['11:00:00', '13:30:00'],
-                    ['14:00:00', '16:30:00'],
-                ];
-            @endphp
+        @php
+            $slotsByDay = $timetable->slots->groupBy('week_day');
+            $timeSlots = [
+                ['08:00:00', '10:30:00'],
+                ['11:00:00', '13:30:00'],
+                ['14:00:00', '16:30:00'],
+            ];
+        @endphp
 
-            @foreach ($timeSlots as [$start, $end])
-                <tr>
-                    <td><strong>{{ \Carbon\Carbon::parse($start)->format('H:i') }} - {{ \Carbon\Carbon::parse($end)->format('H:i') }}</strong></td>
+        @foreach ($timeSlots as [$start, $end])
+            <tr>
+                <td><strong>{{ \Carbon\Carbon::parse($start)->format('H:i') }} - {{ \Carbon\Carbon::parse($end)->format('H:i') }}</strong></td>
 
-                    @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as $day)
-                        @php
-                            $slot = isset($slotsByDay[$day]) ? $slotsByDay[$day]->firstWhere('start_time', $start) : null;
-                        @endphp
-                        <td class="{{ $slot ? '' : 'empty' }}">
-                            <a href="{{ route('admin.absences.list', ['locale' => app()->getLocale(), 'slot' => $slot]) }}" style="display:block; color:inherit; text-decoration:none;">
-                                @if ($slot)
-                                    <div class="slot-info">
-                                        <p>SALLE {{ $slot->room->name ?? '—' }}</p>
-                                        <p>COURS {{ $slot->course ? $slot->course->title : '—' }}</p>
-                                        <p>PROF {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : '—' }}</p>
-                                    </div>
-                                @else
-                                    <em>Ajouter</em>
-                                @endif
-                            </a>
-                        </td>
-                    @endforeach
-                </tr>
-            @endforeach
+                @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'] as $day)
+                    @php
+                        $slot = isset($slotsByDay[$day]) ? $slotsByDay[$day]->firstWhere('start_time', $start) : null;
+                    @endphp
+                    <td class="{{ $slot ? '' : 'empty' }}">
+                        <a href="{{ route('admin.absences.list', ['locale' => app()->getLocale(), 'slot' => $slot]) }}" style="display:block; color:inherit; text-decoration:none;">
+                            @if ($slot)
+                                <div class="slot-info">
+                                    <p>SALLE {{ $slot->room->name ?? '—' }}</p>
+                                    <p>COURS {{ $slot->course ? $slot->course->title : '—' }}</p>
+                                    <p>PROF {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : '—' }}</p>
+                                </div>
+                            @else
+                                <em>Ajouter</em>
+                            @endif
+                        </a>
+                    </td>
+                @endforeach
+            </tr>
+        @endforeach
         </tbody>
     </table>
 @endsection
