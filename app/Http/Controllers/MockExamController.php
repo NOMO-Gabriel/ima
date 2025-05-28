@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\Exam;
+use App\Models\MockExam;
 use App\Models\Formation;
 use Illuminate\Http\Request;
 
@@ -11,13 +11,13 @@ class MockExamController extends Controller
 {
     public function index()
     {
-        $exams = Exam::with('formation')->get();
-        return view('admin.mock-exams.index', compact('exams'));
+        $mockExams = MockExam::with('formation')->get();
+        return view('admin.mock-exams.index', compact('mockExams'));
     }
 
-    public function show($locale, Exam $exam)
+    public function show($locale, MockExam $mockExam)
     {
-        return view('admin.mock-exams.show', compact('exam'));
+        return view('admin.mock-exams.show', compact('mockExam'));
     }
 
     public function create()
@@ -41,17 +41,17 @@ class MockExamController extends Controller
             'course_ids.*' => 'exists:courses,id',
         ]);
 
-        $exam = Exam::create($validated);
+        $mockExam = MockExam::create($validated);
 
         if (!empty($validated['course_ids'])) {
-            $exam->courses()->sync($validated['course_ids']);
+            $mockExam->courses()->sync($validated['course_ids']);
         }
 
         return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Le concours blanc a été créé avec succès !');
     }
 
-    public function update($locale, Request $request, Exam $exam)
+    public function update($locale, Request $request, MockExam $mockExam)
     {
         $validated = $request->validate([
             'date' => 'required|date',
@@ -64,19 +64,19 @@ class MockExamController extends Controller
             'course_ids.*' => 'exists:courses,id',
         ]);
 
-        $exam->update($validated);
+        $mockExam->update($validated);
 
         if (isset($validated['course_ids'])) {
-            $exam->courses()->sync($validated['course_ids']);
+            $mockExam->courses()->sync($validated['course_ids']);
         }
 
         return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Concours blanc mis à jour avec succès.');
     }
 
-    public function destroy($locale, Exam $exam)
+    public function destroy($locale, MockExam $mockExam)
     {
-        $exam->delete();
+        $mockExam->delete();
 
         return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Concours blanc supprimé avec succès.');
