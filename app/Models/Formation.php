@@ -15,6 +15,7 @@ class Formation extends Model
         'price',
         'hours',
         'phase_id',
+        'academy_id',
     ];
 
     public function rooms()
@@ -25,6 +26,11 @@ class Formation extends Model
     public function phase()
     {
         return $this->belongsTo(Phase::class);
+    }
+
+    public function Academy()
+    {
+        return $this->belongsTo(Academy::class);
     }
 
     public function courses()

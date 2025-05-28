@@ -20,6 +20,7 @@ return new class extends Migration
             $table->unsignedInteger('price')->default(0);
 
             $table->foreignId('phase_id')->nullable()->constrained('phases')->onDelete('set null');
+            $table->foreignId('academy_id')->nullable()->constrained('academies')->onDelete('set null');
 
             $table->timestamps();
         });
