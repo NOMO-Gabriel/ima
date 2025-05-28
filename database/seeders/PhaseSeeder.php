@@ -6,7 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
-class PhasesSeeder extends Seeder
+class PhaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.
