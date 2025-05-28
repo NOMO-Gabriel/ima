@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('address')->nullable()->default('cradat');
             $table->enum('account_type', ['staff', 'teacher', 'student'])->default('student');
             $table->enum('status', [
+                'active',
                 'pending_validation',
                 'pending_finalization',
                 'suspended',
