@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             EntranceExamFormationSeeder::class,
             EntranceExamSeeder::class,
             ExamSeeder::class,
-            ExamTypeSeeder::class,
             FormationBookSeeder::class,
             FormationSeeder::class,
             HistorySeeder::class,

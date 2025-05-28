@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('notes', function (Blueprint $table) {
+        Schema::create('exams', function (Blueprint $table) {
             $table->id();
 
-            $table->float('value', 5, 2);
+            $table->dateTime('date');
+            $table->enum('type', ['QCM', 'REDACTION', 'MIX']);
+            $table->integer('duration')->default(0);
 
-            $table->foreignId('student_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
-            $table->foreignId('exam_id')->constrained('exams')->onDelete('cascade');
+            $table->foreignId('formation_id')->constrained('formations')->onDelete('cascade');
 
             $table->timestamps();
         });
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('notes');
+        Schema::dropIfExists('exams');
     }
 };

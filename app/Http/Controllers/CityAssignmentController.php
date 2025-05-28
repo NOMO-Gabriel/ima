@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ExamType;
+use App\Models\CityAssignment;
 use Illuminate\Http\Request;
 
-class ExamTypeController extends Controller
+class CityAssignmentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class ExamTypeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ExamType $examType)
+    public function show(CityAssignment $cityAssignment)
     {
         //
     }
@@ -42,7 +42,7 @@ class ExamTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ExamType $examType)
+    public function edit(CityAssignment $cityAssignment)
     {
         //
     }
@@ -50,7 +50,7 @@ class ExamTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, ExamType $examType)
+    public function update(Request $request, CityAssignment $cityAssignment)
     {
         //
     }
@@ -58,7 +58,7 @@ class ExamTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ExamType $examType)
+    public function destroy(CityAssignment $cityAssignment)
     {
         //
     }

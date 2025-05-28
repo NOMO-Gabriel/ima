@@ -7,59 +7,48 @@ use Illuminate\Http\Request;
 
 class ExamController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        return Exam::all();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function show($id)
     {
-        //
+        return Exam::findOrFail($id);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'date' => 'required|date',
+            'type' => 'required|in:QCM,REDACTION,MIX',
+            'duration' => 'integer|min:0',
+            'formation_id' => 'required|exists:formations,id',
+        ]);
+
+        $exam = Exam::create($data);
+        return response()->json($exam, 201);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Exam $exam)
+    public function update(Request $request, $id)
     {
-        //
+        $exam = Exam::findOrFail($id);
+
+        $data = $request->validate([
+            'date' => 'sometimes|date',
+            'type' => 'sometimes|in:QCM,REDACTION,MIX',
+            'duration' => 'sometimes|integer|min:0',
+            'formation_id' => 'sometimes|exists:formations,id',
+        ]);
+
+        $exam->update($data);
+        return response()->json($exam);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Exam $exam)
+    public function destroy($id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Exam $exam)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Exam $exam)
-    {
-        //
+        $exam = Exam::findOrFail($id);
+        $exam->delete();
+        return response()->noContent();
     }
 }
