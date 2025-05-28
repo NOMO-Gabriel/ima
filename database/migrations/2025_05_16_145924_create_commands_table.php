@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('commands', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->integer('quantity');
-            $table->decimal('amount', 10, 2);
-            $table->foreignId('author_id')->nullable()->constrained('users')->onDelete('set null');
+
+            $table->integer('quantity')->default(0);
+
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
+
             $table->timestamps();
         });
     }

@@ -6,6 +6,7 @@ use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\CityController;
 use App\Http\Controllers\CenterController;
+use App\Http\Controllers\CommandController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\HomeController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionHistoryController;
+use App\Models\Command;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -112,6 +114,7 @@ Route::prefix('{locale}')
                 // Ressources
                 Route::resource('books', BookController::class);
                 Route::resource('materials', MaterialController::class);
+                Route::resource('commands', CommandController::class);
 
                 // Compte
                 Route::resource('profile', ProfileController::class);

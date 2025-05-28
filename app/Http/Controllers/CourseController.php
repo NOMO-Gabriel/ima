@@ -8,9 +8,6 @@ use Illuminate\Http\Request;
 
 class CourseController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         if ($this->user && !$this->user->can('course.view')) {
@@ -21,9 +18,6 @@ class CourseController extends Controller
         return view('admin.courses.index', compact('courses'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         if ($this->user && !$this->user->can('course.create')) {
@@ -35,9 +29,6 @@ class CourseController extends Controller
         return view('admin.courses.create', compact('formations'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         if ($this->user && !$this->user->can('course.create')) {
@@ -67,9 +58,6 @@ class CourseController extends Controller
             ->with('success', 'Le cours a été créé avec succès !');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show($locale, Course $course)
     {
         if ($this->user && !$this->user->can('course.view')) {
@@ -79,9 +67,6 @@ class CourseController extends Controller
         return view('admin.courses.show', compact('course'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit($locale, Course $course)
     {
         if ($this->user && !$this->user->can('course.update')) {
@@ -93,9 +78,6 @@ class CourseController extends Controller
         return view('admin.courses.edit', compact('course', 'formations'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update($locale, Request $request, Course $course)
     {
         if ($this->user && !$this->user->can('course.update')) {
@@ -122,9 +104,6 @@ class CourseController extends Controller
             ->with('success', 'Cours mis à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($locale, Course $course)
     {
         if ($this->user && !$this->user->can('course.delete')) {

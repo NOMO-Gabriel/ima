@@ -7,59 +7,85 @@ use Illuminate\Http\Request;
 
 class MaterialController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $units;
+
+    public function __construct()
+    {
+        $this->units = [
+            'pcs' => 'Pièces',
+            'kg' => 'Kilogrammes',
+            'g' => 'Grammes',
+            'm' => 'Mètres',
+            'cm' => 'Centimètres',
+            'mm' => 'Millimètres',
+            'l' => 'Litres',
+            'ml' => 'Millilitres',
+            'm2' => 'Mètres carrés',
+            'm3' => 'Mètres cubes',
+            'set' => 'Ensembles',
+            'box' => 'Boîtes',
+            'pack' => 'Paquets',
+        ];
+    }
+
     public function index()
     {
-        //
+        $materials = Material::all();
+        return view('admin.materials.index', compact('materials'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        $units = $this->units;
+        return view('admin.materials.create', compact('units'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'unit' => 'required|in:pcs,kg,g,m,cm,mm,l,ml,m2,m3,set,box,pack',
+            'quantity' => 'required|integer|min:0',
+        ]);
+
+        Material::create($validated);
+
+        return redirect()->route('admin.materials.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Matériel créé avec succès.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Material $material)
+    public function show($locale, Material $material)
     {
-        //
+        return view('admin.materials.show', compact('material'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Material $material)
+    public function edit($locale, Material $material)
     {
-        //
+        $units = $this->units;
+        return view('admin.materials.edit', compact('material', 'units'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Material $material)
+    public function update($locale, Request $request, Material $material)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'unit' => 'required|in:pcs,kg,g,m,cm,mm,l,ml,m2,m3,set,box,pack',
+            'quantity' => 'required|integer|min:0',
+        ]);
+
+        $material->update($validated);
+
+        return redirect()->route('admin.materials.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Matériel mis à jour avec succès.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Material $material)
+    public function destroy($locale, Material $material)
     {
-        //
+        $material->delete();
+
+        return redirect()->route('admin.materials.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Matériel supprimé avec succès.');
     }
 }

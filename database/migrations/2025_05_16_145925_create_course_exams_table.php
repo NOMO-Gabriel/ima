@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('course_mock_exams', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('course_id')->constrained('course')->onDelete('cascade');
+            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->foreignId('mock_exam_id')->constrained('mock_exams')->onDelete('cascade');
             $table->float('max_note', 5, 2)->nullable();
 
