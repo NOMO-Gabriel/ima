@@ -29,4 +29,11 @@ class Course extends Model
             ->unique('id')
             ->values();
     }
+
+    public function exams()
+    {
+        return $this->belongsToMany(Exam::class, 'course_exams')
+                    ->withPivot('max_note')
+                    ->withTimestamps();
+    }
 }

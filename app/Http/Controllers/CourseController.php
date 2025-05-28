@@ -48,6 +48,7 @@ class CourseController extends Controller
             'code' => 'required|string|max:255|unique:courses,code',
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+
             'formations' => 'nullable|array',
             'formations.*' => 'exists:formations,id',
         ]);

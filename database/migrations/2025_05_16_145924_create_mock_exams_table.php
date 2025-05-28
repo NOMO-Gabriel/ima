@@ -6,20 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('mock_exams', function (Blueprint $table) {
             $table->id();
+
+            $table->dateTime('date');
+            $table->enum('type', ['QCM', 'REDACTION', 'MIX']);
+            $table->integer('duration')->default(0);
+
+            $table->foreignId('formation_id')->constrained('formations')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('mock_exams');

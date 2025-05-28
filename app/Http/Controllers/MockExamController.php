@@ -2,64 +2,83 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MockExam;
+use App\Models\Course;
+use App\Models\Exam;
+use App\Models\Formation;
 use Illuminate\Http\Request;
 
 class MockExamController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        //
+        $exams = Exam::with('formation')->get();
+        return view('admin.mock-exams.index', compact('exams'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function show($locale, Exam $exam)
+    {
+        return view('admin.mock-exams.show', compact('exam'));
+    }
+
     public function create()
     {
-        //
+        $formations = Formation::all();
+        $courses = Course::all();
+
+        return view('admin.mock-exams.create', compact('formations', 'courses'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'type' => 'required|in:QCM,REDACTION,MIX',
+            'duration' => 'required|integer|min:0',
+
+            'formation_id' => 'required|exists:formations,id',
+
+            'course_ids' => 'array',
+            'course_ids.*' => 'exists:courses,id',
+        ]);
+
+        $exam = Exam::create($validated);
+
+        if (!empty($validated['course_ids'])) {
+            $exam->courses()->sync($validated['course_ids']);
+        }
+
+        return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Le concours blanc a été créé avec succès !');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(MockExam $mockupEntranceExam)
+    public function update($locale, Request $request, Exam $exam)
     {
-        //
+        $validated = $request->validate([
+            'date' => 'required|date',
+            'type' => 'required|in:QCM,REDACTION,MIX',
+            'duration' => 'required|integer|min:0',
+
+            'formation_id' => 'required|exists:formations,id',
+
+            'course_ids' => 'array',
+            'course_ids.*' => 'exists:courses,id',
+        ]);
+
+        $exam->update($validated);
+
+        if (isset($validated['course_ids'])) {
+            $exam->courses()->sync($validated['course_ids']);
+        }
+
+        return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Concours blanc mis à jour avec succès.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(MockExam $mockupEntranceExam)
+    public function destroy($locale, Exam $exam)
     {
-        //
-    }
+        $exam->delete();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, MockExam $mockupEntranceExam)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(MockExam $mockupEntranceExam)
-    {
-        //
+        return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
+            ->with('success', 'Concours blanc supprimé avec succès.');
     }
 }
