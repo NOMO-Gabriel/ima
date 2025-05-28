@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\City;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class CitySeeder extends Seeder
 {
@@ -13,131 +13,79 @@ class CitySeeder extends Seeder
     public function run(): void
     {
         $cities = [
-            
+            // RÉGION DU CENTRE
             [
-                'name' => 'Mbalmayo',
-                'code' => 'MBA',
-
-                
-            ],
-            [
-                'name' => 'Obala',
-                'code' => 'OBA',
-                
-               
+                'name' => 'YAOUNDÉ',
+                'code' => 'YDE',
+                'is_active' => true,
             ],
 
+            // RÉGION DU LITTORAL
             [
-                'name' => 'Edéa',
-                'code' => 'EDE',
-                
-                
+                'name' => 'DOUALA',
+                'code' => 'DLA',
+                'is_active' => true,
             ],
             [
-                'name' => 'Nkongsamba',
+                'name' => 'NKONGSAMBA',
                 'code' => 'NKG',
-                
-                
+                'is_active' => true,
             ],
 
-            // Région de l'Ouest
+            // RÉGION DE L'OUEST
             [
-                'name' => 'Bafoussam',
-                'code' => 'BAF',
-                
+                'name' => 'BAFOUSSAM',
+                'code' => 'BFS',
+                'is_active' => true,
             ],
             [
-                'name' => 'Dschang',
+                'name' => 'BANGANGTÉ',
+                'code' => 'BGT',
+                'is_active' => true,
+            ],
+            [
+                'name' => 'DSCHANG',
                 'code' => 'DSC',
-                
-            ],
-            [
-                'name' => 'Bandjoun',
-                'code' => 'BDJ',
-                
-               
+                'is_active' => true,
             ],
 
-            // Région du Nord-Ouest
+            // RÉGION DU SUD
             [
-                'name' => 'Bamenda',
-                'code' => 'BMD',
-                
-                
-            ],
-            [
-                'name' => 'Kumbo',
-                'code' => 'KMB',
-                
-                
+                'name' => 'EBOLOWA',
+                'code' => 'EBL',
+                'is_active' => true,
             ],
 
-            // Région du Sud-Ouest
+            // RÉGION DE L'EST
             [
-                'name' => 'Buea',
-                'code' => 'BUE',
-                
-                
-            ],
-            [
-                'name' => 'Limbe',
-                'code' => 'LMB',
-                
-                
-            ],
-            [
-                'name' => 'Kumba',
-                'code' => 'KUM',
-                
-                
+                'name' => 'BERTOUA',
+                'code' => 'BRT',
+                'is_active' => true,
             ],
 
-            // Région du Nord
+            // RÉGION DU GRAND NORD (NORD ET EXTRÊME-NORD)
             [
-                'name' => 'Garoua',
-                'code' => 'GAR',
-               
-                
+                'name' => 'GAROUA',
+                'code' => 'GRA',
+                'is_active' => true,
             ],
             [
-                'name' => 'Ngaoundéré',
-                'code' => 'NGA',
-               
-            ],
-
-            // Région de l'Extrême-Nord
-            [
-                'name' => 'Maroua',
-                'code' => 'MAR',
-                
-                
+                'name' => 'MAROUA',
+                'code' => 'MRA',
+                'is_active' => true,
             ],
 
-            // Région de l'Est
-            [
-                'name' => 'Bertoua',
-                'code' => 'BER',
-                
-                
-            ],
-
-            // Région du Sud
-            [
-                'name' => 'Ebolowa',
-                'code' => 'EBO',
-                
-                
-            ],
-            [
-                'name' => 'Sangmélima',
-                'code' => 'SAN',
-                
-                
-            ],
+           
         ];
 
         foreach ($cities as $city) {
-            City::create($city);
+            DB::table('cities')->insert([
+                'name' => $city['name'],
+                'code' => $city['code'],
+                'is_active' => $city['is_active'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         }
     }
 }
