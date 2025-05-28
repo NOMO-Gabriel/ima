@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class EntranceExam extends Model
 {
-    /** @use HasFactory<\Database\Factories\EntranceExamFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -15,8 +16,14 @@ class EntranceExam extends Model
         'name',
     ];
 
-    public function students()
+    // Relations
+    public function formations(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(Formation::class, 'entrance_exam_formations');
+    }
+
+    public function enrollments(): HasMany
+    {
+        return $this->hasMany(Enrollment::class);
     }
 }

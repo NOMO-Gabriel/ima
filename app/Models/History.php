@@ -2,20 +2,15 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-/**
- * Example of call:
- *
- * log_history('updated', $user, [
- *   'before' => ['name' => $oldName],
- *   'after' => ['name' => $newName],
- * ], "Nom de l'utilisateur modifié.");
- *
- * -> Types of action: 'created', 'updated', 'deleted', 'validated', 'suspended', 'rejected', 'archived'
- */
 class History extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'user_id',
         'subject_type',
@@ -31,13 +26,14 @@ class History extends Model
         'changes' => 'array',
     ];
 
-    public function user()
+    // Relations
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function subject()
+    public function subject(): MorphTo
     {
-        return $this->morphTo(null, 'subject_type', 'subject_id');
+        return $this->morphTo();
     }
 }

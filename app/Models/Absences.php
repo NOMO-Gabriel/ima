@@ -4,23 +4,24 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Absences extends Model
 {
-    /** @use HasFactory<\Database\Factories\AbsencesFactory> */
     use HasFactory;
 
     protected $fillable = [
         'student_id',
-        'slot_id'
+        'slot_id',
     ];
 
-    public function student()
+    // Relations
+    public function student(): BelongsTo
     {
         return $this->belongsTo(User::class, 'student_id');
     }
 
-    public function slot()
+    public function slot(): BelongsTo
     {
         return $this->belongsTo(Slot::class);
     }

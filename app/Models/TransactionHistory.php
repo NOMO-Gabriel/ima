@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+// === TransactionHistory.php ===
 class TransactionHistory extends Model
 {
-    /** @use HasFactory<\Database\Factories\TransactionHistoryFactory> */
     use HasFactory;
+
+    protected $fillable = [];
 }
