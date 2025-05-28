@@ -81,23 +81,8 @@ class User extends Authenticatable
         return $this->student !== null;
     }
 
-    public function rankValue() {
-        switch ($this->rank) {
-            case 'all':
-                return 6;
-            case 'academy':
-                return 5;
-            case 'sector':
-                return 4;
-            case 'city':
-                return 3;
-            case 'department':
-                return 2;
-            case 'center':
-                return 1;
-            default:
-                return 0;
-        }
+    public function hasRoleLevel(string $level) {
+        return $$this->roles()->where('level', $level)->exists();
     }
 
     /**
