@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             FormationSeeder::class,
             EntranceExamSeeder::class,
             EntranceExamFormationSeeder::class,
+            RoomSeeder::class,
         ]);
 
         
