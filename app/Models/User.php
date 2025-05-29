@@ -141,9 +141,9 @@ class User extends Authenticatable
         return $this->hasMany(Staff::class, 'user_id');
     }
 
-    public function teachers(): HasMany
+    public function teachers(): HasOne
     {
-        return $this->hasMany(Teacher::class, 'user_id');
+        return $this->hasOne(Teacher::class, 'user_id');
     }
 
     public function students(): HasMany
