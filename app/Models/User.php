@@ -23,18 +23,20 @@ class User extends Authenticatable
         'phone_number',
         'parent_phone_number',
         'city_id',
+        'city', // Pour la compatibilité
         'address',
         'account_type',
         'profile_photo_path',
         'status',
-        'city ',
         'establishment', // Pour les élèves
         'wanted_entrance_exams', // Pour les élèves
         'contract_details', // Détails du contrat
-        'validated_by_financial',
-        'financial_validation_date',
-        'entrance_exam_assigned',
-        'contract_assigned',
+        'validated_by',
+        'validated_at',
+        'finalized_by',
+        'finalized_at',
+        'rejection_reason',
+        'last_login_at',
     ];
 
     protected $hidden = [
@@ -48,12 +50,11 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
         'validated_at' => 'datetime',
         'finalized_at' => 'datetime',
-        'financial_validation_date' => 'datetime',
         'wanted_entrance_exams' => 'array', // Cast en array pour stocker les concours
         'contract_details' => 'array', // Cast en array pour stocker les détails du contrat
     ];
 
-    // Statuts possibles pour les élèves
+    // Statuts possibles pour les utilisateurs
     const STATUS_PENDING_VALIDATION = 'pending_validation'; // En attente de validation par responsable financière
     const STATUS_PENDING_CONTRACT = 'pending_contract'; // En attente d'assignation de contrat et concours
     const STATUS_ACTIVE = 'active'; // Compte activé
@@ -61,11 +62,44 @@ class User extends Authenticatable
     const STATUS_REJECTED = 'rejected';
     const STATUS_ARCHIVED = 'archived';
 
+    // Accessor pour le nom complet
+    public function getFullNameAttribute()
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
+    }
 
-    public function hasRoleLevel(string $level) {
+    // Accessor pour l'URL de la photo de profil
+    public function getProfilePhotoUrlAttribute()
+    {
+        if ($this->profile_photo_path) {
+            return asset('storage/' . $this->profile_photo_path);
+        }
+        
+        // Photo par défaut basée sur le type de compte
+        $defaultPhotos = [
+            'staff' => 'images/default-staff.png',
+            'teacher' => 'images/default-teacher.png',
+            'student' => 'images/default-student.png',
+        ];
+        
+        return asset($defaultPhotos[$this->account_type] ?? 'images/default-user.png');
+    }
+
+    // Accessor pour vérifier si l'utilisateur est en ligne (à implémenter selon vos besoins)
+    public function getIsOnlineAttribute()
+    {
+        // Logique pour déterminer si l'utilisateur est en ligne
+        // Par exemple, basé sur la dernière activité
+        return $this->last_login_at && $this->last_login_at->diffInMinutes() < 15;
+    }
+
+    // Méthodes pour vérifier les niveaux de rôles
+    public function hasRoleLevel(string $level): bool 
+    {
         return $this->roles()->where('level', $level)->exists();
     }
-// Relations
+
+    // Relations pour la traçabilité
     public function validator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'validated_by');
@@ -76,6 +110,7 @@ class User extends Authenticatable
         return $this->belongsTo(User::class, 'finalized_by');
     }
 
+    // Relations académiques
     public function academies(): BelongsToMany
     {
         return $this->belongsToMany(Academy::class)->withPivot('role')->withTimestamps();
@@ -101,9 +136,26 @@ class User extends Authenticatable
         return $this->hasMany(Department::class, 'head_id');
     }
 
+    // Relations pour les enseignants
+    public function teacherProfile(): HasOne
+    {
+        return $this->hasOne(Teacher::class, 'user_id');
+    }
+
     public function teacherAssignations(): HasMany
     {
         return $this->hasMany(Assignation::class, 'teacher_id');
+    }
+
+    public function timetableSlots(): HasMany
+    {
+        return $this->hasMany(Slot::class, 'teacher_id');
+    }
+
+    // Relations pour les étudiants
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class, 'user_id');
     }
 
     public function enrollments(): HasMany
@@ -121,6 +173,13 @@ class User extends Authenticatable
         return $this->hasMany(Note::class, 'student_id');
     }
 
+    // Relations pour le personnel
+    public function staff(): HasMany
+    {
+        return $this->hasMany(Staff::class, 'user_id');
+    }
+
+    // Relations générales
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class, 'author_id');
@@ -136,35 +195,93 @@ class User extends Authenticatable
         return $this->hasMany(CityAssignment::class, 'user_id');
     }
 
-    public function staff(): HasMany
-    {
-        return $this->hasMany(Staff::class, 'user_id');
-    }
-
-    public function teachers(): HasMany
-    {
-        return $this->hasMany(Teacher::class, 'user_id');
-    }
-
-    public function students(): HasMany
-    {
-        return $this->hasMany(Student::class, 'user_id');
-    }
-
-    public function timetableSlots(): HasMany
-    {
-        return $this->hasMany(Slot::class, 'teacher_id');
-    }
-
     public function histories(): HasMany
     {
         return $this->hasMany(History::class, 'user_id');
     }
-    /**
-     * Relation avec le modèle Student (un utilisateur a un profil étudiant)
-     */
-    public function student(): HasOne
+
+    // Scopes pour faciliter les requêtes
+    public function scopeActive($query)
     {
-        return $this->hasOne(Student::class);
+        return $query->where('status', self::STATUS_ACTIVE);
+    }
+
+    public function scopeByAccountType($query, $type)
+    {
+        return $query->where('account_type', $type);
+    }
+
+    public function scopeStaff($query)
+    {
+        return $query->where('account_type', 'staff');
+    }
+
+    public function scopeTeachers($query)
+    {
+        return $query->where('account_type', 'teacher');
+    }
+
+    public function scopeStudents($query)
+    {
+        return $query->where('account_type', 'student');
+    }
+
+    public function scopePendingValidation($query)
+    {
+        return $query->where('status', self::STATUS_PENDING_VALIDATION);
+    }
+
+    public function scopePendingContract($query)
+    {
+        return $query->where('status', self::STATUS_PENDING_CONTRACT);
+    }
+
+    // Méthodes utilitaires
+    public function isStaff(): bool
+    {
+        return $this->account_type === 'staff';
+    }
+
+    public function isTeacher(): bool
+    {
+        return $this->account_type === 'teacher';
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->account_type === 'student';
+    }
+
+    public function canBeDeleted(): bool
+    {
+        // Un utilisateur peut être supprimé s'il n'a pas de dépendances critiques
+        return !$this->directedAcademies()->exists() 
+            && !$this->directedCenters()->exists() 
+            && !$this->headedDepartments()->exists();
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        $labels = [
+            self::STATUS_PENDING_VALIDATION => 'En attente de validation',
+            self::STATUS_PENDING_CONTRACT => 'En attente de contrat',
+            self::STATUS_ACTIVE => 'Actif',
+            self::STATUS_SUSPENDED => 'Suspendu',
+            self::STATUS_REJECTED => 'Rejeté',
+            self::STATUS_ARCHIVED => 'Archivé',
+        ];
+
+        return $labels[$this->status] ?? 'Statut inconnu';
+    }
+
+    public function getAccountTypeLabelAttribute(): string
+    {
+        $labels = [
+            'staff' => 'Personnel',
+            'teacher' => 'Enseignant',
+            'student' => 'Étudiant',
+        ];
+
+        return $labels[$this->account_type] ?? 'Type inconnu';
     }
 }

@@ -48,8 +48,8 @@ class AdminUserSeeder extends Seeder
         $nationalUsers = [
             [
                 'role' => 'pca',
-                'first_name' => 'Président',
-                'last_name' => 'Conseil Administration',
+                'first_name' => 'William',
+                'last_name' => 'WAMBA',
                 'email' => 'pca@ima-icorp.com',
                 'phone_number' => '+237698000001',
                 'city' => 'YAOUNDE',

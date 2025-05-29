@@ -1,551 +1,971 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Académies')
+@section('title', 'Gestion du Personnel')
 
 @section('content')
-    <!-- Fil d'Ariane -->
-    <nav class="flex mb-5 text-sm" aria-label="Breadcrumb">
-        <ol class="inline-flex items-center space-x-1 md:space-x-3">
-            <li class="inline-flex items-center">
-                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center text-gray-600 hover:text-[#4CA3DD]">
-                    <i class="fas fa-home mr-2"></i> Accueil
+    <div class="staff-dashboard">
+        <!-- En-tête de page avec actions principales -->
+        <div class="page-header">
+            <div class="header-content">
+                <div class="breadcrumb">
+                    <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}">
+                        <i class="fas fa-home"></i>
+                    </a>
+                    <i class="fas fa-chevron-right"></i>
+                    {{-- Assurez-vous que cette route existe, ou ajustez le lien --}}
+                    <a href="#"> 
+                        Administration
+                    </a>
+                    <i class="fas fa-chevron-right"></i>
+                    <span>Personnel</span>
+                </div>
+                <h1 class="page-title">Gestion du Personnel</h1>
+                <p class="page-description">Gérez tout le personnel administratif du système avec leurs rôles et permissions.</p>
+            </div>
+            <div class="header-actions">
+                @can('staff.create') {{-- Vérification de permission --}}
+                <a href="{{ route('admin.staff.create', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Ajouter un membre du personnel</span>
                 </a>
-            </li>
-            <li aria-current="page">
-                <div class="flex items-center">
-                    <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-                    <span class="text-[#4CA3DD] font-medium">Académies</span>
-                </div>
-            </li>
-        </ol>
-    </nav>
-
-    <!-- En-tête de page -->
-    <div class="mb-6">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-            <h1 class="text-2xl font-bold text-gray-800 mb-3 md:mb-0">
-                <i class="fas fa-university text-[#4CA3DD] mr-2"></i>Gestion des Académies
-            </h1>
-            <div class="flex items-center space-x-2">
-                <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                   class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                    <i class="fas fa-plus mr-2"></i> Ajouter une académie
-                </a>
+                @endcan
             </div>
         </div>
 
-        <p class="text-gray-600 mb-6">Gérez les académies, leurs informations et leurs paramètres.</p>
-    </div>
+        <!-- Statistiques en une seule ligne -->
+        <div class="stats-container">
+            <div class="stats-card">
+                <div class="stats-icon primary">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <div class="stats-content">
+                    {{-- Utilisation de la variable $stats du contrôleur --}}
+                    <h3 class="stats-value">{{ $stats['total'] ?? 0 }}</h3>
+                    <p class="stats-label">Total Personnel</p>
+                </div>
+                <div class="stats-trend">
+                    <div class="progress-bar primary" style="width: 100%"></div>
+                </div>
+            </div>
 
-    <!-- Section des statistiques -->
-    <div class="stats-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon primary bg-blue-100 text-[#4CA3DD] p-3 rounded-full">
-                    <i class="fas fa-university"></i>
+            <div class="stats-card">
+                <div class="stats-icon success">
+                    <i class="fas fa-user-check"></i>
                 </div>
-                <span class="text-sm text-gray-500">Total</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->total() ?? count($academies) }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies</p>
-            </div>
-            <div class="stats-trend mt-3">
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-[#4CA3DD]" style="width: 100%"></div>
+                <div class="stats-content">
+                    <h3 class="stats-value">{{ $stats['active'] ?? 0 }}</h3>
+                    <p class="stats-label">Personnel Actif</p>
+                </div>
+                <div class="stats-trend">
+                    @php
+                        $activePercentage = ($stats['total'] > 0) ? ($stats['active'] / $stats['total']) * 100 : 0;
+                    @endphp
+                    <div class="progress-bar success" style="width: {{ round($activePercentage) }}%"></div>
                 </div>
             </div>
-        </div>
 
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon success bg-green-100 text-green-600 p-3 rounded-full">
-                    <i class="fas fa-check-circle"></i>
+            <div class="stats-card">
+                <div class="stats-icon info">
+                    <i class="fas fa-user-shield"></i> {{-- Peut-être fas fa-tags pour les rôles ? --}}
                 </div>
-                <span class="text-sm text-gray-500">Actives</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('is_active', true)->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies actives</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $activePercentage = ($academies->total() > 0) ? ($academies->where('is_active', true)->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-green-500" style="width: {{ $activePercentage }}%"></div>
+                <div class="stats-content">
+                    {{-- $roles est une collection des modèles Role passés au filtre --}}
+                    <h3 class="stats-value">{{ $roles->count() }}</h3>
+                    <p class="stats-label">Rôles Administratifs Disponibles</p>
+                </div>
+                <div class="stats-trend">
+                    <div class="progress-bar info" style="width: 100%"></div>
                 </div>
             </div>
-        </div>
 
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon warning bg-blue-100 text-blue-600 p-3 rounded-full">
-                    <i class="fas fa-language"></i>
+            <div class="stats-card">
+                <div class="stats-icon warning">
+                    <i class="fas fa-key"></i> {{-- Ou fas fa-layer-group pour multi-rôles --}}
                 </div>
-                <span class="text-sm text-gray-500">Françaises</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('lang', 'FR')->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies francophones</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $frPercentage = ($academies->total() > 0) ? ($academies->where('lang', 'FR')->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-blue-500" style="width: {{ $frPercentage }}%"></div>
+                <div class="stats-content">
+                    {{-- Calcul des utilisateurs avec plus d'un rôle (nécessite de charger la relation roles) --}}
+                    <h3 class="stats-value">{{ $staffMembers->filter(fn($user) => $user->roles->count() > 1)->count() }}</h3>
+                    <p class="stats-label">Multi-rôles</p>
+                </div>
+                <div class="stats-trend">
+                     @php
+                        $multiRoleCount = $staffMembers->filter(fn($user) => $user->roles->count() > 1)->count();
+                        $multiRolePercentage = ($stats['total'] > 0) ? ($multiRoleCount / $stats['total']) * 100 : 0;
+                    @endphp
+                    <div class="progress-bar warning" style="width: {{ round($multiRolePercentage) }}%"></div>
                 </div>
             </div>
         </div>
 
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon info bg-red-100 text-red-600 p-3 rounded-full">
-                    <i class="fas fa-globe-americas"></i>
-                </div>
-                <span class="text-sm text-gray-500">Anglaises</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('lang', 'EN')->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies anglophones</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $enPercentage = ($academies->total() > 0) ? ($academies->where('lang', 'EN')->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-red-500" style="width: {{ $enPercentage }}%"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Barre de recherche et filtres -->
-    <div class="mb-6 bg-white p-4 rounded-lg shadow">
-        <div class="flex flex-col md:flex-row md:items-end gap-4">
-            <div class="flex-grow">
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
-                    </div>
-                    <input type="text" id="search" name="search"
-                           class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#4CA3DD] focus:border-[#4CA3DD]"
-                           placeholder="Rechercher une académie...">
-                </div>
-            </div>
-            <div>
-                <label for="language-filter" class="block text-sm font-medium text-gray-700 mb-1">Langue</label>
-                <select id="language-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#4CA3DD] focus:border-[#4CA3DD]">
-                    <option value="all">Toutes les langues</option>
-                    <option value="FR">Français</option>
-                    <option value="EN">Anglais</option>
-                </select>
-            </div>
-            <div>
-                <button type="button" id="reset-filters" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    <i class="fas fa-redo-alt mr-1"></i> Réinitialiser
+        <!-- Filtres avancés -->
+        <div class="card filter-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-filter"></i>Filtres
+                </h2>
+                <button class="btn btn-icon filter-toggle" type="button">
+                    <i class="fas fa-chevron-up"></i>
                 </button>
             </div>
-        </div>
-    </div>
-
-    <!-- Messages de succès ou d'erreur -->
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm flex items-start" role="alert">
-            <i class="fas fa-check-circle text-green-500 mt-0.5 mr-3 text-lg"></i>
-            <div>
-                <p class="font-medium">{{ session('success') }}</p>
-            </div>
-            <button class="ml-auto text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow-sm flex items-start" role="alert">
-            <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3 text-lg"></i>
-            <div>
-                <p class="font-medium">{{ session('error') }}</p>
-            </div>
-            <button class="ml-auto text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    @endif
-
-    <!-- Liste des académies - Version desktop -->
-    <div class="bg-white rounded-lg shadow overflow-hidden hidden md:block">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-            <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Nom de l'académie
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
-                    </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Langue
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
-                    </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Date de création
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
-                    </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                </th>
-            </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-            @forelse ($academies as $academy)
-                <tr class="hover:bg-gray-50 transition duration-150">
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-[#4CA3DD]/10 text-[#4CA3DD]">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">
-                                    {{ $academy->name }}
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    Code: {{ $academy->code ?? 'Non défini' }}
-                                </div>
+            <div class="card-body filter-body">
+                <form action="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" method="GET" id="filterForm">
+                    <div class="filter-grid">
+                        <div class="form-group">
+                            <label for="role">
+                                <i class="fas fa-user-tag"></i>Rôle
+                            </label>
+                            <div class="select-wrapper">
+                                <select id="role" name="role" class="form-control">
+                                    <option value="">Tous les rôles</option>
+                                    @foreach($roles as $role) {{-- $roles vient du contrôleur --}}
+                                        <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
+                                            {{ ucfirst(str_replace(['-', '_'], ' ', $role->name)) }} {{-- Amélioration affichage nom rôle --}}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <i class="fas fa-chevron-down"></i>
                             </div>
                         </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm text-gray-500 max-w-xs overflow-hidden text-ellipsis">
-                            {{ Str::limit($academy->description, 50) ?? '—' }}
+
+                        <div class="form-group">
+                            <label for="status">
+                                <i class="fas fa-user-shield"></i>Statut
+                            </label>
+                            <div class="select-wrapper">
+                                <select id="status" name="status" class="form-control">
+                                    <option value="">Tous les statuts</option>
+                                    <option value="{{ \App\Models\User::STATUS_ACTIVE }}" {{ request('status') == \App\Models\User::STATUS_ACTIVE ? 'selected' : '' }}>Actif</option>
+                                    <option value="{{ \App\Models\User::STATUS_SUSPENDED }}" {{ request('status') == \App\Models\User::STATUS_SUSPENDED ? 'selected' : '' }}>Suspendu</option>
+                                    <option value="{{ \App\Models\User::STATUS_ARCHIVED }}" {{ request('status') == \App\Models\User::STATUS_ARCHIVED ? 'selected' : '' }}>Archivé</option>
+                                    {{-- Ajoutez d'autres statuts si pertinents pour le personnel --}}
+                                </select>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
                         </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        @if($academy->lang === 'FR')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                    Français
-                                </span>
-                        @elseif($academy->lang === 'EN')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    Anglais
-                                </span>
-                        @else
-                            <span class="text-gray-500">—</span>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div class="flex items-center">
-                            <i class="far fa-calendar-alt mr-2 text-gray-400"></i>
-                            {{ $academy->created_at->format('d/m/Y') }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div class="flex justify-end space-x-3">
-                            <a href="{{ route('admin.academies.show', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                               class="text-[#4CA3DD] hover:text-[#2A7AB8] bg-[#4CA3DD]/10 p-2 rounded-full" title="Voir">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('admin.academies.edit', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                               class="text-amber-600 hover:text-amber-800 bg-amber-100 p-2 rounded-full" title="Modifier">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <form action="{{ route('admin.academies.destroy', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                                  method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800 bg-red-100 p-2 rounded-full" title="Supprimer"
-                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette académie ?')">
-                                    <i class="fas fa-trash"></i>
+
+                        <div class="form-group"> {{-- Fin du div précédent manquant --}}
+                            <label for="search">
+                                <i class="fas fa-search"></i>Recherche
+                            </label>
+                            <div class="search-wrapper">
+                                <input type="text" id="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Nom, email ou téléphone...">
+                                <button type="button" class="search-clear" {{ request('search') ? '' : 'style=display:none;' }}>
+                                    <i class="fas fa-times"></i>
                                 </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-8 whitespace-nowrap text-center text-gray-500">
-                        <div class="flex flex-col items-center justify-center">
-                            <div class="bg-gray-100 rounded-full p-4 mb-4">
-                                <i class="fas fa-university text-gray-400 text-5xl"></i>
+                                <button type="submit" class="search-button">
+                                    <i class="fas fa-search"></i>
+                                </button>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-1">Aucune académie</h3>
-                            <p class="text-gray-500 mb-4">Vous n'avez pas encore enregistré d'académie.</p>
-                            <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                               class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                                <i class="fas fa-plus mr-2"></i> Créer une académie
-                            </a>
                         </div>
-                    </td>
-                </tr>
-            @endforelse
-            </tbody>
-        </table>
+                    </div> {{-- Fin de filter-grid --}}
 
-        <!-- Pagination améliorée -->
-        @if($academies->hasPages())
-            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 px-6 py-4 bg-white border-t border-gray-200">
-                <div class="pagination-info mb-4 sm:mb-0">
-                    Affichage de <span>{{ $academies->firstItem() ?? 0 }}</span> à <span>{{ $academies->lastItem() ?? 0 }}</span> sur <span>{{ $academies->total() }}</span> académies
-                </div>
-                <div class="pagination-controls">
-                    {{ $academies->links('vendor.pagination.tailwind') }}
-                </div>
-            </div>
-        @endif
-    </div>
-
-    <!-- Liste des académies - Version mobile -->
-    <div class="block md:hidden space-y-4">
-        @forelse ($academies as $academy)
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-[#4CA3DD]/10 text-[#4CA3DD]">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="ml-3">
-                                <h3 class="text-sm font-medium text-gray-900">{{ $academy->name }}</h3>
-                                <p class="text-xs text-gray-500">Code: {{ $academy->code ?? 'Non défini' }}</p>
-                            </div>
-                        </div>
-                        @if($academy->lang === 'FR')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                FR
-                            </span>
-                        @elseif($academy->lang === 'EN')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                EN
-                            </span>
-                        @endif
-                    </div>
-                </div>
-                <div class="px-4 py-3 bg-gray-50 text-xs">
-                    <div class="grid grid-cols-1">
-                        <div class="mb-2">
-                            <span class="font-medium text-gray-500">Description:</span>
-                            <span class="ml-2 text-gray-900">{{ Str::limit($academy->description, 50) ?? '—' }}</span>
-                        </div>
-                        <div class="mb-2">
-                            <span class="font-medium text-gray-500">Date de création:</span>
-                            <span class="ml-2 text-gray-900">{{ $academy->created_at->format('d/m/Y') }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-4 py-3 border-t border-gray-200 flex justify-between">
-                    <a href="{{ route('admin.academies.show', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                       class="inline-flex items-center px-3 py-1 bg-[#4CA3DD]/10 text-[#4CA3DD] rounded-md">
-                        <i class="fas fa-eye mr-1 text-xs"></i> Voir
-                    </a>
-                    <a href="{{ route('admin.academies.edit', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                       class="inline-flex items-center px-3 py-1 bg-amber-100 text-amber-600 rounded-md">
-                        <i class="fas fa-edit mr-1 text-xs"></i> Modifier
-                    </a>
-                    <form action="{{ route('admin.academies.destroy', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                          method="POST" class="inline-block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-100 text-red-600 rounded-md"
-                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette académie ?')">
-                            <i class="fas fa-trash mr-1 text-xs"></i> Supprimer
+                    <div class="filter-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-filter"></i> Appliquer les filtres
                         </button>
-                    </form>
-                </div>
-            </div>
-        @empty
-            <div class="bg-white rounded-lg shadow p-6 text-center">
-                <div class="flex flex-col items-center justify-center">
-                    <div class="bg-gray-100 rounded-full p-4 mb-4">
-                        <i class="fas fa-university text-gray-400 text-4xl"></i>
+                        <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="btn btn-light">
+                            <i class="fas fa-redo-alt"></i> Réinitialiser
+                        </a>
                     </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-1">Aucune académie</h3>
-                    <p class="text-gray-500 mb-4">Vous n'avez pas encore enregistré d'académie.</p>
-                    <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                       class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                        <i class="fas fa-plus mr-2"></i> Créer une académie
-                    </a>
+                </form>
+            </div>
+        </div>
+
+        <!-- Liste du personnel -->
+        <div class="card data-card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    <i class="fas fa-users-cog"></i>Liste du personnel
+                </h2>
+                <div class="view-actions">
+                    <div class="view-switcher">
+                        <button type="button" class="btn btn-icon active" id="tableViewBtn" title="Vue tableau">
+                            <i class="fas fa-list"></i>
+                        </button>
+                        <button type="button" class="btn btn-icon" id="cardViewBtn" title="Vue cartes">
+                            <i class="fas fa-th-large"></i>
+                        </button>
+                    </div>
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-download"></i> Exporter
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="exportDropdown">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-csv text-primary"></i>CSV</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel text-success"></i>Excel</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf text-danger"></i>PDF</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        @endforelse
 
-        <!-- Pagination pour mobile -->
-        @if($academies->hasPages())
-            <div class="bg-white rounded-lg shadow p-4 my-4">
-                {{ $academies->links('vendor.pagination.tailwind') }}
+            <div class="card-body p-0">
+                <!-- Vue tableau -->
+                <div class="table-view">
+                    <div class="table-responsive">
+                        <table class="table staff-table table-hover"> {{-- Ajout de table-hover pour une meilleure UX --}}
+                            <thead>
+                            <tr>
+                                {{-- Pour le tri, vous aurez besoin de JS ou de passer des paramètres d'URL --}}
+                                <th class="sortable" data-sort="name">
+                                    <span>Membre du Personnel</span>
+                                    {{-- <i class="fas fa-sort"></i> --}}
+                                </th>
+                                <th>Contact</th>
+                                <th>Rôles & Permissions</th>
+                                <th class="sortable" data-sort="status">
+                                    <span>Statut</span>
+                                    {{-- <i class="fas fa-sort"></i> --}}
+                                </th>
+                                <th class="sortable" data-sort="last_login">
+                                    <span>Dernière connexion</span>
+                                    {{-- <i class="fas fa-sort"></i> --}}
+                                </th>
+                                <th class="text-end">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse ($staffMembers as $staffUser) {{-- La variable est $staffUser dans le contrôleur pour User --}}
+                                <tr>
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                {{-- Assurez-vous que profile_photo_url est défini dans le modèle User si vous utilisez Laravel Jetstream/Fortify ou une logique similaire --}}
+                                                <img src="{{ $staffUser->profile_photo_url ?? asset('path/to/default-avatar.png') }}" alt="{{ $staffUser->first_name }}" class="avatar">
+                                                {{-- La logique 'is_online' n'est pas standard, vous devez l'implémenter si besoin --}}
+                                                {{-- <span class="user-status {{ $staffUser->is_online ? 'online' : 'offline' }}"></span> --}}
+                                            </div>
+                                            <div class="user-details">
+                                                <a href="{{ route('admin.staff.show', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" class="user-name-link">{{ $staffUser->first_name }} {{ $staffUser->last_name }}</a>
+                                                <div class="user-date">
+                                                    <span class="badge date-badge">
+                                                        <i class="fas fa-user-cog"></i>Personnel
+                                                    </span>
+                                                    <span class="badge date-badge">
+                                                        <i class="far fa-calendar-alt"></i>Créé le: {{ $staffUser->created_at->format('d/m/Y') }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="user-contact">
+                                            <div class="contact-item">
+                                                <i class="fas fa-envelope"></i>
+                                                <a href="mailto:{{ $staffUser->email }}">{{ $staffUser->email }}</a>
+                                            </div>
+                                            <div class="contact-item">
+                                                <i class="fas fa-phone-alt"></i>
+                                                <span>{{ $staffUser->phone_number ?? 'N/A' }}</span>
+                                            </div>
+                                            @if($staffUser->city)
+                                                <div class="contact-item">
+                                                    <i class="fas fa-map-marker-alt"></i>
+                                                    <span>{{ $staffUser->city }}</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="roles-permissions">
+                                            <div class="role-badges">
+                                                @forelse($staffUser->roles as $role)
+                                                    @php
+                                                        $roleColors = [
+                                                            'pca' => 'purple', 'cn' => 'purple-dark', 'dg' => 'blue-dark', 'sg' => 'green-dark',
+                                                            'da' => 'orange', 'rl' => 'teal', 'df-n' => 'red-dark', 'dl-n' => 'indigo-dark',
+                                                            'ddo' => 'blue', 'sup' => 'cyan', 'df-v' => 'red', 'dl-v' => 'indigo',
+                                                            'af' => 'pink', 'ra-v' => 'lime',
+                                                            'cc' => 'sky', 'ra-c' => 'yellow', 'rf-c' => 'rose', 'rl-c' => 'fuchsia',
+                                                            'pc' => 'gray', 'cd-n' => 'emerald', 'cd-v' => 'amber',
+                                                            // Ajoutez d'autres rôles et couleurs
+                                                        ];
+                                                        $roleColorClass = $roleColors[strtolower($role->name)] ?? 'primary'; // default to primary
+                                                    @endphp
+                                                    <span class="role-badge {{ $roleColorClass }}">{{ ucfirst(str_replace(['-', '_'], ' ', $role->name)) }}</span>
+                                                @empty
+                                                    <span class="text-muted fst-italic">Aucun rôle</span>
+                                                @endforelse
+                                            </div>
+                                            @if($staffUser->getDirectPermissions()->isNotEmpty()) {{-- isNotEmpty() est plus idiomatique --}}
+                                                <div class="permissions-info" title="{{ $staffUser->getDirectPermissions()->pluck('name')->join(', ') }}">
+                                                    <i class="fas fa-key text-warning"></i>
+                                                    <span class="text-muted">{{ $staffUser->getDirectPermissions()->count() }} permission(s) directe(s)</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @php
+                                            $statusInfo = [
+                                                \App\Models\User::STATUS_ACTIVE => ['class' => 'success', 'icon' => 'check-circle', 'text' => 'Actif'],
+                                                \App\Models\User::STATUS_SUSPENDED => ['class' => 'danger', 'icon' => 'ban', 'text' => 'Suspendu'],
+                                                \App\Models\User::STATUS_ARCHIVED => ['class' => 'dark', 'icon' => 'archive', 'text' => 'Archivé'],
+                                                // Ajoutez d'autres statuts ici si nécessaire pour le personnel
+                                            ];
+                                            $currentStatus = $statusInfo[$staffUser->status] ?? ['class' => 'secondary', 'icon' => 'question-circle', 'text' => ucfirst(str_replace('_', ' ', $staffUser->status))];
+                                        @endphp
+                                        <div class="status-badge {{ $currentStatus['class'] }}">
+                                            <i class="fas fa-{{ $currentStatus['icon'] }}"></i>
+                                            <span>{{ $currentStatus['text'] }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="login-info">
+                                            @if($staffUser->last_login_at)
+                                                <div class="login-time" title="{{ $staffUser->last_login_at->isoFormat('LLLL') }}">
+                                                    <i class="far fa-clock"></i>
+                                                    {{ $staffUser->last_login_at->diffForHumans() }}
+                                                </div>
+                                                @if($staffUser->last_login_at->diffInDays() < 7)
+                                                    <span class="recent-badge">récent</span>
+                                                @endif
+                                            @else
+                                                <div class="login-time never">
+                                                    <i class="fas fa-power-off text-muted"></i>
+                                                    <span class="text-muted">Jamais</span>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="action-buttons">
+                                            @can('staff.view', $staffUser)
+                                            <a href="{{ route('admin.staff.show', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" class="btn-action view" title="Voir le profil">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @endcan
+                                            @can('staff.update', $staffUser)
+                                            <a href="{{ route('admin.staff.edit', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" class="btn-action edit" title="Modifier">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            @endcan
+                                            <div class="dropdown d-inline-block">
+                                                <button class="btn-action more" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Plus d'options">
+                                                    <i class="fas fa-ellipsis-v"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    @can('staff.manage_permissions', $staffUser) {{-- Adaptez le nom de la permission --}}
+                                                    <li>
+                                                        {{-- La route pour updateDirectPermissions prend $staffUser en paramètre --}}
+                                                        <a class="dropdown-item" href="{{ route('admin.staff.show', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id, 'tab' => 'permissions']) }}"> {{-- Onglet sur la page show --}}
+                                                            <i class="fas fa-key text-primary me-2"></i>Gérer les permissions
+                                                        </a>
+                                                    </li>
+                                                    @endcan
+                                                    <li>
+                                                        <a class="dropdown-item" href="#"> {{-- Lien à définir --}}
+                                                            <i class="fas fa-history text-info me-2"></i>Historique
+                                                        </a>
+                                                    </li>
+                                                    {{-- <li><hr class="dropdown-divider"></li> --}}
+                                                    @if($staffUser->status === \App\Models\User::STATUS_ACTIVE)
+                                                        @can('staff.update', $staffUser) {{-- Ou une permission plus spécifique comme 'staff.suspend' --}}
+                                                        <li>
+                                                            {{-- Formulaire pour changer le statut (par exemple, suspendre) --}}
+                                                            <form action="{{ route('admin.staff.update', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" method="POST" class="dropdown-form">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <input type="hidden" name="status_action" value="suspend"> {{-- Pour identifier l'action dans le contrôleur --}}
+                                                                <input type="hidden" name="status" value="{{ \App\Models\User::STATUS_SUSPENDED }}">
+                                                                <button type="submit" class="dropdown-item text-warning">
+                                                                    <i class="fas fa-user-clock me-2"></i>Suspendre
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                        @endcan
+                                                    @elseif($staffUser->status === \App\Models\User::STATUS_SUSPENDED)
+                                                         @can('staff.update', $staffUser) {{-- Ou 'staff.reactivate' --}}
+                                                        <li>
+                                                            <form action="{{ route('admin.staff.update', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" method="POST" class="dropdown-form">
+                                                                @csrf
+                                                                @method('PUT')
+                                                                <input type="hidden" name="status_action" value="reactivate">
+                                                                <input type="hidden" name="status" value="{{ \App\Models\User::STATUS_ACTIVE }}">
+                                                                <button type="submit" class="dropdown-item text-success">
+                                                                    <i class="fas fa-user-check me-2"></i>Réactiver
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                        @endcan
+                                                    @endif
+                                                    @if(auth()->id() !== $staffUser->id)
+                                                        @can('staff.delete', $staffUser)
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li>
+                                                            <form action="{{ route('admin.staff.destroy', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" method="POST" class="dropdown-form delete-form">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="dropdown-item text-danger">
+                                                                    <i class="fas fa-trash me-2"></i>Supprimer
+                                                                </button>
+                                                            </form>
+                                                        </li>
+                                                        @endcan
+                                                    @endif
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="empty-state">
+                                            <div class="empty-icon">
+                                                <i class="fas fa-users-slash"></i>
+                                            </div>
+                                            <h4>Aucun membre du personnel trouvé</h4>
+                                            <p>Essayez de modifier vos filtres ou <a href="{{ route('admin.staff.create', ['locale' => app()->getLocale()]) }}">d'ajouter un nouveau membre du personnel</a>.</p>
+                                            <div class="empty-actions">
+                                                <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="btn btn-light">
+                                                    <i class="fas fa-redo-alt"></i>Réinitialiser les filtres
+                                                </a>
+                                                @can('staff.create')
+                                                <a href="{{ route('admin.staff.create', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">
+                                                    <i class="fas fa-user-plus"></i>Ajouter un membre
+                                                </a>
+                                                @endcan
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Vue cartes -->
+                <div class="card-view" style="display: none;">
+                    <div class="staff-cards">
+                        @forelse ($staffMembers as $staffUser)
+                            <div class="staff-card">
+                                <div class="staff-card-header">
+                                    <div class="staff-card-avatar">
+                                        <img src="{{ $staffUser->profile_photo_url ?? asset('path/to/default-avatar.png') }}" alt="{{ $staffUser->first_name }}">
+                                        {{-- <span class="user-status {{ $staffUser->is_online ? 'online' : 'offline' }}"></span> --}}
+                                    </div>
+                                    <div class="staff-card-info">
+                                        <h3 class="staff-card-name">
+                                            <a href="{{ route('admin.staff.show', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}">{{ $staffUser->first_name }} {{ $staffUser->last_name }}</a>
+                                        </h3>
+                                        <div class="staff-card-roles">
+                                            @foreach($staffUser->roles as $role)
+                                                @php
+                                                    $roleColors = [ /* ... vos couleurs ... */ ];
+                                                    $roleColorClass = $roleColors[strtolower($role->name)] ?? 'primary';
+                                                @endphp
+                                                <span class="role-badge small {{ $roleColorClass }}">{{ ucfirst(str_replace(['-', '_'], ' ', $role->name)) }}</span>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                    <div class="staff-card-status">
+                                        @php
+                                            $statusInfoCard = [
+                                                \App\Models\User::STATUS_ACTIVE => ['class' => 'success', 'icon' => 'check-circle', 'text' => 'Actif'],
+                                                \App\Models\User::STATUS_SUSPENDED => ['class' => 'danger', 'icon' => 'ban', 'text' => 'Suspendu'],
+                                                \App\Models\User::STATUS_ARCHIVED => ['class' => 'dark', 'icon' => 'archive', 'text' => 'Archivé'],
+                                            ];
+                                            $currentStatusCard = $statusInfoCard[$staffUser->status] ?? ['class' => 'secondary', 'icon' => 'question-circle'];
+                                        @endphp
+                                        <span class="status-indicator {{ $currentStatusCard['class'] }}" title="{{ $currentStatusCard['text'] ?? ucfirst(str_replace('_', ' ', $staffUser->status)) }}">
+                                            <i class="fas fa-{{ $currentStatusCard['icon'] }}"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="staff-card-body">
+                                    <div class="staff-card-detail">
+                                        <i class="fas fa-envelope"></i>
+                                        <a href="mailto:{{ $staffUser->email }}">{{ $staffUser->email }}</a>
+                                    </div>
+                                    <div class="staff-card-detail">
+                                        <i class="fas fa-phone-alt"></i>
+                                        <span>{{ $staffUser->phone_number ?? 'N/A' }}</span>
+                                    </div>
+                                    @if($staffUser->city)
+                                        <div class="staff-card-detail">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>{{ $staffUser->city }}</span>
+                                        </div>
+                                    @endif
+                                    @if($staffUser->getDirectPermissions()->isNotEmpty())
+                                        <div class="staff-card-detail" title="{{ $staffUser->getDirectPermissions()->pluck('name')->join(', ') }}">
+                                            <i class="fas fa-key"></i>
+                                            <span>{{ $staffUser->getDirectPermissions()->count() }} permission(s) directe(s)</span>
+                                        </div>
+                                    @endif
+                                    <div class="staff-card-detail">
+                                        <i class="far fa-calendar-alt"></i>
+                                        <span>Créé le {{ $staffUser->created_at->format('d/m/Y') }}</span>
+                                    </div>
+                                    <div class="staff-card-detail">
+                                        <i class="far fa-clock"></i>
+                                        <span>
+                                            @if($staffUser->last_login_at)
+                                                Dern. con. {{ $staffUser->last_login_at->diffForHumans() }}
+                                                @if($staffUser->last_login_at->diffInDays() < 7)
+                                                    <span class="recent-badge small">récent</span>
+                                                @endif
+                                            @else
+                                                <span class="text-muted">Jamais connecté</span>
+                                            @endif
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="staff-card-footer">
+                                     @can('staff.view', $staffUser)
+                                    <a href="{{ route('admin.staff.show', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" class="staff-card-btn view" title="Voir le profil">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @endcan
+                                     @can('staff.update', $staffUser)
+                                    <a href="{{ route('admin.staff.edit', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" class="staff-card-btn edit" title="Modifier">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    @endcan
+                                    <div class="dropdown">
+                                        <button class="staff-card-btn more" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Plus d'options">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end">
+                                            {{-- ... Mêmes options que dans la table ... --}}
+                                             @can('staff.manage_permissions', $staffUser)
+                                            <li>
+                                                <a class="dropdown-item" href="{{ route('admin.staff.show', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id, 'tab' => 'permissions']) }}">
+                                                    <i class="fas fa-key text-primary me-2"></i>Gérer les permissions
+                                                </a>
+                                            </li>
+                                            @endcan
+                                            @if(auth()->id() !== $staffUser->id)
+                                                @can('staff.delete', $staffUser)
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <form action="{{ route('admin.staff.destroy', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id]) }}" method="POST" class="dropdown-form delete-form">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="dropdown-item text-danger">
+                                                            <i class="fas fa-trash me-2"></i>Supprimer
+                                                        </button>
+                                                    </form>
+                                                </li>
+                                                @endcan
+                                            @endif
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="empty-state w-100"> {{-- w-100 pour prendre toute la largeur de la grille --}}
+                                <div class="empty-icon">
+                                    <i class="fas fa-users-slash"></i>
+                                </div>
+                                <h4>Aucun membre du personnel trouvé</h4>
+                                <p>Essayez de modifier vos filtres ou <a href="{{ route('admin.staff.create', ['locale' => app()->getLocale()]) }}">d'ajouter un nouveau membre du personnel</a>.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
             </div>
-        @endif
+
+            @if($staffMembers->hasPages())
+                <div class="card-footer">
+                    <div class="pagination-info">
+                        Affichage de <span>{{ $staffMembers->firstItem() ?? 0 }}</span> à <span>{{ $staffMembers->lastItem() ?? 0 }}</span> sur <span>{{ $staffMembers->total() }}</span> membres du personnel
+                    </div>
+                    <div class="pagination-controls">
+                        {{-- Pagination avec les paramètres de filtre actuels --}}
+                        {{ $staffMembers->appends(request()->query())->links() }}
+                    </div>
+                </div>
+            @endif
+        </div>
     </div>
 
-    <!-- Styles pour la pagination -->
-    @push('styles')
-        <style>
-            /* Style pour l'info de pagination */
-            .pagination-info {
-                font-size: 0.875rem;
-                color: #64748B;
-            }
+    <!-- Styles spécifiques au personnel (inchangés, mais vérifiez les couleurs) -->
+    <style>
+        /* ... Vos styles existants ... */
+        .role-badge { /* Style de base pour les badges de rôle */
+            padding: 0.25em 0.6em;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: var(--border-radius-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .role-badge.small { font-size: 0.65rem; }
 
-            .pagination-info span {
-                font-weight: 600;
-                color: #1E293B;
-            }
+        /* Couleurs (exemples, à compléter avec vos noms de rôles) */
+        .role-badge.primary { background-color: rgba(var(--bs-primary-rgb), 0.1); color: var(--bs-primary); }
+        .role-badge.purple { background-color: rgba(147, 51, 234, 0.1); color: rgb(126, 34, 206); }
+        .role-badge.purple-dark { background-color: rgba(107, 33, 168, 0.15); color: rgb(107, 33, 168); }
+        .role-badge.blue-dark { background-color: rgba(29, 78, 216, 0.15); color: rgb(29, 78, 216); }
+        .role-badge.green-dark { background-color: rgba(21, 128, 61, 0.15); color: rgb(21, 128, 61); }
+        .role-badge.orange { background-color: rgba(251, 146, 60, 0.1); color: rgb(234, 88, 12); }
+        .role-badge.teal { background-color: rgba(20, 184, 166, 0.1); color: rgb(13, 148, 136); }
+        .role-badge.red-dark { background-color: rgba(185, 28, 28, 0.15); color: rgb(185, 28, 28); }
+        .role-badge.indigo-dark { background-color: rgba(79, 70, 229, 0.15); color: rgb(79, 70, 229); }
+        .role-badge.blue { background-color: rgba(59, 130, 246, 0.1); color: rgb(37, 99, 235); }
+        .role-badge.cyan { background-color: rgba(6, 182, 212, 0.1); color: rgb(8, 145, 178); }
+        .role-badge.red { background-color: rgba(239, 68, 68, 0.1); color: rgb(220, 38, 38); }
+        .role-badge.indigo { background-color: rgba(99, 102, 241, 0.1); color: rgb(79, 70, 229); }
+        .role-badge.pink { background-color: rgba(236, 72, 153, 0.1); color: rgb(219, 39, 119); }
+        .role-badge.lime { background-color: rgba(132, 204, 22, 0.1); color: rgb(101, 163, 13); }
+        .role-badge.sky { background-color: rgba(14, 165, 233, 0.1); color: rgb(2, 132, 199); }
+        .role-badge.yellow { background-color: rgba(250, 204, 21, 0.1); color: rgb(217, 119, 6); } /* Tailwind amber-500 */
+        .role-badge.rose { background-color: rgba(244, 63, 94, 0.1); color: rgb(225, 29, 72); }
+        .role-badge.fuchsia { background-color: rgba(217, 70, 239, 0.1); color: rgb(192, 38, 211); }
+        .role-badge.gray { background-color: rgba(107, 114, 128, 0.1); color: rgb(75, 85, 99); }
+        .role-badge.emerald { background-color: rgba(16, 185, 129, 0.1); color: rgb(5, 150, 105); }
+        .role-badge.amber { background-color: rgba(245, 158, 11, 0.1); color: rgb(217, 119, 6); }
 
-            /* Style pour les contrôles de pagination */
-            .pagination {
-                display: flex;
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
 
-            .pagination li {
-                margin: 0 2px;
-            }
+        .status-badge { /* Style de base pour les badges de statut */
+            display: inline-flex;
+            align-items: center;
+            padding: 0.3em 0.7em;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: var(--border-radius);
+        }
+        .status-badge i { margin-right: 0.4em; }
+        .status-badge.success { background-color: var(--success-light); color: var(--success); }
+        .status-badge.danger { background-color: var(--danger-light); color: var(--danger); }
+        .status-badge.warning { background-color: var(--warning-light); color: var(--warning); }
+        .status-badge.info { background-color: var(--info-light); color: var(--info); }
+        .status-badge.dark { background-color: var(--dark-light, #e9ecef); color: var(--dark, #212529); }
+        .status-badge.secondary { background-color: var(--secondary-light, #f8f9fa); color: var(--secondary, #6c757d); }
 
-            .pagination li.disabled span,
-            .pagination li.disabled a {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
+        .user-name-link {
+            color: var(--text-primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .user-name-link:hover {
+            color: var(--primary);
+            text-decoration: underline;
+        }
 
-            .pagination li a,
-            .pagination li span {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0.5rem 0.75rem;
-                border-radius: 0.375rem;
-                font-size: 0.875rem;
-                line-height: 1.25rem;
-                text-decoration: none;
-                transition: all 200ms;
-            }
+        .me-2 { margin-right: 0.5rem !important; } /* Helper pour les icônes dans dropdown */
 
-            .pagination li:not(.active) a {
-                background-color: #f3f4f6;
-                color: #374151;
-            }
+        /* Styles pour .staff-cards, .staff-card, etc. restent les mêmes */
+        .staff-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+        }
 
-            .pagination li:not(.active) a:hover {
-                background-color: #e5e7eb;
-            }
+        .staff-card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+        }
 
-            .pagination li.active span {
-                background-color: #4CA3DD;
-                color: white;
-            }
+        .staff-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
 
-            /* Style pour les points de suspension */
-            .pagination li.dots span {
-                display: flex;
-                align-items: center;
-                color: #6b7280;
-                padding: 0 0.25rem;
-            }
-        </style>
-    @endpush
+        .staff-card-header {
+            padding: var(--spacing-md);
+            display: flex;
+            position: relative;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+        }
 
-    <!-- Script pour la fonctionnalité de recherche et tri -->
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Implémentation de la recherche en temps réel
-                const searchInput = document.getElementById('search');
-                const rows = document.querySelectorAll('tbody tr');
-                const cards = document.querySelectorAll('.block.md\\:hidden > div');
+        .staff-card-avatar {
+            position: relative;
+            margin-right: var(--spacing-md);
+            flex-shrink: 0;
+        }
 
-                searchInput.addEventListener('keyup', function() {
-                    const searchText = this.value.toLowerCase();
+        .staff-card-avatar img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--card-bg); /* Assurez-vous que --card-bg est défini */
+            box-shadow: var(--shadow-sm); /* Assurez-vous que --shadow-sm est défini */
+        }
 
-                    // Filtrer les lignes du tableau (desktop)
-                    rows.forEach(row => {
-                        const text = row.textContent.toLowerCase();
-                        if (text.includes(searchText)) {
-                            row.classList.remove('hidden');
-                        } else {
-                            row.classList.add('hidden');
-                        }
-                    });
+        .user-status { /* Pour la pastille online/offline sur l'avatar */
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+        }
+        .user-status.online { background-color: var(--success); }
+        .user-status.offline { background-color: var(--secondary); }
 
-                    // Filtrer les cartes (mobile)
-                    cards.forEach(card => {
-                        const text = card.textContent.toLowerCase();
-                        if (text.includes(searchText)) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
+
+        .staff-card-info {
+            flex: 1;
+            min-width: 0; /* Pour que le nom du staff ne déborde pas */
+        }
+
+        .staff-card-name {
+            font-size: 1rem;
+            font-weight: 600;
+            margin: 0 0 var(--spacing-xs) 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .staff-card-name a { color: inherit; text-decoration: none; }
+        .staff-card-name a:hover { color: var(--primary); }
+
+
+        .staff-card-roles {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-xs);
+        }
+
+        .staff-card-status {
+            /* position: absolute; top: var(--spacing-md); right: var(--spacing-md); */ /* Changé pour être à côté du nom */
+            margin-left: auto; /* Pousse le statut à droite */
+            flex-shrink: 0;
+        }
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-size: 0.8rem;
+        }
+        .status-indicator.success { background-color: var(--success-light); color: var(--success); }
+        .status-indicator.danger { background-color: var(--danger-light); color: var(--danger); }
+        .status-indicator.dark { background-color: var(--dark-light, #e9ecef); color: var(--dark, #212529); }
+        .status-indicator.secondary { background-color: var(--secondary-light, #f8f9fa); color: var(--secondary, #6c757d); }
+
+
+        .staff-card-body {
+            padding: var(--spacing-md);
+            flex-grow: 1; /* Pour que le corps prenne l'espace restant */
+        }
+
+        .staff-card-detail {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+        .staff-card-detail a { color: var(--text-secondary); text-decoration: none; }
+        .staff-card-detail a:hover { color: var(--primary); }
+
+
+        .staff-card-detail i {
+            width: 18px; /* Légèrement plus grand pour l'icône */
+            text-align: center; /* Centrer l'icône */
+            margin-right: var(--spacing-sm); /* Ajustement de l'espacement */
+            color: var(--text-muted); /* Couleur plus douce pour les icônes */
+        }
+        .staff-card-detail span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+
+        .staff-card-footer {
+            padding: var(--spacing-sm) var(--spacing-md);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-sm);
+            background-color: var(--section-bg); /* Assurez-vous que --section-bg est défini */
+            border-top: 1px solid var(--border-color);
+        }
+
+        .staff-card-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent; /* transparent par défaut */
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color); /* bordure légère */
+            cursor: pointer;
+            transition: all 0.2s;
+            /* box-shadow: var(--shadow-sm); */ /* Optionnel */
+        }
+
+        .staff-card-btn:hover {
+            transform: translateY(-1px); /* Effet de survol plus subtil */
+            box-shadow: var(--shadow-sm);
+            border-color: var(--primary-light); /* Bordure accentuée au survol */
+        }
+
+        .staff-card-btn.view:hover { background-color: var(--info-light); color: var(--info); border-color: var(--info); }
+        .staff-card-btn.edit:hover { background-color: var(--success-light); color: var(--success); border-color: var(--success); }
+        .staff-card-btn.more:hover { background-color: var(--secondary-light, #f8f9fa); color: var(--secondary, #6c757d); border-color: var(--secondary, #6c757d); }
+
+        .recent-badge {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.65rem;
+            padding: 0.15em 0.4em;
+            border-radius: var(--border-radius-sm);
+            font-weight: 500;
+            margin-left: 0.5em;
+            vertical-align: middle;
+        }
+        .recent-badge.small {
+            font-size: 0.6rem;
+            padding: 0.1em 0.3em;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-muted);
+        }
+        .empty-state .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--border-color-heavy, #ced4da);
+        }
+        .empty-state h4 {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        .empty-state p {
+            margin-bottom: 1.5rem;
+        }
+        .empty-state .empty-actions .btn {
+            margin: 0 0.5rem;
+        }
+
+        .pagination-info {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md);
+            background-color: var(--section-bg);
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+@endsection
+
+@push('scripts')
+    <script>
+        // Script similaire aux autres avec quelques adaptations pour le personnel
+        document.addEventListener('DOMContentLoaded', function() {
+            // Vue tableau/cartes toggle
+            const tableViewBtn = document.getElementById('tableViewBtn');
+            const cardViewBtn = document.getElementById('cardViewBtn');
+            const tableViewEl = document.querySelector('.table-view'); // Renommé pour éviter conflit avec variable tableView
+            const cardViewEl = document.querySelector('.card-view');  // Renommé
+
+            if (tableViewBtn && cardViewBtn && tableViewEl && cardViewEl) {
+                tableViewBtn.addEventListener('click', function() {
+                    tableViewEl.style.display = 'block';
+                    cardViewEl.style.display = 'none';
+                    tableViewBtn.classList.add('active');
+                    cardViewBtn.classList.remove('active');
+                    localStorage.setItem('staff-view', 'table');
                 });
 
-                // Réinitialisation des filtres
-                document.getElementById('reset-filters').addEventListener('click', function() {
-                    searchInput.value = '';
-                    document.getElementById('language-filter').value = 'all';
-
-                    // Réinitialiser l'affichage
-                    rows.forEach(row => row.classList.remove('hidden'));
-                    cards.forEach(card => card.classList.remove('hidden'));
+                cardViewBtn.addEventListener('click', function() {
+                    tableViewEl.style.display = 'none';
+                    cardViewEl.style.display = 'block';
+                    cardViewBtn.classList.add('active');
+                    tableViewBtn.classList.remove('active');
+                    localStorage.setItem('staff-view', 'card');
                 });
 
-                // Filtrage par langue
-                document.getElementById('language-filter').addEventListener('change', function() {
-                    const lang = this.value;
+                const savedView = localStorage.getItem('staff-view');
+                if (savedView === 'card' && cardViewBtn) { // Vérifier que cardViewBtn existe
+                    cardViewBtn.click();
+                } else if (tableViewBtn) { // Par défaut ou si table est sauvegardé
+                     tableViewBtn.classList.add('active'); // S'assurer que le bouton table est actif par défaut
+                     cardViewEl.style.display = 'none'; // Cacher la vue carte par défaut
+                     tableViewEl.style.display = 'block'; // Montrer la vue table par défaut
+                }
+            }
 
-                    if (lang === 'all') {
-                        rows.forEach(row => row.classList.remove('hidden'));
-                        cards.forEach(card => card.classList.remove('hidden'));
-                        return;
+            const filterToggle = document.querySelector('.filter-toggle');
+            const filterBody = document.querySelector('.filter-body');
+            if (filterToggle && filterBody) {
+                // Initial state based on if filters are applied (optional)
+                const params = new URLSearchParams(window.location.search);
+                let filtersApplied = false;
+                for (const param of ['role', 'status', 'search']) {
+                    if (params.has(param) && params.get(param) !== '') {
+                        filtersApplied = true;
+                        break;
                     }
+                }
+                // Si des filtres sont appliqués, on peut vouloir garder le panneau ouvert
+                // Pour l'instant, on le ferme par défaut, sauf si on ajoute une logique de 'sticky'
+                // filterBody.style.display = filtersApplied ? 'block' : 'none';
+                // filterToggle.querySelector('i').className = filtersApplied ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+                // Par défaut, on le ferme :
+                filterBody.style.display = 'none';
+                filterToggle.querySelector('i').className = 'fas fa-chevron-down';
 
-                    // Filtrer les lignes du tableau (desktop)
-                    rows.forEach(row => {
-                        const hasLang = row.textContent.includes(lang === 'FR' ? 'Français' : 'Anglais');
-                        if (hasLang) {
-                            row.classList.remove('hidden');
-                        } else {
-                            row.classList.add('hidden');
-                        }
-                    });
 
-                    // Filtrer les cartes (mobile)
-                    cards.forEach(card => {
-                        const hasLang = card.textContent.includes(lang);
-                        if (hasLang) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
+                filterToggle.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (filterBody.style.display === 'none' || filterBody.offsetParent === null) { // Vérifie s'il est caché
+                        icon.classList.remove('fa-chevron-down');
+                        icon.classList.add('fa-chevron-up');
+                        filterBody.style.display = 'block';
+                    } else {
+                        icon.classList.remove('fa-chevron-up');
+                        icon.classList.add('fa-chevron-down');
+                        filterBody.style.display = 'none';
+                    }
                 });
+            }
 
-                // Auto-dismiss pour les alertes
-                const alerts = document.querySelectorAll('[role="alert"]');
-                alerts.forEach(alert => {
-                    setTimeout(() => {
-                        alert.classList.add('opacity-0', 'transform', 'translate-y-[-10px]', 'transition-all', 'duration-500');
-                        setTimeout(() => {
-                            alert.remove();
-                        }, 500);
-                    }, 5000);
+            const searchInput = document.getElementById('search');
+            const searchClear = document.querySelector('.search-clear');
+            if (searchInput && searchClear) {
+                searchInput.addEventListener('input', function() {
+                    searchClear.style.display = this.value ? 'flex' : 'none';
+                });
+                searchClear.addEventListener('click', function() {
+                    searchInput.value = '';
+                    this.style.display = 'none';
+                    // Optionnel: soumettre le formulaire pour rafraîchir sans le terme de recherche
+                    // document.getElementById('filterForm').submit();
+                    searchInput.focus();
+                });
+                // Afficher le bouton clear au chargement si le champ n'est pas vide
+                if (searchInput.value) {
+                    searchClear.style.display = 'flex';
+                }
+            }
+
+            const deleteForms = document.querySelectorAll('form.delete-form');
+            deleteForms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    const staffName = this.closest('tr, .staff-card')?.querySelector('.user-name-link, .staff-card-name a')?.textContent.trim() || 'ce membre';
+                    if (!confirm(`Êtes-vous sûr de vouloir supprimer ${staffName} ? Cette action est irréversible.`)) {
+                        e.preventDefault();
+                    }
                 });
             });
-        </script>
-    @endpush
-@endsection
+        });
+    </script>
+@endpush
