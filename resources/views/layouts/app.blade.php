@@ -1543,7 +1543,7 @@
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-finance">
-                <a href="{{ route('admin.registrations.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.registrations.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.finance.students.pending', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.registrations.*') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Inscriptions</span>
                 </a>

@@ -111,6 +111,23 @@ Route::prefix('{locale}')
                 Route::resource('transactions', TransactionController::class);
                 Route::resource('transactions-history', TransactionHistoryController::class);
 
+                // Ajouter les routes finance dans la section admin
+                Route::prefix('finance')->name('finance.')->group(function () {
+                    Route::prefix('students')->name('students.')->group(function () {
+                        Route::get('/pending', [App\Http\Controllers\FinanceRegistrationController::class, 'pendingStudents'])->name('pending');
+                        Route::get('/{student}', [App\Http\Controllers\FinanceRegistrationController::class, 'showStudent'])->name('show');
+                        Route::get('/{student}/finalize', [App\Http\Controllers\FinanceRegistrationController::class, 'finalizeRegistration'])->name('finalize');
+                        Route::post('/{student}/process', [App\Http\Controllers\FinanceRegistrationController::class, 'processRegistration'])->name('process');
+                        Route::get('/confirmation/{registration}', [App\Http\Controllers\FinanceRegistrationController::class, 'confirmationRegistration'])->name('confirmation');
+                        Route::post('/{student}/reject', [App\Http\Controllers\FinanceRegistrationController::class, 'rejectStudent'])->name('reject');
+                        Route::get('/completed', [App\Http\Controllers\FinanceRegistrationController::class, 'completedRegistrations'])->name('completed');
+                    });
+                });
+
+
+
+
+
                 // Ressources
                 Route::resource('books', BookController::class);
                 Route::resource('materials', MaterialController::class);
