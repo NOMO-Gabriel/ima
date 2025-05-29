@@ -261,16 +261,28 @@
             overflow: hidden;
             transition: opacity var(--transition-speed);
             opacity: 1;
+            flex-grow: 1; /* Added to push icon to the end */
+            margin-left: 0.75rem; /* Space between category icon and text */
         }
+         .menu-category i:first-child { /* Style for the category icon */
+            min-width: 1.5rem;
+            font-size: 1.125rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
 
         .sidebar.collapsed .menu-category-text {
             opacity: 0;
             width: 0;
+            margin-left: 0; /* Remove margin when collapsed */
         }
 
         .menu-category i.toggle-icon {
             transition: transform var(--transition-speed);
             font-size: 0.75rem;
+            margin-left: auto; /* Pushes toggle icon to the far right */
         }
 
         .menu-category.collapsed i.toggle-icon {
@@ -281,12 +293,16 @@
             opacity: 0;
             width: 0;
         }
+         .sidebar.collapsed .menu-category i:first-child { /* Ensure category icon is still visible when sidebar is collapsed */
+            margin-right: 0;
+        }
+
 
         .menu-group {
             overflow: hidden;
-            max-height: 1000px;
-            transition: max-height var(--transition-speed);
-            margin-left: 0.5rem;
+            max-height: 1000px; /* Arbitrary large value for open state */
+            transition: max-height var(--transition-speed) ease-in-out;
+            margin-left: 0.5rem; /* Indent menu items slightly */
         }
 
         .menu-group.collapsed {
@@ -296,13 +312,14 @@
         .sidebar.collapsed .menu-group:not(.collapsed) {
             position: absolute;
             left: var(--sidebar-width-collapsed);
-            top: 0;
+            top: 0; /* Adjust as needed depending on where the category was clicked */
             background-color: white;
             width: 230px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
-            max-height: auto;
+            max-height: auto; /* Let content define height */
             padding: 0.5rem 0;
+            z-index: 40; /* Ensure it's above other sidebar items */
         }
 
         html.dark .sidebar.collapsed .menu-group:not(.collapsed) {
@@ -357,11 +374,27 @@
         .sidebar.collapsed .menu-item span {
             opacity: 0;
             width: 0;
+            overflow: hidden; /* Ensure text doesn't wrap or show */
         }
 
         .sidebar.collapsed .menu-item i {
             margin-right: 0;
         }
+
+        /* Styles for pop-out menu when sidebar is collapsed */
+        .sidebar.collapsed .menu-category:hover + .menu-group,
+        .sidebar.collapsed .menu-group:hover {
+            display: block; /* Show on hover */
+            opacity: 1;
+            visibility: visible;
+            /* position, top, left, background, etc., are handled by .sidebar.collapsed .menu-group:not(.collapsed) */
+        }
+        .sidebar.collapsed .menu-group { /* Initially hide for hover effect */
+            display: none;
+            opacity: 0;
+            visibility: hidden;
+        }
+
 
         .sidebar.collapsed .menu-group:not(.collapsed) .menu-item span {
             opacity: 1;
@@ -371,6 +404,7 @@
         .sidebar.collapsed .menu-group:not(.collapsed) .menu-item i {
             margin-right: 0.75rem;
         }
+
 
         /* Logout button at bottom */
         .logout-container {
@@ -1449,13 +1483,13 @@
                 <span>Tableau de bord</span>
             </a>
 
-            <div class="menu-category" data-category="administration">
+            <div class="menu-category collapsed" data-category="administration"> <!-- MODIFIED: Added collapsed -->
                 <i class="fas fa-cogs"></i>
                 <div class="menu-category-text">Administration</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group" id="group-administration">
-                {{-- <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
+            <div class="menu-group collapsed" id="group-administration"> <!-- MODIFIED: Added collapsed -->
+                <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
                     <i class="fas fa-id-badge"></i>
                     <span>Personnel</span>
                 </a>
@@ -1466,19 +1500,19 @@
                 <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Élèves</span>
-                </a> --}}
+                </a> 
                 <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Utilisateurs</span>
                 </a>
             </div>
 
-            <div class="menu-category" data-category="management">
+            <div class="menu-category collapsed" data-category="management"> <!-- MODIFIED: Added collapsed -->
                 <i class="fas fa-tasks"></i>
                 <div class="menu-category-text">Gestion</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group" id="group-management">
+            <div class="menu-group collapsed" id="group-management"> <!-- MODIFIED: Added collapsed -->
                 <a href="{{ route('admin.academies.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.academies.*') ? 'active' : '' }}">
                     <i class="fas fa-university"></i>
                     <span>Academies</span>
@@ -1521,12 +1555,12 @@
                 </a>
             </div>
 
-            <div class="menu-category" data-category="planification">
+            <div class="menu-category collapsed" data-category="planification"> <!-- MODIFIED: Added collapsed -->
                 <i class="fas fa-calendar-check"></i>
                 <div class="menu-category-text">Planification</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group" id="group-planification">
+            <div class="menu-group collapsed" id="group-planification"> <!-- MODIFIED: Added collapsed -->
                 <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.planning.*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Planning</span>
@@ -1537,12 +1571,12 @@
                 </a>
             </div>
 
-            <div class="menu-category" data-category="finance">
+            <div class="menu-category collapsed" data-category="finance"> <!-- MODIFIED: Added collapsed -->
                 <i class="fas fa-wallet"></i>
                 <div class="menu-category-text">Finances</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group" id="group-finance">
+            <div class="menu-group collapsed" id="group-finance"> <!-- MODIFIED: Added collapsed -->
                 <a href="{{ route('admin.finance.students.pending', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.registrations.*') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Inscriptions</span>
@@ -1557,12 +1591,12 @@
                 </a>
             </div>
 
-            <div class="menu-category" data-category="resources">
+            <div class="menu-category collapsed" data-category="resources"> <!-- MODIFIED: Added collapsed -->
                 <i class="fas fa-archive"></i>
                 <div class="menu-category-text">Ressources</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group" id="group-resources">
+            <div class="menu-group collapsed" id="group-resources"> <!-- MODIFIED: Added collapsed -->
                 <a href="{{ route('admin.books.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
                     <i class="fas fa-book"></i>
                     <span>Livres</span>
@@ -1577,12 +1611,12 @@
                 </a>
             </div>
 
-            <div class="menu-category" data-category="account">
+            <div class="menu-category collapsed" data-category="account"> <!-- MODIFIED: Added collapsed -->
                 <i class="fas fa-user-cog"></i>
                 <div class="menu-category-text">Compte</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group" id="group-account">
+            <div class="menu-group collapsed" id="group-account"> <!-- MODIFIED: Added collapsed -->
                 <a href="{{ route('admin.profile.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
                     <i class="fas fa-user-circle"></i>
                     <span>Profil</span>
@@ -1680,7 +1714,7 @@
                             </a>
                             <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
                                 @csrf
-                                <button type="submit" class="user-link text-danger">
+                                <button type="submit" class="user-link text-danger w-100" style="text-align: left;"> <!-- Added w-100 and text-align for button -->
                                     <i class="fas fa-sign-out-alt"></i>
                                     <span>Déconnexion</span>
                                 </button>
@@ -1715,7 +1749,7 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>&copy; {{ date('Y') }} Institut Maïeutique Avancé (IMA). Tous droits réservés.</p>
+            <p>© {{ date('Y') }} Institut Maïeutique Avancé (IMA). Tous droits réservés.</p>
         </footer>
     </div>
 </div>
@@ -1726,34 +1760,47 @@
         // Toggle sidebar collapse
         const toggleSidebar = document.querySelector('.toggle-sidebar');
         const sidebar = document.querySelector('.sidebar');
-        const mainContent = document.querySelector('.main-content');
+        // const mainContent = document.querySelector('.main-content'); // Not directly used here
 
-        toggleSidebar.addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
+        if (toggleSidebar && sidebar) {
+            toggleSidebar.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
 
-            // Change toggle icon
-            const toggleIcon = this.querySelector('i');
-            if (sidebar.classList.contains('collapsed')) {
+                // Change toggle icon
+                const toggleIcon = this.querySelector('i');
+                if (sidebar.classList.contains('collapsed')) {
+                    toggleIcon.classList.remove('fa-chevron-left');
+                    toggleIcon.classList.add('fa-chevron-right');
+                    localStorage.setItem('sidebarCollapsed', 'true'); // Save state
+                } else {
+                    toggleIcon.classList.remove('fa-chevron-right');
+                    toggleIcon.classList.add('fa-chevron-left');
+                    localStorage.setItem('sidebarCollapsed', 'false'); // Save state
+                }
+            });
+
+            // Restore sidebar state on page load
+            if (localStorage.getItem('sidebarCollapsed') === 'true') {
+                sidebar.classList.add('collapsed');
+                const toggleIcon = toggleSidebar.querySelector('i');
                 toggleIcon.classList.remove('fa-chevron-left');
                 toggleIcon.classList.add('fa-chevron-right');
-            } else {
-                toggleIcon.classList.remove('fa-chevron-right');
-                toggleIcon.classList.add('fa-chevron-left');
             }
-        });
+        }
+
 
         // Mobile menu toggle
         const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
         const sidebarOverlay = document.querySelector('.sidebar-overlay');
 
-        if (mobileMenuToggle) {
+        if (mobileMenuToggle && sidebar && sidebarOverlay) {
             mobileMenuToggle.addEventListener('click', function() {
                 sidebar.classList.add('show');
                 sidebarOverlay.classList.add('show');
             });
         }
 
-        if (sidebarOverlay) {
+        if (sidebarOverlay && sidebar) {
             sidebarOverlay.addEventListener('click', function() {
                 sidebar.classList.remove('show');
                 sidebarOverlay.classList.remove('show');
@@ -1764,42 +1811,91 @@
         const menuCategories = document.querySelectorAll('.menu-category');
 
         menuCategories.forEach(category => {
+            // Check if the category has a data-category attribute for submenu functionality
             if (category.dataset.category) {
-                category.addEventListener('click', function() {
-                    const groupId = 'group-' + category.dataset.category;
-                    const group = document.getElementById(groupId);
+                const groupId = 'group-' + category.dataset.category;
+                const group = document.getElementById(groupId);
 
-                    if (group) {
-                        group.classList.toggle('collapsed');
-                        category.classList.toggle('collapsed');
+                // Click event for opening/closing submenus
+                category.addEventListener('click', function(e) {
+                    // Prevent click from bubbling up if it's for submenu logic
+                    // and sidebar is not collapsed (or if sidebar is collapsed but we want popout instead of inline expand)
+                    if (!sidebar.classList.contains('collapsed')) {
+                         if (group) {
+                            group.classList.toggle('collapsed');
+                            category.classList.toggle('collapsed');
+                        }
+                    } else {
+                        // If sidebar is collapsed, clicking a category could show a popout
+                        // This part might need more specific logic if popouts are hover-only
+                        // or if a click should toggle a persistent popout.
+                        // For now, assume click doesn't expand inline when sidebar is collapsed.
                     }
                 });
+
+                // Hover events for pop-out menu when sidebar is collapsed
+                if (group) {
+                    let popoutTimeout;
+
+                    const showPopout = () => {
+                        clearTimeout(popoutTimeout);
+                        if (sidebar.classList.contains('collapsed')) {
+                            const rect = category.getBoundingClientRect();
+                            group.style.top = `${rect.top - sidebar.getBoundingClientRect().top}px`; // Position relative to sidebar
+                            group.classList.remove('collapsed'); // Show it
+                            group.style.display = 'block'; // Ensure it's block for positioning
+                            group.style.opacity = '1';
+                            group.style.visibility = 'visible';
+                        }
+                    };
+
+                    const hidePopout = () => {
+                        popoutTimeout = setTimeout(() => {
+                            if (sidebar.classList.contains('collapsed')) {
+                                group.classList.add('collapsed'); // Hide it
+                                group.style.opacity = '0';
+                                group.style.visibility = 'hidden';
+                                group.style.display = 'none';
+                            }
+                        }, 100); // Small delay to allow moving mouse into popout
+                    };
+
+                    category.addEventListener('mouseenter', showPopout);
+                    category.addEventListener('mouseleave', hidePopout);
+                    group.addEventListener('mouseenter', showPopout); // Keep open if mouse enters group
+                    group.addEventListener('mouseleave', hidePopout);
+                }
             }
         });
+
 
         // Toggle theme
         const themeToggle = document.getElementById('theme-toggle');
         const htmlElement = document.documentElement;
 
-        // Check saved theme preference
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        htmlElement.classList.toggle('dark', savedTheme === 'dark');
-        updateThemeIcon();
-
-        themeToggle.addEventListener('click', function() {
-            htmlElement.classList.toggle('dark');
-            localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
+        if (themeToggle && htmlElement) {
+            // Check saved theme preference
+            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            htmlElement.classList.toggle('dark', savedTheme === 'dark');
             updateThemeIcon();
-        });
+
+            themeToggle.addEventListener('click', function() {
+                htmlElement.classList.toggle('dark');
+                localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
+                updateThemeIcon();
+            });
+        }
 
         function updateThemeIcon() {
-            const icon = themeToggle.querySelector('i');
-            if (htmlElement.classList.contains('dark')) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            } else {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
+            if (themeToggle) {
+                const icon = themeToggle.querySelector('i');
+                if (htmlElement.classList.contains('dark')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                }
             }
         }
 
@@ -1807,13 +1903,13 @@
         const activeMenuItem = document.querySelector('.menu-item.active');
         if (activeMenuItem) {
             const parentGroup = activeMenuItem.closest('.menu-group');
-            if (parentGroup) {
+            if (parentGroup && parentGroup.classList.contains('collapsed')) { // Only if it's currently collapsed
                 parentGroup.classList.remove('collapsed');
 
-                // Also expand the category
+                // Also expand the category's visual state (icon)
                 const categoryId = parentGroup.id.replace('group-', '');
                 const category = document.querySelector(`.menu-category[data-category="${categoryId}"]`);
-                if (category) {
+                if (category && category.classList.contains('collapsed')) {
                     category.classList.remove('collapsed');
                 }
             }
@@ -1828,19 +1924,20 @@
 
         Object.keys(dropdownToggles).forEach(toggleId => {
             const toggle = document.getElementById(toggleId);
-            const dropdown = document.getElementById(dropdownToggles[toggleId]);
+            const dropdownId = dropdownToggles[toggleId];
+            const dropdown = document.getElementById(dropdownId);
 
             if (toggle && dropdown) {
                 toggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
+                    e.stopPropagation(); // Prevent click from closing itself immediately
 
                     // Close all other dropdowns
                     Object.values(dropdownToggles).forEach(id => {
-                        if (id !== dropdownToggles[toggleId]) {
-                            document.getElementById(id).classList.remove('show');
+                        if (id !== dropdownId) {
+                            const otherDropdown = document.getElementById(id);
+                            if (otherDropdown) otherDropdown.classList.remove('show');
                         }
                     });
-
                     dropdown.classList.toggle('show');
                 });
             }
@@ -1848,13 +1945,28 @@
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', function(e) {
+            let isInsideDropdown = false;
             Object.values(dropdownToggles).forEach(id => {
                 const dropdown = document.getElementById(id);
-                if (dropdown && dropdown.classList.contains('show')) {
-                    dropdown.classList.remove('show');
+                if (dropdown && dropdown.contains(e.target)) {
+                    isInsideDropdown = true;
+                }
+                 // Also check if click is on the toggle itself
+                const toggleId = Object.keys(dropdownToggles).find(key => dropdownToggles[key] === id);
+                const toggleElement = document.getElementById(toggleId);
+                if (toggleElement && toggleElement.contains(e.target)) {
+                    isInsideDropdown = true;
                 }
             });
+
+            if (!isInsideDropdown) {
+                Object.values(dropdownToggles).forEach(id => {
+                    const dropdown = document.getElementById(id);
+                    if (dropdown) dropdown.classList.remove('show');
+                });
+            }
         });
+
 
         // Close alert messages
         const alertCloseButtons = document.querySelectorAll('.alert-close');
@@ -1862,6 +1974,7 @@
             button.addEventListener('click', function() {
                 const alert = this.closest('.alert');
                 if (alert) {
+                    alert.style.transition = 'opacity 0.3s ease-out';
                     alert.style.opacity = '0';
                     setTimeout(() => {
                         alert.style.display = 'none';
