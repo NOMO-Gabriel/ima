@@ -40,6 +40,7 @@
                 <h1 class="text-2xl font-bold">Détails de l'académie</h1>
                 <p class="text-gray-600">Consulter les informations de l'académie "{{ $academy->name }}"</p>
             </div>
+            @can('academy.edit')
             <div class="flex space-x-2">
                 <a href="{{ route('admin.academies.edit', ['locale' => app()->getLocale(), 'academy' => $academy->id]) }}"
                    class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4CA3DD] hover:bg-[#2A7AB8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4CA3DD]">
@@ -49,6 +50,7 @@
                     Modifier
                 </a>
             </div>
+            @endcan
         </div>
 
         <!-- Carte d'information -->
@@ -82,8 +84,8 @@
                             <dd class="mt-1 text-base text-gray-900">
                                 <div class="flex items-center">
                                     <div class="h-10 w-10 flex-shrink-0">
-                                        <img class="h-10 w-10 rounded-full" 
-                                             src="https://ui-avatars.com/api/?name={{ urlencode($academy->director->name) }}&color=7F9CF5&background=EBF4FF" 
+                                        <img class="h-10 w-10 rounded-full"
+                                             src="https://ui-avatars.com/api/?name={{ urlencode($academy->director->name) }}&color=7F9CF5&background=EBF4FF"
                                              alt="{{ $academy->director->name }}">
                                     </div>
                                     <div class="ml-4">
