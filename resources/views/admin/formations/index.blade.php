@@ -25,7 +25,7 @@
         </ol>
     </nav>
 
-    @canany(['formation.create', 'formation.update', 'formation.delete', 'formation.view'])
+    @canany(['gestion.formation.create', 'gestion.formation.update', 'gestion.formation.delete', 'gestion.formation.read'])
     <div class="bg-white shadow-md rounded-lg p-5 mb-8">
         <!-- En-tête avec titre et bouton d'ajout -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -35,12 +35,14 @@
                 </svg>
                 Gestion des Formations
             </h1>
+            @can('gestion.formation.create')
             <a href="{{ route('admin.formations.create', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Ajouter une formation
             </a>
+            @endcan
         </div>
 
         <!-- Message de succès -->
@@ -212,7 +214,7 @@
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                         Phase
                     </th>
-                    @canany(['formation.update', 'formation.delete'])
+                    @canany(['gestion.formation.update', 'gestion.formation.delete', 'gestion.formation.read'])
                     <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
                         Actions
                     </th>
@@ -247,9 +249,10 @@
                                 —
                             @endif
                         </td>
-                        @canany(['formation.update', 'formation.delete'])
+                        @canany(['gestion.formation.update', 'gestion.formation.delete', 'gestion.formation.read'])
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                             <div class="flex justify-center space-x-3">
+                                @can('gestion.formation.read')
                                 <a href="{{ route('admin.formations.show', ['locale' => app()->getLocale(), 'formation' => $formation->id]) }}"
                                    class="text-[#4CA3DD] hover:text-[#2A7AB8] dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-150"
                                    title="Voir les détails">
@@ -258,6 +261,8 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                 </a>
+                                @endcan
+                                @can('gestion.formation.update')
                                 <a href="{{ route('admin.formations.edit', ['locale' => app()->getLocale(), 'formation' => $formation->id]) }}"
                                    class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors duration-150"
                                    title="Modifier">
@@ -265,6 +270,8 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                     </svg>
                                 </a>
+                                @endcan
+                                @can('gestion.formation.delete')
                                 <form action="{{ route('admin.formations.destroy', ['locale' => app()->getLocale(), 'formation' => $formation->id]) }}"
                                       method="POST"
                                       class="inline-block"
@@ -279,6 +286,7 @@
                                         </svg>
                                     </button>
                                 </form>
+                                @endcan
                             </div>
                         </td>
                         @endcanany

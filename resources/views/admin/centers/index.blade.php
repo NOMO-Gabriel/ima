@@ -30,7 +30,7 @@
         </ol>
     </nav>
 
-    @canany(['center.view', 'center.create', 'center.update', 'center.delete'])
+    @canany(['gestion.center.read', 'gestion.center.create', 'gestion.center.update', 'gestion.center.delete'])
         <div class="transition-colors duration-300">
             <!-- En-tête avec titre et bouton d'ajout -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
@@ -41,7 +41,7 @@
                     </svg>
                     Gestion des Centres
                 </h1>
-                @can('center.create')
+                @can('gestion.center.create')
                     <a href="{{ route('admin.centers.create', app()->getLocale()) }}"
                        class="inline-flex items-center justify-center px-6 py-3 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -55,7 +55,7 @@
             <!-- Messages Flash -->
             <x-flash-message />
 
-            @can('center.view')
+            @can('gestion.center.read')
                 <!-- Section des statistiques -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="stats-card rounded-xl p-6 shadow-lg border transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
@@ -138,7 +138,7 @@
                         </div>
                         @php
                             $recentCenters = $centers->filter(function($center) {
-                                return $center->created_at->isCurrentWeek();
+                                return $center->created_at !== null && $center->created_at->isCurrentWeek();
                             })->count();
                         @endphp
                         <h3 class="text-2xl font-bold mb-1 transition-colors duration-300"
@@ -171,7 +171,7 @@
                         </div>
                         <div class="flex flex-wrap items-center gap-4 w-full lg:w-auto">
                             <select name="status" onchange="this.form.submit()"
-                                    class="border text-sm rounded-lg focus:ring-2 focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-3 transition-all duration-300"
+                                    class="border text-sm rounded-lg focus:ring-2 focus:ring-[#4CA3DD] focus:border-[#4CA3DD] py-3 px-6 transition-all duration-300"
                                     :class="{ 'bg-gray-700 border-gray-600 text-gray-200': darkMode, 'bg-gray-50 border-gray-300 text-gray-900': !darkMode }">
                                 <option value="">Tous les statuts</option>
                                 <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actifs</option>
@@ -268,14 +268,14 @@
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-[#4CA3DD]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                             </svg>
-                                            Créé le {{ $center->created_at->format('d/m/Y') }}
+                                            Créé le {{ $center->created_at ? $center->created_at->format('d/m/Y') : '' }}
                                         </div>
                                     </div>
 
                                     <!-- Actions -->
-                                    @canany(['center.view', 'center.update', 'center.delete'])
+                                    @canany(['gestion.center.read', 'gestion.center.update', 'gestion.center.delete'])
                                         <div class="flex flex-wrap gap-2">
-                                            @can('center.view')
+                                            @can('gestion.center.read')
                                                 <a href="{{ route('admin.centers.show', [app()->getLocale(), $center]) }}"
                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-[#4CA3DD] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200"
                                                    title="Voir les détails">
@@ -286,7 +286,7 @@
                                                     Voir
                                                 </a>
                                             @endcan
-                                            @can('center.update')
+                                            @can('gestion.center.update')
                                                 <a href="{{ route('admin.centers.edit', [app()->getLocale(), $center]) }}"
                                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-yellow-700 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition-colors duration-200"
                                                    title="Modifier">
@@ -296,7 +296,7 @@
                                                     Modifier
                                                 </a>
                                             @endcan
-                                            @can('center.delete')
+                                            @can('gestion.center.delete')
                                                 <form action="{{ route('admin.centers.destroy', [app()->getLocale(), $center]) }}"
                                                       method="POST"
                                                       class="inline-block"
@@ -344,7 +344,7 @@
                             @endif
                         </p>
                         @if(!request('search'))
-                            @can('center.create')
+                            @can('gestion.center.create')
                                 <a href="{{ route('admin.centers.create', app()->getLocale()) }}"
                                    class="inline-flex items-center justify-center px-6 py-3 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -366,23 +366,34 @@
             @endcan
         </div>
     @else
-        <!-- Accès non autorisé -->
-        <div class="shadow-md rounded-xl p-8 mb-8 text-center transition-colors duration-300"
-             :class="{ 'bg-gray-800': darkMode, 'bg-white': !darkMode }">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 transition-colors duration-300"
-                 :class="{ 'text-gray-500': darkMode, 'text-gray-400': !darkMode }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <h3 class="text-lg font-medium mb-2 transition-colors duration-300"
-                :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">
-                Accès non autorisé
-            </h3>
-            <p class="transition-colors duration-300"
-               :class="{ 'text-gray-400': darkMode, 'text-gray-600': !darkMode }">
-                Vous n'avez pas les permissions nécessaires pour accéder à cette section.
-            </p>
+        <!-- Message d'accès refusé -->
+        <div class="p-8 text-center rounded-lg border transition-colors"
+             :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-white' : 'bg-white border-gray-200'">
+            <div class="flex flex-col items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-16 w-16 mb-4 transition-colors"
+                     :class="darkMode ? 'text-red-500' : 'text-red-400'"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <p class="text-xl font-medium mb-2 transition-colors"
+                   :class="darkMode ? 'text-white' : 'text-gray-800'">
+                    Accès refusé
+                </p>
+                <p class="mb-6 transition-colors"
+                   :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
+                    Vous n'avez pas les permissions nécessaires pour accéder à la gestion des phases.
+                </p>
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"
+                   class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour au tableau de bord
+                </a>
+            </div>
         </div>
-    @endcanany
+    @endcan
 @endsection
 
 @push('styles')

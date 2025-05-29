@@ -25,6 +25,7 @@
         </ol>
     </nav>
 
+    @canany(['gestion.course.create', 'gestion.course.update', 'gestion.course.delete', 'gestion.course.read'])
     <div class="bg-white shadow-md rounded-lg p-5 mb-8">
         <!-- En-tête avec titre et bouton d'ajout -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -34,12 +35,14 @@
                 </svg>
                 Gestion des Cours
             </h1>
+            @can('gestion.course.create')
             <a href="{{ route('admin.courses.create', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Ajouter un cours
             </a>
+            @endcan
         </div>
 
         <!-- Messages d'alerte -->
@@ -213,88 +216,100 @@
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50">
                 <tr>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400 w-20">
                         Code
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400 w-1/3">
                         Titre
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400 w-1/4">
                         Description
                     </th>
-                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400 w-1/4">
                         Formations
                     </th>
-                    <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
-                        Actions
-                    </th>
+                    @canany(['gestion.course.update', 'gestion.course.delete', 'gestion.course.read'])
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400 w-24">
+                            Actions
+                        </th>
+                    @endcanany
                 </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                 @forelse($courses as $course)
                     <tr class="hover:bg-gray-100 transition-colors duration-150">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
-                            <span class="px-2.5 py-1 inline-flex items-center rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
-                                {{ $course->code }}
-                            </span>
+                <span class="px-2.5 py-1 inline-flex items-center rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
+                    {{ $course->code }}
+                </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-700">
-                            {{ $course->title }}
+                        <td class="px-6 py-4 text-sm font-medium text-gray-700">
+                            <div class="break-words leading-relaxed max-w-xs">
+                                {{ $course->title }}
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs">
                             <div class="truncate">{{ $course->description ?? '—' }}</div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                        <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                             @if($course->formations && $course->formations->count() > 0)
                                 <div class="flex flex-wrap gap-1">
                                     @foreach($course->formations->take(2) as $formation)
                                         <span class="px-2 py-1 inline-flex items-center rounded-full bg-purple-100 text-purple-800 text-xs font-medium">
-                                            {{ $formation->name }}
-                                        </span>
+                                {{ $formation->name }}
+                            </span>
                                     @endforeach
                                     @if($course->formations->count() > 2)
                                         <span class="px-2 py-1 inline-flex items-center rounded-full bg-gray-100 text-gray-800 text-xs font-medium">
-                                            +{{ $course->formations->count() - 2 }}
-                                        </span>
+                                +{{ $course->formations->count() - 2 }}
+                            </span>
                                     @endif
                                 </div>
                             @else
                                 <span class="text-gray-400">—</span>
                             @endif
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
-                            <div class="flex justify-center space-x-3">
-                                <a href="{{ route('admin.courses.show', ['locale' => app()->getLocale(), 'course' => $course->id]) }}"
-                                   class="text-[#4CA3DD] hover:text-[#2A7AB8] dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-150"
-                                   title="Voir les détails">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                </a>
-                                <a href="{{ route('admin.courses.edit', ['locale' => app()->getLocale(), 'course' => $course->id]) }}"
-                                   class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors duration-150"
-                                   title="Modifier">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </a>
-                                <form action="{{ route('admin.courses.destroy', ['locale' => app()->getLocale(), 'course' => $course->id]) }}"
-                                      method="POST"
-                                      class="inline-block"
-                                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce cours?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                            class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-150"
-                                            title="Supprimer">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+                        @canany(['gestion.course.read', 'gestion.course.update', 'gestion.course.delete'])
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                <div class="flex justify-center space-x-3">
+                                    @can('gestion.course.read')
+                                        <a href="{{ route('admin.courses.show', ['locale' => app()->getLocale(), 'course' => $course->id]) }}"
+                                           class="text-[#4CA3DD] hover:text-[#2A7AB8] dark:text-blue-400 dark:hover:text-blue-300 transition-colors duration-150"
+                                           title="Voir les détails">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </a>
+                                    @endcan
+                                    @can('gestion.course.update')
+                                        <a href="{{ route('admin.courses.edit', ['locale' => app()->getLocale(), 'course' => $course->id]) }}"
+                                           class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors duration-150"
+                                           title="Modifier">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                            </svg>
+                                        </a>
+                                    @endcan
+                                    @can('gestion.course.delete')
+                                        <form action="{{ route('admin.courses.destroy', ['locale' => app()->getLocale(), 'course' => $course->id]) }}"
+                                              method="POST"
+                                              class="inline-block"
+                                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce cours?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 transition-colors duration-150"
+                                                    title="Supprimer">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endcan
+                                </div>
+                            </td>
+                        @endcanany
                     </tr>
                 @empty
                     <tr>
@@ -325,6 +340,35 @@
             </div>
         @endif
     </div>
+    @else
+        <!-- Message d'accès refusé -->
+        <div class="p-8 text-center rounded-lg border transition-colors"
+             :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-white' : 'bg-white border-gray-200'">
+            <div class="flex flex-col items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-16 w-16 mb-4 transition-colors"
+                     :class="darkMode ? 'text-red-500' : 'text-red-400'"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <p class="text-xl font-medium mb-2 transition-colors"
+                   :class="darkMode ? 'text-white' : 'text-gray-800'">
+                    Accès refusé
+                </p>
+                <p class="mb-6 transition-colors"
+                   :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
+                    Vous n'avez pas les permissions nécessaires pour accéder à la gestion des phases.
+                </p>
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"
+                   class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour au tableau de bord
+                </a>
+            </div>
+        </div>
+    @endcanany
 @endsection
 
 @push('styles')

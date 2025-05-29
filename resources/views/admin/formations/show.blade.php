@@ -78,7 +78,7 @@
             </div>
         @endif
 
-        @canany(['formation.update', 'formation.view'])
+        @canany(['gestion.formation.update', 'gestion.formation.read'])
         <!-- Contenu principal divisé en sections -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <!-- Informations principales -->
@@ -153,7 +153,7 @@
                     </div>
                     <div class="p-4">
                         <div class="space-y-3">
-                            @can('formation.update')
+                            @can('gestion.formation.update')
                             <a href="{{ route('admin.formations.edit', ['locale' => app()->getLocale(), 'formation' => $formation->id]) }}" class="flex items-center p-3 text-gray-700 border border-gray-200 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-3 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -164,7 +164,7 @@
                                 </svg>
                             </a>
                             @endcan
-                            @can('formation.delete')
+                            @can('gestion.formation.delete')
                             <form action="{{ route('admin.formations.destroy', ['locale' => app()->getLocale(), 'formation' => $formation->id]) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette formation? Cette action est irréversible.');">
                                 @csrf
                                 @method('DELETE')

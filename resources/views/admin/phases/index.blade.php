@@ -27,7 +27,7 @@
         </ol>
     </nav>
 
-    @can('phase.view')
+    @canany(['gestion.phase.create', 'gestion.phase.update', 'gestion.phase.delete', 'gestion.phase.read'])
         <div class="shadow-md rounded-lg p-5 mb-8 transition-colors" :class="darkMode ? 'bg-[#1E293B] border border-[#2C3E50]' : 'bg-white'">
             <!-- En-tête avec titre et bouton d'ajout -->
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -37,7 +37,7 @@
                     </svg>
                     Gestion des Phases
                 </h1>
-                @can('phase.create')
+                @can('gestion.phase.create')
                     <a href="{{ route('admin.phases.create', ['locale' => app()->getLocale()]) }}"
                        class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -186,7 +186,7 @@
                             <option value="older">Plus anciennes</option>
                         </select>
                         <select id="filter-sort"
-                                class="border text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5 transition-colors"
+                                class="border text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] py-2.5 px-6 transition-colors"
                                 :class="darkMode ? 'bg-[#334155] border-[#475569] text-gray-800' : 'bg-gray-50 border-gray-300 text-gray-900'">
                             <option value="created-desc">Création (récent → ancien)</option>
                             <option value="created-asc">Création (ancien → récent)</option>
@@ -216,7 +216,7 @@
                            :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
                             Commencez par créer une nouvelle phase pour organiser votre calendrier académique
                         </p>
-                        @can('phase.create')
+                        @can('gestion.phase.create')
                             <a href="{{ route('admin.phases.create', ['locale' => app()->getLocale()]) }}"
                                class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -250,7 +250,7 @@
                                 :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
                                 Date de création
                             </th>
-                            @canany(['phase.update', 'phase.delete'])
+                            @canany(['gestion.phase.update', 'gestion.phase.delete'])
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider transition-colors"
                                     :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
                                     Actions
@@ -337,10 +337,10 @@
                                         {{ $createdDate->format('H:i') }}
                                     </div>
                                 </td>
-                                @canany(['phase.update', 'phase.delete'])
+                                @canany(['gestion.phase.update', 'gestion.phase.delete'])
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                         <div class="flex justify-center space-x-3">
-                                            @can('phase.update')
+                                            @can('gestion.phase.update')
                                                 <a href="{{ route('admin.phases.edit', ['locale' => app()->getLocale(), 'phase' => $phase->id]) }}"
                                                    class="transition-colors duration-150"
                                                    :class="darkMode ? 'text-yellow-400 hover:text-yellow-300' : 'text-yellow-600 hover:text-yellow-800'"
@@ -350,7 +350,7 @@
                                                     </svg>
                                                 </a>
                                             @endcan
-                                            @can('phase.delete')
+                                            @can('gestion.phase.delete')
                                                 <form action="{{ route('admin.phases.destroy', ['locale' => app()->getLocale(), 'phase' => $phase->id]) }}"
                                                       method="POST"
                                                       class="inline-block"
@@ -361,7 +361,7 @@
                                                             class="transition-colors duration-150"
                                                             :class="darkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-800'"
                                                             title="Supprimer">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                                         </svg>
                                                     </button>

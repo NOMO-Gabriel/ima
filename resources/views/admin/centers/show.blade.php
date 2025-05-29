@@ -42,7 +42,7 @@
         </ol>
     </nav>
 
-    @can('center.view')
+    @can('gestion.center.read')
         <!-- En-tête avec titre et actions -->
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
             <div class="flex items-center">
@@ -75,7 +75,7 @@
                     </svg>
                     Retour à la liste
                 </a>
-                @can('center.update')
+                @can('gestion.center.update')
                     <a href="{{ route('admin.centers.edit', ['locale' => app()->getLocale(), 'center' => $center]) }}"
                        class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -389,7 +389,7 @@
                         </h3>
                     </div>
                     <div class="p-6 space-y-3">
-                        @can('center.update')
+                        @can('gestion.center.update')
                             <a href="{{ route('admin.centers.edit', ['locale' => app()->getLocale(), 'center' => $center]) }}"
                                class="flex items-center w-full px-4 py-3 text-sm font-medium text-[#4CA3DD] border border-[#4CA3DD] rounded-lg hover:bg-[#4CA3DD] hover:text-white transition-all duration-200 group">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-3 group-hover:scale-110 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -451,21 +451,32 @@
             </div>
         </div>
     @else
-        <!-- Accès non autorisé -->
-        <div class="shadow-md rounded-xl p-8 mb-8 text-center transition-colors duration-300"
-             :class="{ 'bg-gray-800': darkMode, 'bg-white': !darkMode }">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 transition-colors duration-300"
-                 :class="{ 'text-gray-500': darkMode, 'text-gray-400': !darkMode }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <h3 class="text-lg font-medium mb-2 transition-colors duration-300"
-                :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">
-                Accès non autorisé
-            </h3>
-            <p class="transition-colors duration-300"
-               :class="{ 'text-gray-400': darkMode, 'text-gray-600': !darkMode }">
-                Vous n'avez pas les permissions nécessaires pour voir les détails de ce centre.
-            </p>
+        <!-- Message d'accès refusé -->
+        <div class="p-8 text-center rounded-lg border transition-colors"
+             :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-white' : 'bg-white border-gray-200'">
+            <div class="flex flex-col items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-16 w-16 mb-4 transition-colors"
+                     :class="darkMode ? 'text-red-500' : 'text-red-400'"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <p class="text-xl font-medium mb-2 transition-colors"
+                   :class="darkMode ? 'text-white' : 'text-gray-800'">
+                    Accès refusé
+                </p>
+                <p class="mb-6 transition-colors"
+                   :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
+                    Vous n'avez pas les permissions nécessaires pour accéder à la gestion des phases.
+                </p>
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"
+                   class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour au tableau de bord
+                </a>
+            </div>
         </div>
     @endcan
 @endsection
