@@ -55,7 +55,7 @@ class FinanceRegistrationController extends Controller
         // Tri
         $sortField = $request->get('sort', 'created_at');
         $sortDirection = $request->get('direction', 'desc');
-        
+
         $validSortFields = ['created_at', 'first_name', 'last_name', 'email'];
         if (in_array($sortField, $validSortFields)) {
             $query->orderBy($sortField, $sortDirection);
@@ -99,9 +99,9 @@ class FinanceRegistrationController extends Controller
         ];
 
         return view('admin.finance.students.pending', compact(
-            'pendingStudents', 
-            'cities', 
-            'centers', 
+            'pendingStudents',
+            'cities',
+            'centers',
             'establishments',
             'stats'
         ));
@@ -144,8 +144,8 @@ class FinanceRegistrationController extends Controller
 
         return view('admin.finance.students.finalize', compact(
             'student',
-            'formations', 
-            'centers', 
+            'formations',
+            'centers',
             'paymentMethods'
         ));
     }
@@ -179,7 +179,7 @@ class FinanceRegistrationController extends Controller
             'parent_phone_number' => 'nullable|string|max:20',
             'establishment' => 'required|string|max:255',
             'center_id' => 'required|exists:centers,id',
-            
+
             // Validation des informations d'inscription
             'formations' => 'required|array|min:1',
             'formations.*' => 'exists:formations,id',
@@ -187,9 +187,6 @@ class FinanceRegistrationController extends Controller
             'receipt_number' => 'required|string|unique:registrations,receipt_number',
             'amount_received' => 'required|numeric|min:0',
             'contract_amount' => 'required|numeric|min:0',
-            'payment_schedule' => 'required|in:monthly,quarterly,semester,annual,one_time',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after:start_date',
             'special_conditions' => 'nullable|string|max:1000',
         ]);
 
@@ -203,14 +200,16 @@ class FinanceRegistrationController extends Controller
             }
 
             // Mettre à jour les informations de l'utilisateur
-            $student->update([
+
+            $user = User::with('student')->where('email', $validated['email'])->first();
+
+            $user->update([
                 'first_name' => $validated['first_name'],
                 'last_name' => $validated['last_name'],
                 'email' => $validated['email'],
                 'phone_number' => $validated['phone_number'],
                 'center_id' => $validated['center_id'],
                 'city' => $selectedCenter->city, // Mettre à jour la ville selon le centre
-                'status' => User::STATUS_ACTIVE,
                 'validated_by' => Auth::id(),
                 'validated_at' => now(),
                 'finalized_by' => Auth::id(),
@@ -218,7 +217,7 @@ class FinanceRegistrationController extends Controller
             ]);
 
             // Mettre à jour les informations spécifiques à l'élève
-            $student->student->update([
+            $user->student->update([
                 'establishment' => $validated['establishment'],
                 'parent_phone_number' => $validated['parent_phone_number'],
             ]);
@@ -227,14 +226,11 @@ class FinanceRegistrationController extends Controller
             $registration = Registration::create([
                 'receipt_number' => $validated['receipt_number'],
                 'contract' => $validated['contract_amount'],
-                'payment_method_id' => $validated['payment_method_id'],
-                'student_id' => $student->student->id,
+                'special_conditions' => $validated['special_conditions'],
+
+                'student_id' => $user->student->id,
                 'formation_id' => $validated['formations'][0], // Formation principale
                 'center_id' => $validated['center_id'],
-                'payment_schedule' => $validated['payment_schedule'],
-                'start_date' => $validated['start_date'],
-                'end_date' => $validated['end_date'],
-                'special_conditions' => $validated['special_conditions'],
             ]);
 
             // Ajouter toutes les formations sélectionnées
@@ -244,8 +240,10 @@ class FinanceRegistrationController extends Controller
             if ($validated['amount_received'] > 0) {
                 $registration->installments()->create([
                     'amount' => $validated['amount_received'],
-                    'payment_date' => now(),
+
                     'payment_method_id' => $validated['payment_method_id'],
+                    'registration_id' => $registration->id,
+
                     'processed_by' => Auth::id(),
                 ]);
             }
@@ -262,7 +260,7 @@ class FinanceRegistrationController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             return back()
                 ->withInput()
                 ->with('error', 'Une erreur est survenue lors de la finalisation de l\'inscription: ' . $e->getMessage());
@@ -274,15 +272,13 @@ class FinanceRegistrationController extends Controller
      */
     public function confirmationRegistration($locale, Registration $registration)
     {
-        $registration->load([
-            'student.user', 
-            'formations', 
-            'center', 
-            'paymentMethod', 
-            'installments'
+        $registration->student->user->update([
+            'status' => User::STATUS_ACTIVE,
         ]);
 
-        return view('admin.finance.students.confirmation', compact('registration'));
+        $registration->load(['student.user', 'formations', 'center']);
+
+        return view('admin.finance.students.confirm', compact('registration'));
     }
 
     /**

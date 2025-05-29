@@ -100,7 +100,7 @@
                             <i class="fas fa-search"></i>Recherche générale
                         </label>
                         <div class="search-wrapper">
-                            <input type="text" id="search" name="search" value="{{ request('search') }}" 
+                            <input type="text" id="search" name="search" value="{{ request('search') }}"
                                    class="form-control" placeholder="Nom, email, téléphone, établissement...">
                             <button type="button" class="search-clear" {{ request('search') ? '' : 'style=display:none' }}>
                                 <i class="fas fa-times"></i>
@@ -223,7 +223,7 @@
                                                         <span class="badge warning-badge">
                                                             <i class="fas fa-hourglass-half"></i>En attente
                                                         </span>
-                                                        @if($student->student->parent_phone_number)
+                                                        @if($student->parent_phone_number)
                                                             <span class="badge info-badge">
                                                                 <i class="fas fa-user-friends"></i>Contact parent
                                                             </span>
@@ -242,16 +242,16 @@
                                                     <i class="fas fa-phone-alt"></i>
                                                     <span>{{ $student->phone_number ?? 'Non renseigné' }}</span>
                                                 </div>
-                                                @if($student->student->establishment)
+                                                @if($student->establishment)
                                                     <div class="contact-item">
                                                         <i class="fas fa-school"></i>
-                                                        <span>{{ $student->student->establishment }}</span>
+                                                        <span>{{ $student->establishment }}</span>
                                                     </div>
                                                 @endif
-                                                @if($student->student->parent_phone_number)
+                                                @if($student->parent_phone_number)
                                                     <div class="contact-item secondary">
                                                         <i class="fas fa-user-friends"></i>
-                                                        <span>Parent: {{ $student->student->parent_phone_number }}</span>
+                                                        <span>Parent: {{ $student->parent_phone_number }}</span>
                                                     </div>
                                                 @endif
                                             </div>
@@ -262,10 +262,10 @@
                                                     <i class="fas fa-map-marker-alt"></i>
                                                     <span>{{ $student->city ?? 'Non spécifié' }}</span>
                                                 </div>
-                                                @if($student->student->center)
+                                                @if($student->center)
                                                     <div class="location-item">
                                                         <i class="fas fa-building"></i>
-                                                        <span>{{ $student->student->center->name }}</span>
+                                                        <span>{{ $student->center->name }}</span>
                                                     </div>
                                                 @else
                                                     <div class="location-item muted">
@@ -282,7 +282,7 @@
                                                     {{ $student->created_at->format('d/m/Y') }}
                                                 </div>
                                                 <div class="date-secondary">
-                                                    {{ $student->created_at->format('H:i') }} • 
+                                                    {{ $student->created_at->format('H:i') }} •
                                                     {{ $student->created_at->diffForHumans() }}
                                                 </div>
                                                 @if($student->created_at->isToday())
@@ -302,16 +302,16 @@
                                         </td>
                                         <td>
                                             <div class="action-buttons">
-                                                <a href="{{ route('admin.finance.students.show', ['locale' => app()->getLocale(), 'student' => $student]) }}" 
+                                                <a href="{{ route('admin.finance.students.show', ['locale' => app()->getLocale(), 'student' => $student]) }}"
                                                    class="btn-action view" title="Voir les détails">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('admin.finance.students.finalize', ['locale' => app()->getLocale(), 'student' => $student]) }}" 
+                                                <a href="{{ route('admin.finance.students.finalize', ['locale' => app()->getLocale(), 'student' => $student]) }}"
                                                    class="btn-action finalize" title="Finaliser l'inscription">
                                                     <i class="fas fa-check-circle"></i>
                                                 </a>
-                                                <button type="button" class="btn-action reject" 
-                                                        onclick="showRejectModal({{ $student->id }})" 
+                                                <button type="button" class="btn-action reject"
+                                                        onclick="showRejectModal({{ $student->id }})"
                                                         title="Rejeter l'inscription">
                                                     <i class="fas fa-times-circle"></i>
                                                 </button>
@@ -379,20 +379,20 @@
                                         <i class="fas fa-phone-alt"></i>
                                         <span>{{ $student->phone_number ?? 'Non renseigné' }}</span>
                                     </div>
-                                    @if($student->student->establishment)
+                                    @if($student->establishment)
                                         <div class="student-card-detail">
                                             <i class="fas fa-school"></i>
-                                            <span>{{ $student->student->establishment }}</span>
+                                            <span>{{ $student->establishment }}</span>
                                         </div>
                                     @endif
                                     <div class="student-card-detail">
                                         <i class="fas fa-map-marker-alt"></i>
                                         <span>{{ $student->city ?? 'Non spécifié' }}</span>
                                     </div>
-                                    @if($student->student->center)
+                                    @if($student->center)
                                         <div class="student-card-detail">
                                             <i class="fas fa-building"></i>
-                                            <span>{{ $student->student->center->name }}</span>
+                                            <span>{{ $student->center->name }}</span>
                                         </div>
                                     @endif
                                     <div class="student-card-detail">
@@ -401,11 +401,11 @@
                                     </div>
                                 </div>
                                 <div class="student-card-footer">
-                                    <a href="{{ route('admin.finance.students.finalize', ['locale' => app()->getLocale(), 'student' => $student]) }}" 
+                                    <a href="{{ route('admin.finance.students.finalize', ['locale' => app()->getLocale(), 'student' => $student]) }}"
                                        class="btn btn-success btn-sm">
                                         <i class="fas fa-check-circle"></i>Finaliser
                                     </a>
-                                    <a href="{{ route('admin.finance.students.show', ['locale' => app()->getLocale(), 'student' => $student]) }}" 
+                                    <a href="{{ route('admin.finance.students.show', ['locale' => app()->getLocale(), 'student' => $student]) }}"
                                        class="btn btn-light btn-sm">
                                         <i class="fas fa-eye"></i>Détails
                                     </a>
@@ -436,8 +436,8 @@
         @if($pendingStudents->hasPages())
             <div class="card-footer">
                 <div class="pagination-info">
-                    Affichage de <span>{{ $pendingStudents->firstItem() ?? 0 }}</span> à 
-                    <span>{{ $pendingStudents->lastItem() ?? 0 }}</span> sur 
+                    Affichage de <span>{{ $pendingStudents->firstItem() ?? 0 }}</span> à
+                    <span>{{ $pendingStudents->lastItem() ?? 0 }}</span> sur
                     <span>{{ $pendingStudents->total() }}</span> élèves
                 </div>
                 <div class="pagination-controls">
@@ -471,8 +471,8 @@
                     <label for="rejection_reason" class="form-label required">
                         <i class="fas fa-comment-alt"></i>Raison du rejet
                     </label>
-                    <textarea id="rejection_reason" name="rejection_reason" rows="4" 
-                              class="form-control" 
+                    <textarea id="rejection_reason" name="rejection_reason" rows="4"
+                              class="form-control"
                               placeholder="Expliquez clairement pourquoi cette inscription est rejetée..."
                               required maxlength="1000"></textarea>
                     <div class="form-help">
@@ -1381,29 +1381,29 @@ body {
     .finance-dashboard {
         padding: var(--spacing-md);
     }
-    
+
     .stats-container {
         grid-template-columns: repeat(2, 1fr);
     }
-    
+
     .filter-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .page-header {
         flex-direction: column;
     }
-    
+
     .header-actions {
         margin-top: var(--spacing-md);
         width: 100%;
     }
-    
+
     .view-actions {
         flex-direction: column;
         gap: var(--spacing-md);
     }
-    
+
     .students-cards {
         grid-template-columns: 1fr;
     }
@@ -1413,16 +1413,16 @@ body {
     .stats-container {
         grid-template-columns: 1fr;
     }
-    
+
     .action-buttons {
         flex-direction: column;
     }
-    
+
     .students-table th:nth-child(3),
     .students-table td:nth-child(3) {
         display: none;
     }
-    
+
     .filter-actions {
         flex-direction: column;
     }
@@ -1576,10 +1576,10 @@ function showRejectModal(studentId) {
     const modal = document.getElementById('rejectModal');
     const form = document.getElementById('rejectForm');
     const baseUrl = "{{ url('/') }}/{{ app()->getLocale() }}/finance/students";
-    
+
     form.action = `${baseUrl}/${studentId}/reject`;
     modal.style.display = 'flex';
-    
+
     setTimeout(() => {
         document.getElementById('rejection_reason').focus();
     }, 100);
@@ -1588,7 +1588,7 @@ function showRejectModal(studentId) {
 function closeRejectModal() {
     const modal = document.getElementById('rejectModal');
     const textarea = document.getElementById('rejection_reason');
-    
+
     modal.style.display = 'none';
     textarea.value = '';
 }

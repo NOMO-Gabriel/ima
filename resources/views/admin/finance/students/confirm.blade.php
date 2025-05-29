@@ -11,7 +11,7 @@
         </div>
         <h1 class="confirmation-title">Inscription finalisée avec succès !</h1>
         <p class="confirmation-subtitle">
-            L'inscription de <strong>{{ $registration->student->user->full_name }}</strong> 
+            L'inscription de <strong>{{ $registration->student->user->full_name }}</strong>
             a été traitée et son compte est maintenant actif.
         </p>
     </div>
@@ -31,8 +31,8 @@
             <div class="card-body">
                 <div class="student-overview">
                     <div class="student-photo">
-                        <img src="{{ $registration->student->user->profile_photo_url }}" 
-                             alt="{{ $registration->student->user->full_name }}" 
+                        <img src="{{ $registration->student->user->profile_photo_url }}"
+                             alt="{{ $registration->student->user->full_name }}"
                              class="avatar-large">
                         <div class="status-badge success">
                             <i class="fas fa-check"></i>
@@ -136,23 +136,15 @@
                                 {{ number_format($registration->contract, 0, ',', ' ') }} FCFA
                             </div>
                         </div>
-                        
+
                         <div class="payment-details">
-                            <div class="summary-item">
-                                <div class="summary-label">Méthode de paiement</div>
-                                <div class="summary-value">
-                                    <i class="fas fa-wallet"></i>
-                                    {{ $registration->paymentMethod->name }}
-                                </div>
-                            </div>
-                            
                             <div class="summary-item">
                                 <div class="summary-label">Montant initial reçu</div>
                                 <div class="summary-value success">
                                     {{ number_format($registration->installments->sum('amount'), 0, ',', ' ') }} FCFA
                                 </div>
                             </div>
-                            
+
                             <div class="summary-item">
                                 <div class="summary-label">Montant restant</div>
                                 <div class="summary-value {{ ($registration->contract - $registration->installments->sum('amount')) > 0 ? 'warning' : 'success' }}">
@@ -161,7 +153,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="payment-timeline">
                         <h4 class="timeline-title">Historique des paiements</h4>
                         <div class="timeline">
@@ -177,13 +169,10 @@
                                         <div class="timeline-date">
                                             {{ $installment->created_at->format('d/m/Y à H:i') }}
                                         </div>
-                                        <div class="timeline-method">
-                                            {{ $registration->paymentMethod->name }}
-                                        </div>
                                     </div>
                                 </div>
                             @endforeach
-                            
+
                             @if($registration->contract - $registration->installments->sum('amount') > 0)
                                 <div class="timeline-item pending">
                                     <div class="timeline-marker pending">
@@ -222,7 +211,7 @@
                             <p class="step-description">Le compte élève est activé et l'inscription est confirmée.</p>
                         </div>
                     </div>
-                    
+
                     <div class="step-item next">
                         <div class="step-marker">
                             <i class="fas fa-envelope"></i>
@@ -230,12 +219,12 @@
                         <div class="step-content">
                             <h4 class="step-title">Notification envoyée</h4>
                             <p class="step-description">
-                                Un email de confirmation a été envoyé à {{ $registration->student->user->email }} 
+                                Un email de confirmation a été envoyé à {{ $registration->student->user->email }}
                                 avec les détails de l'inscription et les informations de connexion.
                             </p>
                         </div>
                     </div>
-                    
+
                     <div class="step-item">
                         <div class="step-marker">
                             <i class="fas fa-calendar-alt"></i>
@@ -243,12 +232,12 @@
                         <div class="step-content">
                             <h4 class="step-title">Planning des cours</h4>
                             <p class="step-description">
-                                L'élève recevra son planning de cours et pourra accéder à son espace personnel 
+                                L'élève recevra son planning de cours et pourra accéder à son espace personnel
                                 pour suivre ses formations.
                             </p>
                         </div>
                     </div>
-                    
+
                     <div class="step-item">
                         <div class="step-marker">
                             <i class="fas fa-credit-card"></i>
@@ -257,7 +246,7 @@
                             <h4 class="step-title">Paiements suivants</h4>
                             <p class="step-description">
                                 @if($registration->contract - $registration->installments->sum('amount') > 0)
-                                    Le solde restant de {{ number_format($registration->contract - $registration->installments->sum('amount'), 0, ',', ' ') }} FCFA 
+                                    Le solde restant de {{ number_format($registration->contract - $registration->installments->sum('amount'), 0, ',', ' ') }} FCFA
                                     sera à régler selon l'échéancier convenu.
                                 @else
                                     Le paiement est intégralement réglé. Aucun versement supplémentaire n'est requis.
@@ -273,23 +262,23 @@
     <!-- Actions -->
     <div class="actions-section">
         <div class="primary-actions">
-            <a href="{{ route('admin.finance.students.pending', ['locale' => app()->getLocale()]) }}" 
+            <a href="{{ route('admin.finance.students.pending', ['locale' => app()->getLocale()]) }}"
                class="btn btn-primary">
                 <i class="fas fa-arrow-left"></i>Retour aux inscriptions en attente
             </a>
-            
+
             <button type="button" class="btn btn-success" onclick="window.print()">
                 <i class="fas fa-print"></i>Imprimer le récapitulatif
             </button>
         </div>
-        
+
         <div class="secondary-actions">
-            <a href="{{ route('admin.finance.students.completed', ['locale' => app()->getLocale()]) }}" 
+            <a href="{{ route('admin.finance.students.completed', ['locale' => app()->getLocale()]) }}"
                class="btn btn-light">
                 <i class="fas fa-list"></i>Voir toutes les inscriptions
             </a>
-            
-            <a href="{{ route('admin.users.show', ['locale' => app()->getLocale(), 'user' => $registration->student->user]) }}" 
+
+            <a href="{{ route('admin.users.show', ['locale' => app()->getLocale(), 'user' => $registration->student->user]) }}"
                class="btn btn-light">
                 <i class="fas fa-user"></i>Profil de l'élève
             </a>
@@ -874,17 +863,17 @@ body {
     .actions-section {
         display: none;
     }
-    
+
     .confirmation-container {
         padding: 0;
     }
-    
+
     .card {
         box-shadow: none;
         border: 1px solid var(--border-color);
         margin-bottom: var(--spacing-md);
     }
-    
+
     .success-icon {
         animation: none;
     }
@@ -895,34 +884,34 @@ body {
     .confirmation-container {
         padding: var(--spacing-lg);
     }
-    
+
     .confirmation-header {
         padding: var(--spacing-lg);
     }
-    
+
     .success-icon {
         width: 60px;
         height: 60px;
         font-size: 2rem;
     }
-    
+
     .confirmation-title {
         font-size: 1.5rem;
     }
-    
+
     .student-overview {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .financial-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .primary-actions, .secondary-actions {
         flex-direction: column;
     }
-    
+
     .btn {
         justify-content: center;
     }
@@ -932,16 +921,16 @@ body {
     .student-details-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .formation-item {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .formation-price {
         align-self: center;
     }
-    
+
     .actions-section {
         padding: var(--spacing-lg);
     }
@@ -954,7 +943,7 @@ body {
 document.addEventListener('DOMContentLoaded', function() {
     // Animation d'entrée pour les éléments
     const animateElements = document.querySelectorAll('.card, .step-item');
-    
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -965,14 +954,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }, {
         threshold: 0.1
     });
-    
+
     animateElements.forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(20px)';
         el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
         observer.observe(el);
     });
-    
+
     // Animation séquentielle pour les étapes
     const steps = document.querySelectorAll('.step-item');
     steps.forEach((step, index) => {

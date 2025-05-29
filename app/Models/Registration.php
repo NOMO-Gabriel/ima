@@ -11,7 +11,12 @@ class Registration extends Model
     use HasFactory;
 
     protected $fillable = [
-        'receipt_number'
+        'receipt_number',
+        'contract',
+        'student_id',
+        'formation_id',
+        'center_id',
+        'special_conditions',
     ];
 
     public function formations()
@@ -26,6 +31,11 @@ class Registration extends Model
 
     public function student()
     {
-        return $this->hasOne(Student::class);
+        return $this->belongsTo(Student::class);
+    }
+
+    public function center()
+    {
+        return $this->belongsTo(Center::class);
     }
 }

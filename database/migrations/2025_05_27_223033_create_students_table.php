@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
 
             $table->string('establishment')->nullable();
+            $table->string('parent_phone_number')->nullable()->unique();
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->string('parent_phone_number')->nullable()->unique();
 
             $table->timestamps();
         });
