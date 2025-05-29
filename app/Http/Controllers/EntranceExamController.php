@@ -28,9 +28,9 @@ class EntranceExamController extends Controller
 
     public function store(Request $request)
     {
-        if ($this->user && !$this->user->can('course.create')) {
-            abort(403, 'Non autorisé');
-        }
+        // if ($this->user && !$this->user->can('course.create')) {
+        //     abort(403, 'Non autorisé');
+        // }
 
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:entrance_exams,code',

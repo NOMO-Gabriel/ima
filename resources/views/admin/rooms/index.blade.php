@@ -293,7 +293,7 @@
                     Affichage de <span>{{ $rooms->firstItem() ?? 0 }}</span> à <span>{{ $rooms->lastItem() ?? 0 }}</span> sur <span>{{ $rooms->total() }}</span> chambres
                 </div>
                 <div class="pagination-controls">
-                    {{ $rooms->links('vendor.pagination.tailwind') }}
+                    {{ $rooms->links() }}
                 </div>
             </div>
         @endif

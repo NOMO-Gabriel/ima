@@ -51,6 +51,14 @@ class MockExamController extends Controller
             ->with('success', 'Le concours blanc a été créé avec succès !');
     }
 
+    public function edit($locale, MockExam $mockExam)
+    {
+        $formations = Formation::all();
+        $courses = Course::all();
+
+        return view('admin.mock-exams.edit', compact('mockExam', 'formations', 'courses'));
+    }
+
     public function update($locale, Request $request, MockExam $mockExam)
     {
         $validated = $request->validate([

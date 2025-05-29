@@ -13,16 +13,18 @@ class Center extends Model
 
     protected $fillable = [
         'name',
-        'location',
+        'code',
+        'description',
+        'address',
+        'contact_email',
+        'contact_phone',
+        'is_active',
+        'staff_ids',
         'city_id',
-        'nb_students',
         'director_id',
-        'head_id',
         'logistics_director_id',
         'finance_director_id',
-        'academic_manager_id',
-        'staff_ids',
-        'is_active',
+        'academy_id',
         'created_by',
         'updated_by',
     ];
@@ -30,7 +32,6 @@ class Center extends Model
     protected $casts = [
         'staff_ids' => 'array',
         'is_active' => 'boolean',
-        'nb_students' => 'integer',
     ];
 
     // Relations
@@ -44,11 +45,6 @@ class Center extends Model
         return $this->belongsTo(User::class, 'director_id');
     }
 
-    public function head(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'head_id');
-    }
-
     public function logisticsDirector(): BelongsTo
     {
         return $this->belongsTo(User::class, 'logistics_director_id');
@@ -59,9 +55,9 @@ class Center extends Model
         return $this->belongsTo(User::class, 'finance_director_id');
     }
 
-    public function academicManager(): BelongsTo
+    public function academy(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'academic_manager_id');
+        return $this->belongsTo(Academy::class, 'academy_id');
     }
 
     public function creator(): BelongsTo

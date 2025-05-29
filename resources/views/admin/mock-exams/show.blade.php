@@ -1,31 +1,31 @@
 @extends('layouts.app')
 
 @section('content')
-<h1>Détails du concours blanc #{{ $exam->id }}</h1>
+<h1>Détails du concours blanc #{{ $mockExam->id }}</h1>
 
 <table class="table table-bordered">
     <tr>
         <th>Date</th>
-        <td>{{ $exam->date->format('d/m/Y H:i') }}</td>
+        <td>{{ $mockExam->date->format('d/m/Y H:i') }}</td>
     </tr>
     <tr>
         <th>Type</th>
-        <td>{{ $exam->type }}</td>
+        <td>{{ $mockExam->type }}</td>
     </tr>
     <tr>
         <th>Durée (minutes)</th>
-        <td>{{ $exam->duration }}</td>
+        <td>{{ $mockExam->duration }}</td>
     </tr>
     <tr>
         <th>Formation</th>
-        <td>{{ $exam->formation->title ?? 'N/A' }}</td>
+        <td>{{ $mockExam->formation->name ?? 'N/A' }}</td>
     </tr>
     <tr>
         <th>Cours associés</th>
         <td>
-            @if($exam->courses->count())
+            @if($mockExam->courses->count())
                 <ul>
-                    @foreach($exam->courses as $course)
+                    @foreach($mockExam->courses as $course)
                         <li>{{ $course->title }}</li>
                     @endforeach
                 </ul>
@@ -36,6 +36,6 @@
     </tr>
 </table>
 
-<a href="{{ route('admin.mock-exams.edit', ['locale' => app()->getLocale(), 'exam' => $exam->id]) }}" class="btn btn-warning">Modifier</a>
+<a href="{{ route('admin.mock-exams.edit', ['locale' => app()->getLocale(), 'mock_exam' => $mockExam->id]) }}" class="btn btn-warning">Modifier</a>
 <a href="{{ route('admin.mock-exams.index', ['locale' => app()->getLocale()]) }}" class="btn btn-secondary">Retour</a>
 @endsection

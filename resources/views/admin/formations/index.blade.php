@@ -238,7 +238,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             @if($formation->phase)
                                 <span class="px-2.5 py-1 inline-flex items-center rounded-full bg-purple-100 text-purple-800 text-xs font-medium">
-                                    {{ $formation->phase->name }}
+                                    {{ optional($formation->phase)->start ? \Carbon\Carbon::parse($formation->phase->start)->format('d/m/Y') : 'N/A' }} - {{ optional($formation->phase)->end ? \Carbon\Carbon::parse($formation->phase->end)->format('d/m/Y') : 'N/A' }}
                                 </span>
                             @else
                                 —
@@ -302,7 +302,7 @@
                     Affichage de <span>{{ $formations->firstItem() ?? 0 }}</span> à <span>{{ $formations->lastItem() ?? 0 }}</span> sur <span>{{ $formations->total() }}</span> formations
                 </div>
                 <div class="pagination-controls">
-                    {{ $formations->links('vendor.pagination.tailwind') }}
+                    {{ $formations->links() }}
                 </div>
             </div>
         @endif

@@ -121,7 +121,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <input type="date" name="start" id="start" value="{{ old('start', $phase->start) }}" required
+                        <input type="date" name="start" id="start" value="{{ old('start', $phase->start ? $phase->start->format('Y-m-d') : '') }}" required
                                class="block w-full pl-10 pr-4 py-3 border rounded-lg shadow-sm focus:ring-[#4CA3DD] focus:border-[#4CA3DD] sm:text-sm transition duration-150 ease-in-out"
                                :class="darkMode ? 'bg-[#2C3E50] text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'" />
                     </div>
@@ -147,7 +147,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                         </div>
-                        <input type="date" name="end" id="end" value="{{ old('end', $phase->end) }}" required
+                        <input type="date" name="end" id="end" value="{{ old('end', $phase->end ? $phase->end->format('Y-m-d') : '') }}" required
                                class="block w-full pl-10 pr-4 py-3 border rounded-lg shadow-sm focus:ring-[#4CA3DD] focus:border-[#4CA3DD] sm:text-sm transition duration-150 ease-in-out"
                                :class="darkMode ? 'bg-[#2C3E50] text-gray-300 border-gray-600' : 'bg-white text-gray-700 border-gray-300'" />
                     </div>

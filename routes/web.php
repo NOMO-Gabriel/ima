@@ -29,7 +29,6 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionHistoryController;
-use App\Models\Command;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 

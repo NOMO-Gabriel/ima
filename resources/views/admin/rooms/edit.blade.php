@@ -159,7 +159,7 @@
             <select name="formation_id" id="formation_id">
                 <option value="">-- Aucune --</option>
                 @foreach ($formations as $formation)
-                    <option value="{{ $formation->id }}" {{ old('formation_id') == $formation->id ? 'selected' : '' }}>
+                    <option value="{{ $formation->id }}" {{ old('formation_id', $room->formation_id) == $formation->id ? 'selected' : '' }}>
                         {{ $formation->name }}
                     </option>
                 @endforeach
