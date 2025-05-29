@@ -1756,233 +1756,423 @@
 
 <!-- Scripts -->
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Toggle sidebar collapse
-        const toggleSidebar = document.querySelector('.toggle-sidebar');
-        const sidebar = document.querySelector('.sidebar');
-        // const mainContent = document.querySelector('.main-content'); // Not directly used here
+// Remplacez le script dans votre fichier HTML par celui-ci :
 
-        if (toggleSidebar && sidebar) {
-            toggleSidebar.addEventListener('click', function() {
-                sidebar.classList.toggle('collapsed');
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle sidebar collapse
+    const toggleSidebar = document.querySelector('.toggle-sidebar');
+    const sidebar = document.querySelector('.sidebar');
 
-                // Change toggle icon
-                const toggleIcon = this.querySelector('i');
-                if (sidebar.classList.contains('collapsed')) {
-                    toggleIcon.classList.remove('fa-chevron-left');
-                    toggleIcon.classList.add('fa-chevron-right');
-                    localStorage.setItem('sidebarCollapsed', 'true'); // Save state
-                } else {
-                    toggleIcon.classList.remove('fa-chevron-right');
-                    toggleIcon.classList.add('fa-chevron-left');
-                    localStorage.setItem('sidebarCollapsed', 'false'); // Save state
-                }
-            });
-
-            // Restore sidebar state on page load
-            if (localStorage.getItem('sidebarCollapsed') === 'true') {
-                sidebar.classList.add('collapsed');
-                const toggleIcon = toggleSidebar.querySelector('i');
+    // Fonction pour mettre à jour l'icône du toggle
+    function updateToggleIcon() {
+        if (toggleSidebar) {
+            const toggleIcon = toggleSidebar.querySelector('i');
+            if (sidebar.classList.contains('collapsed')) {
                 toggleIcon.classList.remove('fa-chevron-left');
                 toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
             }
         }
+    }
 
-
-        // Mobile menu toggle
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const sidebarOverlay = document.querySelector('.sidebar-overlay');
-
-        if (mobileMenuToggle && sidebar && sidebarOverlay) {
-            mobileMenuToggle.addEventListener('click', function() {
-                sidebar.classList.add('show');
-                sidebarOverlay.classList.add('show');
-            });
+    // Fonction pour toggle la sidebar
+    function toggleSidebarState() {
+        if (sidebar.classList.contains('collapsed')) {
+            // Ouvrir la sidebar
+            sidebar.classList.remove('collapsed');
+            localStorage.setItem('sidebarCollapsed', 'false');
+            updateToggleIcon();
+            // Rouvrir le groupe actif quand on expand
+            reopenActiveGroup();
+        } else {
+            // Fermer la sidebar
+            sidebar.classList.add('collapsed');
+            localStorage.setItem('sidebarCollapsed', 'true');
+            updateToggleIcon();
+            // Fermer tous les groupes quand on collapse
+            closeAllMenuGroups();
         }
+    }
 
-        if (sidebarOverlay && sidebar) {
-            sidebarOverlay.addEventListener('click', function() {
+    if (toggleSidebar && sidebar) {
+        toggleSidebar.addEventListener('click', function() {
+            toggleSidebarState();
+        });
+
+        // Restore sidebar state on page load
+        if (localStorage.getItem('sidebarCollapsed') === 'true') {
+            sidebar.classList.add('collapsed');
+            updateToggleIcon();
+        }
+    }
+
+    // Mobile menu toggle
+    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+    const sidebarOverlay = document.querySelector('.sidebar-overlay');
+
+    if (mobileMenuToggle && sidebar && sidebarOverlay) {
+        mobileMenuToggle.addEventListener('click', function() {
+            // Sur mobile, on utilise la classe 'show' au lieu de 'collapsed'
+            if (sidebar.classList.contains('show')) {
                 sidebar.classList.remove('show');
                 sidebarOverlay.classList.remove('show');
-            });
-        }
+            } else {
+                sidebar.classList.add('show');
+                sidebarOverlay.classList.add('show');
+            }
+        });
+    }
 
-        // Toggle menu categories
-        const menuCategories = document.querySelectorAll('.menu-category');
+    if (sidebarOverlay && sidebar) {
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            sidebarOverlay.classList.remove('show');
+        });
+    }
 
-        menuCategories.forEach(category => {
-            // Check if the category has a data-category attribute for submenu functionality
-            if (category.dataset.category) {
-                const groupId = 'group-' + category.dataset.category;
-                const group = document.getElementById(groupId);
+    // Toggle menu categories
+    const menuCategories = document.querySelectorAll('.menu-category');
 
-                // Click event for opening/closing submenus
+    menuCategories.forEach(category => {
+        if (category.dataset.category) {
+            const groupId = 'group-' + category.dataset.category;
+            const group = document.getElementById(groupId);
+
+            if (group) {
+                // Click event pour ouvrir/fermer les sous-menus quand sidebar normale
                 category.addEventListener('click', function(e) {
-                    // Prevent click from bubbling up if it's for submenu logic
-                    // and sidebar is not collapsed (or if sidebar is collapsed but we want popout instead of inline expand)
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
                     if (!sidebar.classList.contains('collapsed')) {
-                         if (group) {
-                            group.classList.toggle('collapsed');
-                            category.classList.toggle('collapsed');
-                        }
-                    } else {
-                        // If sidebar is collapsed, clicking a category could show a popout
-                        // This part might need more specific logic if popouts are hover-only
-                        // or if a click should toggle a persistent popout.
-                        // For now, assume click doesn't expand inline when sidebar is collapsed.
+                        toggleMenuGroup(category, group);
                     }
                 });
 
-                // Hover events for pop-out menu when sidebar is collapsed
+                // Système de hover pour sidebar collapsed
+                setupHoverSystem(category, group);
+            }
+        }
+    });
+
+    // Fonction pour toggle un groupe de menu
+    function toggleMenuGroup(category, group) {
+        const isCurrentlyCollapsed = group.classList.contains('collapsed');
+        
+        if (isCurrentlyCollapsed) {
+            // Ouvrir ce groupe
+            group.classList.remove('collapsed');
+            category.classList.remove('collapsed');
+        } else {
+            // Fermer ce groupe
+            group.classList.add('collapsed');
+            category.classList.add('collapsed');
+        }
+    }
+
+    // Fonction pour fermer tous les groupes
+    function closeAllMenuGroups() {
+        menuCategories.forEach(cat => {
+            if (cat.dataset.category) {
+                const groupId = 'group-' + cat.dataset.category;
+                const group = document.getElementById(groupId);
                 if (group) {
-                    let popoutTimeout;
-
-                    const showPopout = () => {
-                        clearTimeout(popoutTimeout);
-                        if (sidebar.classList.contains('collapsed')) {
-                            const rect = category.getBoundingClientRect();
-                            group.style.top = `${rect.top - sidebar.getBoundingClientRect().top}px`; // Position relative to sidebar
-                            group.classList.remove('collapsed'); // Show it
-                            group.style.display = 'block'; // Ensure it's block for positioning
-                            group.style.opacity = '1';
-                            group.style.visibility = 'visible';
-                        }
-                    };
-
-                    const hidePopout = () => {
-                        popoutTimeout = setTimeout(() => {
-                            if (sidebar.classList.contains('collapsed')) {
-                                group.classList.add('collapsed'); // Hide it
-                                group.style.opacity = '0';
-                                group.style.visibility = 'hidden';
-                                group.style.display = 'none';
-                            }
-                        }, 100); // Small delay to allow moving mouse into popout
-                    };
-
-                    category.addEventListener('mouseenter', showPopout);
-                    category.addEventListener('mouseleave', hidePopout);
-                    group.addEventListener('mouseenter', showPopout); // Keep open if mouse enters group
-                    group.addEventListener('mouseleave', hidePopout);
+                    group.classList.add('collapsed');
+                    cat.classList.add('collapsed');
+                    // Cacher le popout s'il est visible
+                    hidePopout(group);
                 }
             }
         });
+    }
 
-
-        // Toggle theme
-        const themeToggle = document.getElementById('theme-toggle');
-        const htmlElement = document.documentElement;
-
-        if (themeToggle && htmlElement) {
-            // Check saved theme preference
-            const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-            htmlElement.classList.toggle('dark', savedTheme === 'dark');
-            updateThemeIcon();
-
-            themeToggle.addEventListener('click', function() {
-                htmlElement.classList.toggle('dark');
-                localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
-                updateThemeIcon();
-            });
-        }
-
-        function updateThemeIcon() {
-            if (themeToggle) {
-                const icon = themeToggle.querySelector('i');
-                if (htmlElement.classList.contains('dark')) {
-                    icon.classList.remove('fa-moon');
-                    icon.classList.add('fa-sun');
-                } else {
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
-                }
-            }
-        }
-
-        // Auto-expand active menu group
+    // Fonction pour rouvrir le groupe contenant l'élément actif
+    function reopenActiveGroup() {
         const activeMenuItem = document.querySelector('.menu-item.active');
         if (activeMenuItem) {
             const parentGroup = activeMenuItem.closest('.menu-group');
-            if (parentGroup && parentGroup.classList.contains('collapsed')) { // Only if it's currently collapsed
+            if (parentGroup) {
                 parentGroup.classList.remove('collapsed');
-
-                // Also expand the category's visual state (icon)
                 const categoryId = parentGroup.id.replace('group-', '');
                 const category = document.querySelector(`.menu-category[data-category="${categoryId}"]`);
-                if (category && category.classList.contains('collapsed')) {
+                if (category) {
                     category.classList.remove('collapsed');
                 }
             }
         }
+    }
 
-        // Dropdown handling
-        const dropdownToggles = {
-            'notification-toggle': 'notification-dropdown',
-            'language-toggle': 'language-dropdown',
-            'user-toggle': 'user-dropdown'
+    // Système de hover pour sidebar collapsed
+    function setupHoverSystem(category, group) {
+        let hoverTimeout;
+        let isHovering = false;
+
+        const showPopout = () => {
+            if (!sidebar.classList.contains('collapsed')) return;
+            
+            clearTimeout(hoverTimeout);
+            isHovering = true;
+            
+            // Positionner le popout
+            const rect = category.getBoundingClientRect();
+            const sidebarRect = sidebar.getBoundingClientRect();
+            
+            group.style.position = 'fixed';
+            group.style.left = sidebarRect.right + 'px';
+            group.style.top = rect.top + 'px';
+            group.style.zIndex = '1000';
+            group.style.width = '230px';
+            
+            // Adapter les couleurs selon le thème
+            if (document.documentElement.classList.contains('dark')) {
+                group.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-dark-secondary').trim() || '#2C3E50';
+                group.style.border = '1px solid rgba(75, 85, 99, 0.2)';
+            } else {
+                group.style.backgroundColor = 'white';
+                group.style.border = '1px solid #e5e7eb';
+            }
+            
+            group.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+            group.style.borderRadius = '0.5rem';
+            group.style.padding = '0.5rem 0';
+            
+            // Afficher le groupe
+            group.classList.remove('collapsed');
+            group.style.display = 'block';
+            group.style.opacity = '1';
+            group.style.visibility = 'visible';
+            
+            // Afficher aussi le nom de la catégorie dans le popout
+            addCategoryTitle(group, category);
         };
 
-        Object.keys(dropdownToggles).forEach(toggleId => {
-            const toggle = document.getElementById(toggleId);
-            const dropdownId = dropdownToggles[toggleId];
-            const dropdown = document.getElementById(dropdownId);
+        const hidePopout = (delay = 100) => {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = setTimeout(() => {
+                if (!isHovering || !sidebar.classList.contains('collapsed')) {
+                    hidePopoutImmediate(group);
+                }
+            }, delay);
+        };
 
-            if (toggle && dropdown) {
-                toggle.addEventListener('click', function(e) {
-                    e.stopPropagation(); // Prevent click from closing itself immediately
+        const resetHover = () => {
+            isHovering = false;
+            hidePopout();
+        };
 
-                    // Close all other dropdowns
-                    Object.values(dropdownToggles).forEach(id => {
-                        if (id !== dropdownId) {
-                            const otherDropdown = document.getElementById(id);
-                            if (otherDropdown) otherDropdown.classList.remove('show');
-                        }
-                    });
-                    dropdown.classList.toggle('show');
+        // Events pour la catégorie
+        category.addEventListener('mouseenter', () => {
+            isHovering = true;
+            showPopout();
+        });
+        
+        category.addEventListener('mouseleave', resetHover);
+
+        // Events pour le groupe
+        group.addEventListener('mouseenter', () => {
+            isHovering = true;
+            clearTimeout(hoverTimeout);
+        });
+        
+        group.addEventListener('mouseleave', resetHover);
+    }
+
+    // Fonction pour cacher immédiatement le popout
+    function hidePopoutImmediate(group) {
+        group.classList.add('collapsed');
+        group.style.opacity = '0';
+        group.style.visibility = 'hidden';
+        group.style.display = 'none';
+        group.style.position = '';
+        group.style.left = '';
+        group.style.top = '';
+        group.style.zIndex = '';
+        group.style.width = '';
+        group.style.backgroundColor = '';
+        group.style.boxShadow = '';
+        group.style.borderRadius = '';
+        group.style.padding = '';
+        group.style.border = '';
+        
+        // Retirer le titre de catégorie s'il existe
+        const categoryTitle = group.querySelector('.popout-category-title');
+        if (categoryTitle) {
+            categoryTitle.remove();
+        }
+    }
+
+    // Fonction générique pour cacher les popouts
+    function hidePopout(group) {
+        hidePopoutImmediate(group);
+    }
+
+    // Fonction pour ajouter le titre de catégorie dans le popout
+    function addCategoryTitle(group, category) {
+        // Éviter les doublons
+        let existingTitle = group.querySelector('.popout-category-title');
+        if (existingTitle) {
+            existingTitle.remove();
+        }
+        
+        const categoryText = category.querySelector('.menu-category-text')?.textContent || '';
+        const categoryIcon = category.querySelector('i:first-child')?.outerHTML || '';
+        
+        if (categoryText) {
+            const titleElement = document.createElement('div');
+            titleElement.className = 'popout-category-title';
+            titleElement.innerHTML = `${categoryIcon} ${categoryText}`;
+            titleElement.style.cssText = `
+                padding: 0.75rem 1rem;
+                font-weight: 600;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+                margin-bottom: 0.5rem;
+                color: var(--primary);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            `;
+            
+            if (document.documentElement.classList.contains('dark')) {
+                titleElement.style.borderBottomColor = 'rgba(75, 85, 99, 0.2)';
+            }
+            
+            group.insertBefore(titleElement, group.firstChild);
+        }
+    }
+
+    // Cacher tous les popouts quand on clique ailleurs
+    document.addEventListener('click', function(e) {
+        if (!sidebar.contains(e.target)) {
+            menuCategories.forEach(category => {
+                if (category.dataset.category) {
+                    const groupId = 'group-' + category.dataset.category;
+                    const group = document.getElementById(groupId);
+                    if (group && sidebar.classList.contains('collapsed')) {
+                        hidePopoutImmediate(group);
+                    }
+                }
+            });
+        }
+    });
+
+    // Gestion du redimensionnement de la fenêtre
+    window.addEventListener('resize', function() {
+        if (sidebar.classList.contains('collapsed')) {
+            // Recacher tous les popouts lors du redimensionnement
+            menuCategories.forEach(category => {
+                if (category.dataset.category) {
+                    const groupId = 'group-' + category.dataset.category;
+                    const group = document.getElementById(groupId);
+                    if (group) {
+                        hidePopoutImmediate(group);
+                    }
+                }
+            });
+        }
+    });
+
+    // Toggle theme
+    const themeToggle = document.getElementById('theme-toggle');
+    const htmlElement = document.documentElement;
+
+    if (themeToggle && htmlElement) {
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        htmlElement.classList.toggle('dark', savedTheme === 'dark');
+        updateThemeIcon();
+
+        themeToggle.addEventListener('click', function() {
+            htmlElement.classList.toggle('dark');
+            localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
+            updateThemeIcon();
+        });
+    }
+
+    function updateThemeIcon() {
+        if (themeToggle) {
+            const icon = themeToggle.querySelector('i');
+            if (htmlElement.classList.contains('dark')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+        }
+    }
+
+    // Auto-expand active menu group au chargement (seulement si sidebar pas collapsed)
+    if (!sidebar.classList.contains('collapsed')) {
+        reopenActiveGroup();
+    }
+
+    // Dropdown handling
+    const dropdownToggles = {
+        'notification-toggle': 'notification-dropdown',
+        'language-toggle': 'language-dropdown',
+        'user-toggle': 'user-dropdown'
+    };
+
+    Object.keys(dropdownToggles).forEach(toggleId => {
+        const toggle = document.getElementById(toggleId);
+        const dropdownId = dropdownToggles[toggleId];
+        const dropdown = document.getElementById(dropdownId);
+
+        if (toggle && dropdown) {
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+
+                // Close all other dropdowns
+                Object.values(dropdownToggles).forEach(id => {
+                    if (id !== dropdownId) {
+                        const otherDropdown = document.getElementById(id);
+                        if (otherDropdown) otherDropdown.classList.remove('show');
+                    }
                 });
+                dropdown.classList.toggle('show');
+            });
+        }
+    });
+
+    // Close dropdowns when clicking outside
+    document.addEventListener('click', function(e) {
+        let isInsideDropdown = false;
+        Object.values(dropdownToggles).forEach(id => {
+            const dropdown = document.getElementById(id);
+            if (dropdown && dropdown.contains(e.target)) {
+                isInsideDropdown = true;
+            }
+            const toggleId = Object.keys(dropdownToggles).find(key => dropdownToggles[key] === id);
+            const toggleElement = document.getElementById(toggleId);
+            if (toggleElement && toggleElement.contains(e.target)) {
+                isInsideDropdown = true;
             }
         });
 
-        // Close dropdowns when clicking outside
-        document.addEventListener('click', function(e) {
-            let isInsideDropdown = false;
+        if (!isInsideDropdown) {
             Object.values(dropdownToggles).forEach(id => {
                 const dropdown = document.getElementById(id);
-                if (dropdown && dropdown.contains(e.target)) {
-                    isInsideDropdown = true;
-                }
-                 // Also check if click is on the toggle itself
-                const toggleId = Object.keys(dropdownToggles).find(key => dropdownToggles[key] === id);
-                const toggleElement = document.getElementById(toggleId);
-                if (toggleElement && toggleElement.contains(e.target)) {
-                    isInsideDropdown = true;
-                }
+                if (dropdown) dropdown.classList.remove('show');
             });
+        }
+    });
 
-            if (!isInsideDropdown) {
-                Object.values(dropdownToggles).forEach(id => {
-                    const dropdown = document.getElementById(id);
-                    if (dropdown) dropdown.classList.remove('show');
-                });
+    // Close alert messages
+    const alertCloseButtons = document.querySelectorAll('.alert-close');
+    alertCloseButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const alert = this.closest('.alert');
+            if (alert) {
+                alert.style.transition = 'opacity 0.3s ease-out';
+                alert.style.opacity = '0';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 300);
             }
         });
-
-
-        // Close alert messages
-        const alertCloseButtons = document.querySelectorAll('.alert-close');
-        alertCloseButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const alert = this.closest('.alert');
-                if (alert) {
-                    alert.style.transition = 'opacity 0.3s ease-out';
-                    alert.style.opacity = '0';
-                    setTimeout(() => {
-                        alert.style.display = 'none';
-                    }, 300);
-                }
-            });
-        });
     });
+});
 </script>
 
 @stack('scripts')
