@@ -63,16 +63,16 @@
                         </div>
                         <div class="info-item">
                             <i class="fas fa-school"></i>
-                            <span>{{ $student->student->establishment ?? 'Non renseigné' }}</span>
+                            <span>{{ $student->establishment ?? 'Non renseigné' }}</span>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-map-marker-alt"></i>
                             <span>{{ $student->city ?? 'Non renseigné' }}</span>
                         </div>
-                        @if($student->student->parent_phone_number)
+                        @if($student->parent_phone_number)
                             <div class="info-item">
                                 <i class="fas fa-user-friends"></i>
-                                <span>Parent: {{ $student->student->parent_phone_number }}</span>
+                                <span>Parent: {{ $student->parent_phone_number }}</span>
                             </div>
                         @endif
                         <div class="info-item">
@@ -86,7 +86,7 @@
     </div>
 
     <!-- Formulaire de finalisation -->
-    <form method="POST" action="{{ route('admin.finance.students.process', ['locale' => app()->getLocale(), 'student' => $student]) }}" 
+    <form method="POST" action="{{ route('admin.finance.students.process', ['locale' => app()->getLocale(), 'student' => $student]) }}"
           id="finalizationForm" class="finalization-form">
         @csrf
 
@@ -105,8 +105,8 @@
                     @foreach($formations as $formation)
                         <div class="formation-card">
                             <label class="formation-label">
-                                <input type="checkbox" name="formations[]" value="{{ $formation->id }}" 
-                                       class="formation-checkbox" 
+                                <input type="checkbox" name="formations[]" value="{{ $formation->id }}"
+                                       class="formation-checkbox"
                                        {{ in_array($formation->id, old('formations', [])) ? 'checked' : '' }}>
                                 <div class="formation-content">
                                     <div class="formation-header">
@@ -189,14 +189,14 @@
                     <div class="form-group">
                         <label for="parent_phone_number" class="form-label"><i class="fas fa-user-friends"></i>Téléphone du parent (facultatif)</label>
                         <input type="text" name="parent_phone_number" id="parent_phone_number" class="form-control"
-                            value="{{ old('parent_phone_number', $student->student->parent_phone_number ?? '') }}">
+                            value="{{ old('parent_phone_number', $student->parent_phone_number ?? '') }}">
                         @error('parent_phone_number') <div class="error-message">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="form-group full-width">
                         <label for="establishment" class="form-label required"><i class="fas fa-school"></i>Établissement</label>
                         <input type="text" name="establishment" id="establishment" class="form-control"
-                            value="{{ old('establishment', $student->student->establishment ?? '') }}" required>
+                            value="{{ old('establishment', $student->establishment ?? '') }}" required>
                         @error('establishment') <div class="error-message">{{ $message }}</div> @enderror
                     </div>
                 </div>
@@ -222,7 +222,7 @@
                             <select id="center_id" name="center_id" class="form-control" required>
                                 <option value="">Sélectionnez un centre</option>
                                 @foreach($centers as $center)
-                                    <option value="{{ $center->id }}" 
+                                    <option value="{{ $center->id }}"
                                             {{ old('center_id') == $center->id ? 'selected' : '' }}>
                                         {{ $center->name }}
                                         @if($center->location) - {{ $center->location }} @endif
@@ -232,29 +232,6 @@
                             <i class="fas fa-chevron-down"></i>
                         </div>
                         @error('center_id')
-                            <div class="error-message">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Période de formation -->
-                    <div class="form-group">
-                        <label for="start_date" class="form-label required">
-                            <i class="fas fa-calendar-plus"></i>Date de début
-                        </label>
-                        <input type="date" id="start_date" name="start_date" class="form-control" 
-                               value="{{ old('start_date') }}" min="{{ date('Y-m-d') }}" required>
-                        @error('start_date')
-                            <div class="error-message">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="end_date" class="form-label required">
-                            <i class="fas fa-calendar-minus"></i>Date de fin
-                        </label>
-                        <input type="date" id="end_date" name="end_date" class="form-control" 
-                               value="{{ old('end_date') }}" required>
-                        @error('end_date')
                             <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
@@ -283,7 +260,7 @@
                             <select id="payment_method_id" name="payment_method_id" class="form-control" required>
                                 <option value="">Sélectionnez une méthode</option>
                                 @foreach($paymentMethods as $method)
-                                    <option value="{{ $method->id }}" 
+                                    <option value="{{ $method->id }}"
                                             {{ old('payment_method_id') == $method->id ? 'selected' : '' }}>
                                         {{ $method->name }} ({{ $method->label }})
                                     </option>
@@ -301,7 +278,7 @@
                         <label for="receipt_number" class="form-label required">
                             <i class="fas fa-receipt"></i>Numéro de reçu
                         </label>
-                        <input type="text" id="receipt_number" name="receipt_number" class="form-control" 
+                        <input type="text" id="receipt_number" name="receipt_number" class="form-control"
                                value="{{ old('receipt_number') }}" placeholder="Ex: REC-2025-001" required>
                         @error('receipt_number')
                             <div class="error-message">{{ $message }}</div>
@@ -313,7 +290,7 @@
                         <label for="contract_amount" class="form-label required">
                             <i class="fas fa-file-contract"></i>Montant du contrat (FCFA)
                         </label>
-                        <input type="number" id="contract_amount" name="contract_amount" class="form-control" 
+                        <input type="number" id="contract_amount" name="contract_amount" class="form-control"
                                value="{{ old('contract_amount') }}" min="0" step="1000" required>
                         @error('contract_amount')
                             <div class="error-message">{{ $message }}</div>
@@ -325,40 +302,9 @@
                         <label for="amount_received" class="form-label required">
                             <i class="fas fa-money-bill-wave"></i>Montant reçu (FCFA)
                         </label>
-                        <input type="number" id="amount_received" name="amount_received" class="form-control" 
+                        <input type="number" id="amount_received" name="amount_received" class="form-control"
                                value="{{ old('amount_received') }}" min="0" step="1000" required>
                         @error('amount_received')
-                            <div class="error-message">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- Planning de paiement -->
-                    <div class="form-group">
-                        <label for="payment_schedule" class="form-label required">
-                            <i class="fas fa-calendar-alt"></i>Planning de paiement
-                        </label>
-                        <div class="select-wrapper">
-                            <select id="payment_schedule" name="payment_schedule" class="form-control" required>
-                                <option value="">Sélectionnez un planning</option>
-                                <option value="one_time" {{ old('payment_schedule') == 'one_time' ? 'selected' : '' }}>
-                                    Paiement unique
-                                </option>
-                                <option value="monthly" {{ old('payment_schedule') == 'monthly' ? 'selected' : '' }}>
-                                    Mensuel
-                                </option>
-                                <option value="quarterly" {{ old('payment_schedule') == 'quarterly' ? 'selected' : '' }}>
-                                    Trimestriel
-                                </option>
-                                <option value="semester" {{ old('payment_schedule') == 'semester' ? 'selected' : '' }}>
-                                    Semestriel
-                                </option>
-                                <option value="annual" {{ old('payment_schedule') == 'annual' ? 'selected' : '' }}>
-                                    Annuel
-                                </option>
-                            </select>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                        @error('payment_schedule')
                             <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
@@ -368,7 +314,7 @@
                         <label for="special_conditions" class="form-label">
                             <i class="fas fa-sticky-note"></i>Conditions spéciales (optionnel)
                         </label>
-                        <textarea id="special_conditions" name="special_conditions" rows="3" 
+                        <textarea id="special_conditions" name="special_conditions" rows="3"
                                   class="form-control" maxlength="1000"
                                   placeholder="Notes particulières, réductions accordées, etc.">{{ old('special_conditions') }}</textarea>
                         @error('special_conditions')
@@ -393,9 +339,9 @@
                         Veuillez remplir les informations ci-dessus pour voir le récapitulatif.
                     </p>
                 </div>
-                
+
                 <div class="form-actions">
-                    <a href="{{ route('admin.finance.students.pending', ['locale' => app()->getLocale()]) }}" 
+                    <a href="{{ route('admin.finance.students.pending', ['locale' => app()->getLocale()]) }}"
                        class="btn btn-light">
                         <i class="fas fa-times"></i>Annuler
                     </a>
@@ -875,33 +821,33 @@ body {
     .finalize-registration-container {
         padding: var(--spacing-md);
     }
-    
+
     .page-header {
         flex-direction: column;
         gap: var(--spacing-md);
     }
-    
+
     .header-actions {
         width: 100%;
     }
-    
+
     .student-overview {
         flex-direction: column;
         text-align: center;
     }
-    
+
     .formations-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .form-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .form-actions {
         flex-direction: column;
     }
-    
+
     .btn {
         justify-content: center;
     }
@@ -911,12 +857,12 @@ body {
     .student-info-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .formation-header {
         flex-direction: column;
         gap: var(--spacing-sm);
     }
-    
+
     .formation-price {
         align-self: flex-start;
     }
@@ -930,30 +876,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('finalizationForm');
     const submitBtn = document.getElementById('submit-btn');
     const summaryContent = document.getElementById('summary-content');
-    
+
     // Éléments du formulaire
     const formationsCheckboxes = document.querySelectorAll('input[name="formations[]"]');
     const centerSelect = document.getElementById('center_id');
-    const startDateInput = document.getElementById('start_date');
-    const endDateInput = document.getElementById('end_date');
     const paymentMethodSelect = document.getElementById('payment_method_id');
     const receiptNumberInput = document.getElementById('receipt_number');
     const contractAmountInput = document.getElementById('contract_amount');
     const amountReceivedInput = document.getElementById('amount_received');
-    const paymentScheduleSelect = document.getElementById('payment_schedule');
-    
-    // Mettre à jour la date de fin automatiquement
-    startDateInput.addEventListener('change', function() {
-        if (this.value) {
-            const startDate = new Date(this.value);
-            const endDate = new Date(startDate);
-            endDate.setFullYear(startDate.getFullYear() + 1);
-            endDateInput.value = endDate.toISOString().split('T')[0];
-            endDateInput.min = this.value;
-            updateSummary();
-        }
-    });
-    
+
     // Calculer le total des formations sélectionnées
     function calculateFormationsTotal() {
         let total = 0;
@@ -969,7 +900,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         return total;
     }
-    
+
     // Mettre à jour le montant du contrat basé sur les formations
     function updateContractAmount() {
         const total = calculateFormationsTotal();
@@ -977,7 +908,7 @@ document.addEventListener('DOMContentLoaded', function() {
             contractAmountInput.value = total;
         }
     }
-    
+
     // Event listeners pour les formations
     formationsCheckboxes.forEach(checkbox => {
         checkbox.addEventListener('change', function() {
@@ -985,16 +916,16 @@ document.addEventListener('DOMContentLoaded', function() {
             updateSummary();
         });
     });
-    
+
     // Event listeners pour tous les champs
-    [centerSelect, paymentMethodSelect, receiptNumberInput, contractAmountInput, 
-     amountReceivedInput, paymentScheduleSelect].forEach(element => {
+    [centerSelect, paymentMethodSelect, receiptNumberInput, contractAmountInput,
+     amountReceivedInput].forEach(element => {
         element.addEventListener('change', updateSummary);
         if (element.tagName === 'INPUT') {
             element.addEventListener('input', updateSummary);
         }
     });
-    
+
     // Fonction pour mettre à jour le récapitulatif
     function updateSummary() {
         const selectedFormations = Array.from(formationsCheckboxes)
@@ -1003,30 +934,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 const card = cb.closest('.formation-card');
                 return card.querySelector('.formation-name').textContent;
             });
-        
+
         const center = centerSelect.options[centerSelect.selectedIndex]?.text || '';
         const paymentMethod = paymentMethodSelect.options[paymentMethodSelect.selectedIndex]?.text || '';
         const contractAmount = contractAmountInput.value;
         const amountReceived = amountReceivedInput.value;
-        const paymentSchedule = paymentScheduleSelect.options[paymentScheduleSelect.selectedIndex]?.text || '';
         const receiptNumber = receiptNumberInput.value;
-        
+
         // Vérifier si tous les champs requis sont remplis
-        const isFormValid = selectedFormations.length > 0 && 
-                           centerSelect.value && 
-                           paymentMethodSelect.value && 
-                           receiptNumber && 
-                           contractAmount && 
-                           amountReceived && 
-                           paymentScheduleSelect.value &&
-                           startDateInput.value &&
-                           endDateInput.value;
-        
+        const isFormValid = selectedFormations.length > 0 &&
+                           centerSelect.value &&
+                           paymentMethodSelect.value &&
+                           receiptNumber &&
+                           contractAmount &&
+                           amountReceived;
+
         submitBtn.disabled = !isFormValid;
-        
+
         if (isFormValid) {
             const remainingAmount = parseInt(contractAmount) - parseInt(amountReceived);
-            
+
             summaryContent.innerHTML = `
                 <div class="summary-grid">
                     <div class="summary-item">
@@ -1036,13 +963,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="summary-item">
                         <div class="summary-label">Centre d'affectation</div>
                         <div class="summary-value">${center}</div>
-                    </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Période</div>
-                        <div class="summary-value">
-                            Du ${new Date(startDateInput.value).toLocaleDateString('fr-FR')} 
-                            au ${new Date(endDateInput.value).toLocaleDateString('fr-FR')}
-                        </div>
                     </div>
                     <div class="summary-item">
                         <div class="summary-label">Méthode de paiement</div>
@@ -1068,10 +988,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             ${remainingAmount.toLocaleString('fr-FR')} FCFA
                         </div>
                     </div>
-                    <div class="summary-item">
-                        <div class="summary-label">Planning de paiement</div>
-                        <div class="summary-value">${paymentSchedule}</div>
-                    </div>
                 </div>
             `;
         } else {
@@ -1083,42 +999,42 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
         }
     }
-    
+
     // Validation du formulaire avant soumission
     form.addEventListener('submit', function(e) {
         const selectedFormations = Array.from(formationsCheckboxes).filter(cb => cb.checked);
-        
+
         if (selectedFormations.length === 0) {
             e.preventDefault();
             alert('Veuillez sélectionner au moins une formation.');
             return false;
         }
-        
+
         const contractAmount = parseInt(contractAmountInput.value);
         const amountReceived = parseInt(amountReceivedInput.value);
-        
+
         if (amountReceived > contractAmount) {
             e.preventDefault();
             alert('Le montant reçu ne peut pas être supérieur au montant du contrat.');
             return false;
         }
-        
+
         // Confirmation finale
         const confirmMessage = `Êtes-vous sûr de vouloir finaliser l'inscription de {{ $student->full_name }} ?
-        
+
 Cette action va :
 - Activer le compte de l'élève
 - Créer son dossier d'inscription
 - Enregistrer le paiement initial
-        
+
 Cette action est irréversible.`;
-        
+
         if (!confirm(confirmMessage)) {
             e.preventDefault();
             return false;
         }
     });
-    
+
     // Initialiser le récapitulatif
     updateSummary();
 });
