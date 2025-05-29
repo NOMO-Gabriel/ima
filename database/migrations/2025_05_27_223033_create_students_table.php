@@ -16,6 +16,7 @@ return new class extends Migration
 
             $table->string('establishment')->nullable();
             $table->string('parent_phone_number')->nullable()->unique();
+            $table->boolean('fully_registered')->default(false);
 
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
 

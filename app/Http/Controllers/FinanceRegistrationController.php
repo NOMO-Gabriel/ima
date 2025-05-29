@@ -9,7 +9,6 @@ use App\Models\Formation;
 use App\Models\Center;
 use App\Models\PaymentMethod;
 use App\Models\Registration;
-use App\Models\City;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +22,9 @@ class FinanceRegistrationController extends Controller
     public function pendingStudents(Request $request)
     {
         $query = User::where('account_type', 'student')
-            ->where('status', User::STATUS_PENDING_VALIDATION)
+            ->whereHas('student', function ($q) {
+                $q->where('fully_registered', false);
+            })
             ->with(['student', 'roles']);
 
         // Filtres de recherche
@@ -63,7 +64,10 @@ class FinanceRegistrationController extends Controller
             $query->latest();
         }
 
-        $pendingStudents = $query->paginate(15);
+        $pendingStudents = User::where('account_type', 'student')
+            ->whereHas('student', fn ($q) => $q->where('fully_registered', false))
+            ->with(['student.registration', 'roles'])
+            ->paginate(15);
 
         // Données pour les filtres
         $cities = User::where('account_type', 'student')

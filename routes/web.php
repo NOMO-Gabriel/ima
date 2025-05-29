@@ -17,6 +17,7 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EntranceExamController;
 use App\Http\Controllers\FormationController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\InstallmentController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\MockExamController;
 use App\Http\Controllers\PhaseController;
@@ -29,6 +30,7 @@ use App\Http\Controllers\TeacherController;
 use App\Http\Controllers\TimetableController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\TransactionHistoryController;
+use App\Models\Installment;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 
@@ -83,6 +85,9 @@ Route::prefix('{locale}')
 
             // Protected by admin role
             Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
+                Route::resource('transactions', TransactionController::class);
+                Route::get('transactions-stats', [TransactionController::class, 'stats'])->name('transactions.stats');
+                Route::get('transactions-export', [TransactionController::class, 'export'])->name('transactions.export');
 
                 // Administration
                 Route::resource('staff', StaffController::class);
@@ -107,11 +112,20 @@ Route::prefix('{locale}')
 
                 // Finances
                 Route::resource('registrations', RegistrationController::class);
-                Route::resource('transactions', TransactionController::class);
                 Route::resource('transactions-history', TransactionHistoryController::class);
 
                 // Ajouter les routes finance dans la section admin
                 Route::prefix('finance')->name('finance.')->group(function () {
+                    // Routes personnalisées pour les installments
+                    Route::get('/installments', [InstallmentController::class, 'index'])->name('installments.index');
+                    Route::get('/installments/create', [InstallmentController::class, 'create'])->name('installments.create');
+                    Route::post('/installments', [InstallmentController::class, 'store'])->name('installments.store');
+                    Route::get('/installments/{installment}', [InstallmentController::class, 'show'])->name('installments.show');
+                    Route::get('/installments/{installment}/edit', [InstallmentController::class, 'edit'])->name('installments.edit');
+                    Route::put('/installments/{installment}', [InstallmentController::class, 'update'])->name('installments.update');
+                    Route::delete('/installments/{installment}', [InstallmentController::class, 'destroy'])->name('installments.destroy');
+
+
                     Route::prefix('students')->name('students.')->group(function () {
                         Route::get('/pending', [App\Http\Controllers\FinanceRegistrationController::class, 'pendingStudents'])->name('pending');
                         Route::get('/{student}', [App\Http\Controllers\FinanceRegistrationController::class, 'showStudent'])->name('show');
@@ -122,9 +136,6 @@ Route::prefix('{locale}')
                         Route::get('/completed', [App\Http\Controllers\FinanceRegistrationController::class, 'completedRegistrations'])->name('completed');
                     });
                 });
-
-
-
 
 
                 // Ressources

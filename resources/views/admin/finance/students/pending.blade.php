@@ -306,10 +306,17 @@
                                                    class="btn-action view" title="Voir les détails">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                                <a href="{{ route('admin.finance.students.finalize', ['locale' => app()->getLocale(), 'student' => $student]) }}"
-                                                   class="btn-action finalize" title="Finaliser l'inscription">
-                                                    <i class="fas fa-check-circle"></i>
-                                                </a>
+                                                @if (!$student->student->registration)
+                                                    <a href="{{ route('admin.finance.students.finalize', ['locale' => app()->getLocale(), 'student' => $student]) }}"
+                                                    class="btn-action finalize" title="Finaliser l'inscription">
+                                                        <i class="fas fa-check-circle"></i>
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('admin.finance.installments.index', ['locale' => app()->getLocale(), 'student' => $student->student->id, 'registration' => $student->student->registration->id]) }}"
+                                                    class="btn-action view" title="Voir l'inscription">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                @endif
                                                 <button type="button" class="btn-action reject"
                                                         onclick="showRejectModal({{ $student->id }})"
                                                         title="Rejeter l'inscription">

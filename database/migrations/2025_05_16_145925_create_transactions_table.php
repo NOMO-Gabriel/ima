@@ -11,13 +11,15 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
 
-            $table->enum('direction', ['IN', 'OUT']);
-            $table->foreignId('reason_id')->constrained('transaction_reasons')->onDelete('restrict');
             $table->decimal('amount', 10, 2)->default(0);
             $table->text('description')->nullable();
+            $table->boolean('valid')->default(true);
 
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('reason_id')->constrained('transaction_reasons')->onDelete('restrict');
+            $table->foreignId('receiver_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('center_id')->nullable()->constrained('centers')->nullOnDelete();
+
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
 
             $table->timestamps();
         });

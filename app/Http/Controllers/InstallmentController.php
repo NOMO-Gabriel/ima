@@ -2,64 +2,55 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+use App\Models\Registration;
 use App\Models\Installment;
+use App\Models\PaymentMethod;
+use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InstallmentController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Affiche la liste des versements pour une inscription
      */
-    public function index()
+    public function index(Request $request, $locale)
     {
-        //
+        $registrationId = $request->get('registration');
+
+        if (!$registrationId) {
+            return redirect()->back()->with('error', 'Paramètres manquants');
+        }
+
+        // $student = Student::findOrFail($studentId);
+        $registration = Registration::findOrFail($registrationId);
+        $student = $registration->student;
+
+        return view('admin.finance.students.installments.index', compact('student', 'registration'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
-    }
+        $studentId = $request->input('student_id') ?? $request->get('student');
+        $student = Student::findOrFail($studentId);
+        $registration = $student->registration;
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Installment $installment)
-    {
-        //
-    }
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:0',
+            'payment_method_id' => 'nullable|exists:payment_methods,id',
+            'notes' => 'nullable|string',
+        ]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Installment $installment)
-    {
-        //
-    }
+        Installment::create([
+            'amount' => $validated['amount'],
+            'notes' => $validated['notes'] ?? null,
+            'payment_method_id' => $validated['payment_method_id'],
+            'registration_id' => $registration->id,
+            'processed_by' => Auth::id(),
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Installment $installment)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Installment $installment)
-    {
-        //
+        return redirect()->back()->with('success', 'Versement ajouté avec succès.');
     }
 }

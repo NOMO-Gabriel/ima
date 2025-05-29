@@ -14,9 +14,8 @@ class RegistrationController extends Controller
 {
     public function index()
     {
-
-
         $registrations = Registration::with('student', 'formation', 'installments')->latest()->paginate(10);
+
         return view('admin.registrations.index', compact('registrations'));
     }
 
@@ -64,16 +63,13 @@ class RegistrationController extends Controller
 
     public function show($locale, Registration $registration)
     {
-
-
         $registration->load('student', 'formation', 'installments');
+
         return view('admin.registrations.show', compact('registration'));
     }
 
     public function edit($locale, Registration $registration)
     {
-
-
         $students = Student::orderBy('last_name')->get();
         $formations = Formation::orderBy('title')->get();
         $centers = Center::orderBy('name')->get();

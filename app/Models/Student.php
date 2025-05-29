@@ -14,6 +14,7 @@ class Student extends Model
         'establishment',
         'user_id',
         'parent_phone_number',
+        'full_registered',
     ];
 
     // Relations
