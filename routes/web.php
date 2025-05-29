@@ -84,10 +84,60 @@ Route::prefix('{locale}')
             // Protected by admin role
             Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
 
-                // Administration
-                Route::resource('staff', StaffController::class);
-                Route::resource('teachers', TeacherController::class);
-                Route::resource('students', StudentController::class);
+                // =====================================
+                // GESTION DES UTILISATEURS - SÉPARÉE
+                // =====================================
+                
+                // Personnel administratif
+                Route::prefix('staff')->name('staff.')->group(function () {
+                    Route::get('/', [StaffController::class, 'index'])->name('index');
+                    Route::get('/create', [StaffController::class, 'create'])->name('create');
+                    Route::post('/', [StaffController::class, 'store'])->name('store');
+                    Route::get('/{staffUser}', [StaffController::class, 'show'])->name('show');
+                    Route::get('/{staffUser}/edit', [StaffController::class, 'edit'])->name('edit');
+                    Route::put('/{staffUser}', [StaffController::class, 'update'])->name('update');
+                    Route::delete('/{staffUser}', [StaffController::class, 'destroy'])->name('destroy');
+                    Route::put('/{staffUser}/permissions', [StaffController::class, 'updateDirectPermissions'])->name('update-permissions');
+                });
+
+                // Enseignants
+                Route::prefix('teachers')->name('teachers.')->group(function () {
+                    Route::get('/', [TeacherController::class, 'index'])->name('index');
+                    Route::get('/create', [TeacherController::class, 'create'])->name('create');
+                    Route::post('/', [TeacherController::class, 'store'])->name('store');
+                    Route::get('/{teacherUser}', [TeacherController::class, 'show'])->name('show');
+                    Route::get('/{teacherUser}/edit', [TeacherController::class, 'edit'])->name('edit');
+                    Route::put('/{teacherUser}', [TeacherController::class, 'update'])->name('update');
+                    Route::delete('/{teacherUser}', [TeacherController::class, 'destroy'])->name('destroy');
+                    Route::put('/{teacherUser}/permissions', [TeacherController::class, 'updateDirectPermissions'])->name('update-permissions');
+                });
+
+                // Étudiants
+                Route::prefix('students')->name('students.')->group(function () {
+                    Route::get('/', [StudentController::class, 'index'])->name('index');
+                    Route::get('/create', [StudentController::class, 'create'])->name('create');
+                    Route::post('/', [StudentController::class, 'store'])->name('store');
+                    Route::get('/{studentUser}', [StudentController::class, 'show'])->name('show');
+                    Route::get('/{studentUser}/edit', [StudentController::class, 'edit'])->name('edit');
+                    Route::put('/{studentUser}', [StudentController::class, 'update'])->name('update');
+                    Route::delete('/{studentUser}', [StudentController::class, 'destroy'])->name('destroy');
+                });
+
+                // Gestion globale des utilisateurs (pour vue d'ensemble)
+                Route::prefix('users')->name('users.')->group(function () {
+                    Route::get('/', [UserController::class, 'index'])->name('index');
+                    Route::get('/create', [UserController::class, 'create'])->name('create');
+                    Route::post('/', [UserController::class, 'store'])->name('store');
+                    Route::get('/{user}', [UserController::class, 'show'])->name('show');
+                    Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+                    Route::put('/{user}', [UserController::class, 'update'])->name('update');
+                    Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+                    Route::put('/{user}/roles', [UserController::class, 'updateRoles'])->name('update-roles');
+                });
+
+                // =====================================
+                // AUTRES MODULES
+                // =====================================
 
                 // Gestion
                 Route::resource('academies', AcademyController::class);
@@ -110,7 +160,7 @@ Route::prefix('{locale}')
                 Route::resource('transactions', TransactionController::class);
                 Route::resource('transactions-history', TransactionHistoryController::class);
 
-                // Ajouter les routes finance dans la section admin
+                // Finance - Validation des inscriptions
                 Route::prefix('finance')->name('finance.')->group(function () {
                     Route::prefix('students')->name('students.')->group(function () {
                         Route::get('/pending', [App\Http\Controllers\FinanceRegistrationController::class, 'pendingStudents'])->name('pending');
@@ -123,10 +173,6 @@ Route::prefix('{locale}')
                     });
                 });
 
-
-
-
-
                 // Ressources
                 Route::resource('books', BookController::class);
                 Route::resource('materials', MaterialController::class);
@@ -138,20 +184,8 @@ Route::prefix('{locale}')
 
                 // Others
                 Route::resource('slots', SlotController::class);
-
-                Route::resource('users', UserController::class);
-            });
-
-            // User only
-            // Route::prefix('admin/users')->name('admin.users.')->middleware('permission:user.view.any')->group(function () {
-                Route::prefix('admin/users')->name('admin.users.')->group(function () {
-                    Route::resource('/', UserController::class)->parameters(['' => 'user']);
-                Route::put('{user}/roles', [UserController::class, 'updateRoles'])
-                    ->middleware('permission:user.role.assign')
-                    ->name('update-roles');
             });
         });
      });
 
 require __DIR__.'/auth.php';
-

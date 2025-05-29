@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -77,7 +77,7 @@ class TeacherController extends Controller
                                ->latest()
                                ->paginate(15);
 
-        $spatieRoles = Role::where('name', 'enseignant')->orWhere(/* autres rôles enseignants */)->get();
+        $spatieRoles = Role::where('name', 'enseignant')->get();
         $academies = Academy::orderBy('name')->pluck('name', 'id');
         $departments = Department::orderBy('name')->pluck('name', 'id');
 

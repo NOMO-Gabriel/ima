@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin; // Ou App\Http\Controllers\ suivant votre structure
+namespace App\Http\Controllers; // Ou App\Http\Controllers\ suivant votre structure
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
