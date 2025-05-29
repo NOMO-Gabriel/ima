@@ -189,12 +189,7 @@
         @php
             use Illuminate\Support\Str;
 
-            // Vérification de l'existence du timetable
-            if (!$timetable) {
-                $slots = collect();
-            } else {
-                $slots = $timetable->slots;
-            }
+            // Grouper les slots par jour
             $slotsByDay = $slots->groupBy('week_day');
 
             // Générer les couleurs pour les professeurs
@@ -238,124 +233,105 @@
             </div>
         @endif
 
-        @if(!$timetable)
-            <!-- Message si aucun emploi du temps n'existe -->
-            <div class="text-center py-12 rounded-lg transition-colors duration-150"
-                 :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 transition-colors duration-150"
-                     :class="darkMode ? 'text-[#64748B]' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <h3 class="text-xl font-semibold mb-2 transition-colors duration-150"
-                    :class="darkMode ? 'text-[#F1F5F9]' : 'text-gray-900'">
-                    Aucun emploi du temps configuré
-                </h3>
-                <p class="transition-colors duration-150"
-                   :class="darkMode ? 'text-[#94A3B8]' : 'text-gray-600'">
-                    L'emploi du temps pour cette formation n'a pas encore été créé pour cette semaine.
-                </p>
-            </div>
-        @else
-            <!-- Emploi du temps -->
-            <div class="overflow-x-auto rounded-lg border transition-colors duration-150"
-                 :class="darkMode ? 'border-[#475569]' : 'border-gray-200'">
+        <!-- Emploi du temps -->
+        <div class="overflow-x-auto rounded-lg border transition-colors duration-150"
+             :class="darkMode ? 'border-[#475569]' : 'border-gray-200'">
 
-                <table class="min-w-full table-fixed">
-                    <thead>
-                    <tr class="transition-colors duration-150"
-                        :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
-                        <th rowspan="2" class="w-32 px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150"
+            <table class="min-w-full table-fixed">
+                <thead>
+                <tr class="transition-colors duration-150"
+                    :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
+                    <th rowspan="2" class="w-32 px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150"
+                        :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
+                        Jour
+                    </th>
+                    <th rowspan="2" class="w-28 px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150"
+                        :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
+                        Horaire
+                    </th>
+                    <th colspan="{{ $formationRooms->count() }}"
+                        class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150"
+                        :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
+                        {{ $formation->name }}
+                    </th>
+                </tr>
+                <tr class="transition-colors duration-150"
+                    :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
+                    @foreach ($formationRooms as $room)
+                        <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider border-r transition-colors duration-150"
                             :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
-                            Jour
+                            {{ $room->name }}
                         </th>
-                        <th rowspan="2" class="w-28 px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150"
-                            :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
-                            Horaire
-                        </th>
-                        <th colspan="{{ $formationRooms->count() }}"
-                            class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150"
-                            :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
-                            {{ $formation->name }}
-                        </th>
-                    </tr>
-                    <tr class="transition-colors duration-150"
-                        :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
-                        @foreach ($formationRooms as $room)
-                            <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider border-r transition-colors duration-150"
-                                :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
-                                {{ $room->name }}
-                            </th>
-                        @endforeach
-                    </tr>
-                    </thead>
-                    <tbody class="divide-y transition-colors duration-150"
-                           :class="darkMode ? 'bg-[#334155] divide-[#475569]' : 'bg-white divide-gray-200'">
-                    @foreach ($days as $dayIndex => $day)
-                        @foreach ($periods as $periodIndex => $period)
-                            <tr class="transition-colors duration-150"
-                                :class="darkMode ? 'hover:bg-[#475569]' : 'hover:bg-gray-50'">
-                                @if ($periodIndex === 0)
-                                    <td rowspan="{{ count($periods) }}"
-                                        class="px-4 py-6 text-center font-bold border-r transition-colors duration-150"
-                                        :class="darkMode ? 'text-[#F1F5F9] border-[#64748B] bg-[#475569]' : 'text-gray-900 border-gray-200 bg-gray-100'">
-                                        <div>{{ $day->locale('fr')->isoFormat('dddd') }}</div>
-                                        <div class="text-xs font-normal opacity-75 mt-1">{{ $weekStartDate->copy()->addDays($dayIndex)->format('d/m') }}</div>
-                                    </td>
-                                @endif
-
-                                <td class="px-4 py-6 text-center font-semibold border-r transition-colors duration-150"
-                                    :class="darkMode ? 'text-[#F1F5F9] border-[#64748B] bg-[#475569]' : 'text-gray-900 border-gray-200 bg-gray-100'">
-                                    <div class="text-sm">
-                                        {{ \Carbon\Carbon::parse($period['start'])->format('H:i') }} -
-                                        {{ \Carbon\Carbon::parse($period['end'])->format('H:i') }}
-                                    </div>
-                                </td>
-
-                                @foreach ($formationRooms as $room)
-                                    @php
-                                        $slot = $timetable->slots->firstWhere(fn($s) =>
-                                            $s->week_day === $dayNames[$dayIndex] &&
-                                            $s->start_time === $period['start'] &&
-                                            $s->formation_id === $formation->id &&
-                                            $s->room_id === $room->id
-                                        );
-                                    @endphp
-                                    <td class="px-2 py-3 text-center border-r transition-all duration-150 h-24"
-                                        :class="darkMode ? 'border-[#64748B]' : 'border-gray-200'">
-                                        @if ($slot)
-                                            <a href="{{ route('admin.slots.edit', ['locale' => app()->getLocale(), 'slot' => $slot]) }}"
-                                               class="block p-3 rounded-lg transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer h-full"
-                                               style="background-color: {{ $teacherColors[$slot->teacher_id] ?? '#64748B' }}; color: white;">
-                                                <div class="space-y-1">
-                                                    <div class="text-xs font-bold truncate">
-                                                        {{ $slot->course->title ?? 'Cours' }}
-                                                    </div>
-                                                    <div class="text-xs opacity-90 truncate">
-                                                        {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : 'Professeur' }}
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        @else
-                                            <a href="#"
-                                               class="block p-3 rounded-lg border-2 border-dashed transition-all duration-200 hover:border-solid h-full flex items-center justify-center"
-                                               :class="darkMode ? 'border-[#64748B] hover:border-[#4CA3DD] hover:bg-[#475569] text-[#94A3B8]' : 'border-gray-300 hover:border-[#4CA3DD] hover:bg-gray-50 text-gray-500'">
-                                                <div class="text-xs">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                    </svg>
-                                                    Ajouter
-                                                </div>
-                                            </a>
-                                        @endif
-                                    </td>
-                                @endforeach
-                            </tr>
-                        @endforeach
                     @endforeach
-                    </tbody>
-                </table>
-            </div>
-        @endif
+                </tr>
+                </thead>
+                <tbody class="divide-y transition-colors duration-150"
+                       :class="darkMode ? 'bg-[#334155] divide-[#475569]' : 'bg-white divide-gray-200'">
+                @foreach ($days as $dayIndex => $day)
+                    @foreach ($periods as $periodIndex => $period)
+                        <tr class="transition-colors duration-150"
+                            :class="darkMode ? 'hover:bg-[#475569]' : 'hover:bg-gray-50'">
+                            @if ($periodIndex === 0)
+                                <td rowspan="{{ count($periods) }}"
+                                    class="px-4 py-6 text-center font-bold border-r transition-colors duration-150"
+                                    :class="darkMode ? 'text-[#F1F5F9] border-[#64748B] bg-[#475569]' : 'text-gray-900 border-gray-200 bg-gray-100'">
+                                    <div>{{ $day->locale('fr')->isoFormat('dddd') }}</div>
+                                    <div class="text-xs font-normal opacity-75 mt-1">{{ $weekStartDate->copy()->addDays($dayIndex)->format('d/m') }}</div>
+                                </td>
+                            @endif
+
+                            <td class="px-4 py-6 text-center font-semibold border-r transition-colors duration-150"
+                                :class="darkMode ? 'text-[#F1F5F9] border-[#64748B] bg-[#475569]' : 'text-gray-900 border-gray-200 bg-gray-100'">
+                                <div class="text-sm">
+                                    {{ \Carbon\Carbon::parse($period['start'])->format('H:i') }} -
+                                    {{ \Carbon\Carbon::parse($period['end'])->format('H:i') }}
+                                </div>
+                            </td>
+
+                            @foreach ($formationRooms as $room)
+                                @php
+                                    $slot = $slots->firstWhere(fn($s) =>
+                                        $s->week_day === $dayNames[$dayIndex] &&
+                                        $s->start_time === $period['start'] &&
+                                        $s->formation_id === $formation->id &&
+                                        $s->room_id === $room->id
+                                    );
+                                @endphp
+                                <td class="px-2 py-3 text-center border-r transition-all duration-150 h-24"
+                                    :class="darkMode ? 'border-[#64748B]' : 'border-gray-200'">
+                                    @if ($slot)
+                                        <a href="{{ route('admin.slots.edit', ['locale' => app()->getLocale(), 'slot' => $slot]) }}"
+                                           class="block p-3 rounded-lg transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer h-full"
+                                           style="background-color: {{ $teacherColors[$slot->teacher_id] ?? '#64748B' }}; color: white;">
+                                            <div class="space-y-1">
+                                                <div class="text-xs font-bold truncate">
+                                                    {{ $slot->course->title ?? 'Cours non défini' }}
+                                                </div>
+                                                <div class="text-xs opacity-90 truncate">
+                                                    {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : 'Professeur non assigné' }}
+                                                </div>
+                                            </div>
+                                        </a>
+                                    @else
+                                        <a href="{{ route('admin.slots.create', ['locale' => app()->getLocale()]) }}?timetable_id={{ $timetable->id }}&formation_id={{ $formation->id }}&room_id={{ $room->id }}&week_day={{ $dayNames[$dayIndex] }}&start_time={{ $period['start'] }}&end_time={{ $period['end'] }}"
+                                           class="block p-3 rounded-lg border-2 border-dashed transition-all duration-200 hover:border-solid h-full flex items-center justify-center"
+                                           :class="darkMode ? 'border-[#64748B] hover:border-[#4CA3DD] hover:bg-[#475569] text-[#94A3B8]' : 'border-gray-300 hover:border-[#4CA3DD] hover:bg-gray-50 text-gray-500'">
+                                            <div class="text-xs">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                </svg>
+                                                Planifier
+                                            </div>
+                                        </a>
+                                    @endif
+                                </td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
 @endsection
 
@@ -403,3 +379,4 @@
         }
     </style>
 @endpush
+@endsection

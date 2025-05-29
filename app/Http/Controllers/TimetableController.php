@@ -25,16 +25,20 @@ class TimetableController extends Controller
 
         // Étape 2 : Sélection de la formation
         if (!$formationId) {
-            $formations = Formation::all();
+            $formations = Formation::whereHas('rooms', function($query) use ($centerId) {
+                $query->where('center_id', $centerId);
+            })->get();
 
             return view('admin.planning.select_formation', compact('center', 'formations'));
         }
 
         // Étape 3 : Affichage de l'emploi du temps pour la formation sélectionnée
-        $formation = Formation::with('rooms')->findOrFail($formationId);
+        $formation = Formation::with(['rooms' => function($query) use ($centerId) {
+            $query->where('center_id', $centerId);
+        }])->findOrFail($formationId);
 
         // Vérifier que la formation a des salles dans ce centre
-        $formationRooms = $formation->rooms->where('center_id', $centerId);
+        $formationRooms = $formation->rooms;
         if ($formationRooms->isEmpty()) {
             return redirect()->route('admin.planning.index', [
                 'locale' => app()->getLocale(),
@@ -62,35 +66,25 @@ class TimetableController extends Controller
             ['start' => '14:00:00', 'end' => '16:30:00'],
         ];
 
-        // Emploi du temps de la semaine pour ce centre
+        // Trouver ou créer l'emploi du temps de la semaine
         $timetable = $center->timetables()
             ->whereDate('week_start_date', $weekStart)
-            ->with(['slots' => function($query) use ($formationId) {
-                $query->where('formation_id', $formationId)
-                      ->with(['room', 'course', 'formation', 'teacher']);
-            }])
             ->first();
 
-        // Création si inexistant
         if (!$timetable) {
-            $timetable = Timetable::createWithDefaultSlots($center, $weekStart, $formationId);
-            $timetable = $center->timetables()
-                ->whereDate('week_start_date', $weekStart)
-                ->with(['slots' => function($query) use ($formationId) {
-                    $query->where('formation_id', $formationId)
-                          ->with(['room', 'course', 'formation', 'teacher']);
-                }])
-                ->first();
+            $timetable = Timetable::create([
+                'center_id' => $center->id,
+                'week_start_date' => $weekStart->toDateString(),
+                'day_start_time' => '08:00:00',
+                'day_end_time' => '16:30:00',
+            ]);
         }
 
-        // Créer les slots manquants pour cette formation uniquement
-        $this->createMissingSlots($timetable, $formation, $formationRooms, $dayNames, $periods);
-
-        // Rechargement des relations
-        $timetable->load(['slots' => function($query) use ($formationId) {
-            $query->where('formation_id', $formationId)
-                  ->with(['room', 'course', 'formation', 'teacher']);
-        }]);
+        // Charger les slots existants pour cette formation uniquement
+        $slots = $timetable->slots()
+            ->where('formation_id', $formationId)
+            ->with(['room', 'course', 'formation', 'teacher'])
+            ->get();
 
         // Navigation semaine précédente / suivante
         $prevWeek = $weekStart->copy()->subWeek()->toDateString();
@@ -107,41 +101,8 @@ class TimetableController extends Controller
             'weekStartDate' => $weekStart,
             'prevWeek' => $prevWeek,
             'nextWeek' => $nextWeek,
+            'slots' => $slots,
         ]);
-    }
-
-    /**
-     * Créer les slots manquants pour une formation spécifique
-     */
-    private function createMissingSlots($timetable, $formation, $rooms, $dayNames, $periods)
-    {
-        $existingSlots = $timetable->slots->mapWithKeys(function ($slot) {
-            return [$slot->week_day . $slot->start_time . $slot->end_time . $slot->room_id => true];
-        })->toArray();
-
-        // Récupérer les slots de formation (template)
-        $formationSlots = $formation->slots;
-
-        foreach ($rooms as $room) {
-            foreach ($formationSlots as $formationSlot) {
-                $key = $formationSlot->week_day . $formationSlot->start_time . $formationSlot->end_time . $room->id;
-
-                if (!isset($existingSlots[$key])) {
-                    \App\Models\Slot::create([
-                        'timetable_id' => $timetable->id,
-                        'week_day'     => $formationSlot->week_day,
-                        'start_time'   => $formationSlot->start_time,
-                        'end_time'     => $formationSlot->end_time,
-                        'room_id'      => $room->id,
-                        'formation_id' => $formation->id,
-                        'course_id'    => $formationSlot->course_id,
-                        'teacher_id'   => $formationSlot->teacher_id,
-                    ]);
-
-                    $existingSlots[$key] = true;
-                }
-            }
-        }
     }
 
     /**

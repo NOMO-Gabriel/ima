@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Modifier le créneau')
+@section('title', 'Planifier un créneau')
 
 @section('content')
 <div class="planning-dashboard">
@@ -14,17 +14,17 @@
                 <i class="fas fa-chevron-right"></i>
                 <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale()]) }}">Planning</a>
                 <i class="fas fa-chevron-right"></i>
-                <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id, 'formation_id' => $formation->id, 'week_start_date' => $slot->timetable->week_start_date->toDateString()]) }}">
+                <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id, 'formation_id' => $formation->id, 'week_start_date' => $timetable->week_start_date->toDateString()]) }}">
                     {{ $center->name }}
                 </a>
                 <i class="fas fa-chevron-right"></i>
-                <span>Modifier créneau</span>
+                <span>Nouveau créneau</span>
             </div>
-            <h1 class="page-title">Modifier le créneau</h1>
-            <p class="page-description">Modification des détails du cours planifié</p>
+            <h1 class="page-title">Planifier un créneau</h1>
+            <p class="page-description">Ajouter un nouveau cours à l'emploi du temps</p>
         </div>
         <div class="header-actions">
-            <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id, 'formation_id' => $formation->id, 'week_start_date' => $slot->timetable->week_start_date->toDateString()]) }}" class="btn btn-light">
+            <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id, 'formation_id' => $formation->id, 'week_start_date' => $timetable->week_start_date->toDateString()]) }}" class="btn btn-light">
                 <i class="fas fa-arrow-left"></i>
                 <span>Retour au planning</span>
             </a>
@@ -77,9 +77,9 @@
                     <div class="info-content">
                         <span class="info-label">Créneau</span>
                         <span class="info-value">
-                            {{ ucfirst($slot->week_day) }}
-                            {{ \Carbon\Carbon::parse($slot->start_time)->format('H:i') }} -
-                            {{ \Carbon\Carbon::parse($slot->end_time)->format('H:i') }}
+                            {{ ucfirst($slotData['week_day']) }}
+                            {{ \Carbon\Carbon::parse($slotData['start_time'])->format('H:i') }} -
+                            {{ \Carbon\Carbon::parse($slotData['end_time'])->format('H:i') }}
                         </span>
                     </div>
                 </div>
@@ -87,17 +87,21 @@
         </div>
     </div>
 
-    <!-- Formulaire de modification -->
+    <!-- Formulaire de planification -->
     <div class="card form-card">
         <div class="card-header">
             <h2 class="card-title">
-                <i class="fas fa-edit"></i>Modifier les détails du cours
+                <i class="fas fa-calendar-plus"></i>Détails du cours
             </h2>
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ route('admin.slots.update', ['locale' => app()->getLocale(), 'slot' => $slot]) }}" id="slotEditForm">
+            <form method="POST" action="{{ route('admin.slots.store', ['locale' => app()->getLocale()]) }}" id="slotForm">
                 @csrf
-                @method('PUT')
+
+                <!-- Champs cachés pour les données du créneau -->
+                @foreach($slotData as $key => $value)
+                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                @endforeach
 
                 <div class="form-grid">
                     <div class="form-group">
@@ -106,9 +110,9 @@
                         </label>
                         <div class="select-wrapper">
                             <select name="course_id" id="course_id" class="form-control @error('course_id') is-invalid @enderror">
-                                <option value="">-- Aucun cours assigné --</option>
+                                <option value="">-- Sélectionner un cours --</option>
                                 @foreach($courses as $course)
-                                    <option value="{{ $course->id }}" {{ (old('course_id') ?? $slot->course_id) == $course->id ? 'selected' : '' }}>
+                                    <option value="{{ $course->id }}" {{ old('course_id') == $course->id ? 'selected' : '' }}>
                                         {{ $course->title }}
                                     </option>
                                 @endforeach
@@ -118,13 +122,7 @@
                         @error('course_id')
                             <div class="form-error">{{ $message }}</div>
                         @enderror
-                        <div class="form-help">
-                            @if($slot->course)
-                                Cours actuel : <strong>{{ $slot->course->title }}</strong>
-                            @else
-                                Aucun cours actuellement assigné
-                            @endif
-                        </div>
+                        <div class="form-help">Choisissez le cours à enseigner pendant ce créneau</div>
                     </div>
 
                     <div class="form-group">
@@ -133,9 +131,9 @@
                         </label>
                         <div class="select-wrapper">
                             <select name="teacher_id" id="teacher_id" class="form-control @error('teacher_id') is-invalid @enderror">
-                                <option value="">-- Aucun professeur assigné --</option>
+                                <option value="">-- Sélectionner un professeur --</option>
                                 @foreach($teachers as $teacher)
-                                    <option value="{{ $teacher->id }}" {{ (old('teacher_id') ?? $slot->teacher_id) == $teacher->id ? 'selected' : '' }}>
+                                    <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
                                         {{ $teacher->first_name }} {{ $teacher->last_name }}
                                     </option>
                                 @endforeach
@@ -145,48 +143,17 @@
                         @error('teacher_id')
                             <div class="form-error">{{ $message }}</div>
                         @enderror
-                        <div class="form-help">
-                            @if($slot->teacher)
-                                Professeur actuel : <strong>{{ $slot->teacher->first_name }} {{ $slot->teacher->last_name }}</strong>
-                            @else
-                                Aucun professeur actuellement assigné
-                            @endif
-                        </div>
+                        <div class="form-help">Assignez un professeur à ce créneau</div>
                     </div>
-                </div>
-
-                <!-- Informations de création -->
-                <div class="creation-info">
-                    <div class="info-row">
-                        <span class="info-label">
-                            <i class="fas fa-calendar-plus"></i>Créé le
-                        </span>
-                        <span class="info-value">{{ $slot->created_at->format('d/m/Y à H:i') }}</span>
-                    </div>
-                    @if($slot->updated_at != $slot->created_at)
-                        <div class="info-row">
-                            <span class="info-label">
-                                <i class="fas fa-edit"></i>Dernière modification
-                            </span>
-                            <span class="info-value">{{ $slot->updated_at->format('d/m/Y à H:i') }}</span>
-                        </div>
-                    @endif
                 </div>
 
                 <div class="form-actions">
-                    <div class="action-group">
-                        <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id, 'formation_id' => $formation->id, 'week_start_date' => $slot->timetable->week_start_date->toDateString()]) }}" class="btn btn-light">
-                            <i class="fas fa-times"></i>Annuler
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>Sauvegarder les modifications
-                        </button>
-                    </div>
-                    <div class="action-group">
-                        <button type="button" class="btn btn-danger" onclick="showDeleteModal()">
-                            <i class="fas fa-trash"></i>Supprimer le créneau
-                        </button>
-                    </div>
+                    <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id, 'formation_id' => $formation->id, 'week_start_date' => $timetable->week_start_date->toDateString()]) }}" class="btn btn-light">
+                        <i class="fas fa-times"></i>Annuler
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>Planifier le créneau
+                    </button>
                 </div>
             </form>
         </div>
@@ -196,68 +163,25 @@
     <div class="card help-card">
         <div class="card-header">
             <h3 class="card-title">
-                <i class="fas fa-lightbulb"></i>Actions possibles
+                <i class="fas fa-lightbulb"></i>Aide
             </h3>
         </div>
         <div class="card-body">
             <div class="help-content">
                 <div class="help-item">
-                    <h4><i class="fas fa-edit text-primary"></i> Modification</h4>
-                    <p>Vous pouvez modifier le cours et/ou le professeur assigné à ce créneau.</p>
+                    <h4><i class="fas fa-info-circle text-info"></i> Cours optionnel</h4>
+                    <p>Vous pouvez créer le créneau sans assigner de cours spécifique. Il pourra être défini plus tard.</p>
                 </div>
                 <div class="help-item">
-                    <h4><i class="fas fa-eraser text-warning"></i> Réinitialisation</h4>
-                    <p>Vous pouvez retirer le cours ou le professeur en sélectionnant "Aucun".</p>
+                    <h4><i class="fas fa-user-check text-success"></i> Professeur optionnel</h4>
+                    <p>De même, l'assignation d'un professeur peut être faite ultérieurement selon les disponibilités.</p>
                 </div>
                 <div class="help-item">
-                    <h4><i class="fas fa-trash text-danger"></i> Suppression</h4>
-                    <p>La suppression du créneau le retirera définitivement du planning.</p>
+                    <h4><i class="fas fa-edit text-warning"></i> Modification possible</h4>
+                    <p>Une fois créé, le créneau pourra être modifié ou supprimé depuis le planning principal.</p>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-<!-- Modal de suppression -->
-<div id="deleteModal" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 class="modal-title">
-                <i class="fas fa-trash text-danger"></i>
-                Supprimer le créneau
-            </h3>
-            <button type="button" class="modal-close" onclick="closeDeleteModal()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <form id="deleteForm" method="POST" action="{{ route('admin.slots.destroy', ['locale' => app()->getLocale(), 'slot' => $slot]) }}">
-            @csrf
-            @method('DELETE')
-            <div class="modal-body">
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <strong>Attention :</strong> Cette action est irréversible. Le créneau sera définitivement supprimé du planning.
-                </div>
-                <p>Êtes-vous sûr de vouloir supprimer ce créneau ?</p>
-                <div class="slot-summary-delete">
-                    <strong>{{ ucfirst($slot->week_day) }}
-                    {{ \Carbon\Carbon::parse($slot->start_time)->format('H:i') }} -
-                    {{ \Carbon\Carbon::parse($slot->end_time)->format('H:i') }}</strong><br>
-                    <span class="text-muted">
-                        {{ $slot->course ? $slot->course->title : 'Aucun cours' }} •
-                        {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : 'Aucun professeur' }}
-                    </span>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" onclick="closeDeleteModal()">
-                    <i class="fas fa-times"></i>Annuler
-                </button>
-                <button type="submit" class="btn btn-danger">
-                    <i class="fas fa-trash"></i>Confirmer la suppression
-                </button>
-            </div>
-        </form>
     </div>
 </div>
 
@@ -283,7 +207,6 @@
     --danger: #F87171;
     --danger-light: rgba(248, 113, 113, 0.1);
     --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
     --border-radius: 0.5rem;
     --spacing-sm: 0.5rem;
     --spacing-md: 1rem;
@@ -505,39 +428,6 @@ body {
     margin-top: 0.25rem;
 }
 
-/* Informations de création */
-.creation-info {
-    background-color: var(--section-bg);
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius);
-    margin-bottom: var(--spacing-lg);
-}
-
-.info-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
-}
-
-.info-row:last-child {
-    margin-bottom: 0;
-}
-
-.info-row .info-label {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--text-secondary);
-}
-
-.info-row .info-value {
-    font-size: 0.8125rem;
-    color: var(--text-primary);
-}
-
 /* Buttons */
 .btn {
     display: inline-flex;
@@ -571,110 +461,12 @@ body {
     background-color: var(--border-color);
 }
 
-.btn-danger {
-    background-color: var(--danger);
-    color: white;
-}
-
-.btn-danger:hover {
-    background-color: #dc2626;
-}
-
 .form-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-top: var(--spacing-lg);
     border-top: 1px solid var(--border-color);
-}
-
-.action-group {
-    display: flex;
-    gap: var(--spacing-md);
-}
-
-/* Modal */
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-md);
-    width: 90%;
-    max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.modal-header {
-    padding: var(--spacing-lg);
-    border-bottom: 1px solid var(--border-color);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-title {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-sm);
-}
-
-.modal-close {
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    color: var(--text-secondary);
-    font-size: 1.25rem;
-}
-
-.modal-body {
-    padding: var(--spacing-lg);
-}
-
-.modal-footer {
-    padding: var(--spacing-lg);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-    gap: var(--spacing-sm);
-}
-
-.alert {
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius);
-    margin-bottom: var(--spacing-md);
-    display: flex;
-    align-items: flex-start;
-    gap: var(--spacing-sm);
-}
-
-.alert-warning {
-    background-color: var(--warning-light);
-    color: var(--warning);
-    border: 1px solid var(--warning);
-}
-
-.slot-summary-delete {
-    background-color: var(--section-bg);
-    padding: var(--spacing-md);
-    border-radius: var(--border-radius);
-    margin-top: var(--spacing-md);
-    text-align: center;
 }
 
 /* Aide contextuelle */
@@ -721,11 +513,6 @@ body {
         flex-direction: column;
         gap: var(--spacing-md);
     }
-
-    .action-group {
-        width: 100%;
-        justify-content: center;
-    }
 }
 </style>
 @endpush
@@ -739,6 +526,20 @@ document.addEventListener('DOMContentLoaded', function() {
         courseSelect.focus();
     }
 
+    // Validation du formulaire
+    const form = document.getElementById('slotForm');
+    form.addEventListener('submit', function(e) {
+        const courseId = document.getElementById('course_id').value;
+        const teacherId = document.getElementById('teacher_id').value;
+
+        // Vérifier qu'au moins un champ est rempli
+        if (!courseId && !teacherId) {
+            e.preventDefault();
+            alert('Veuillez sélectionner au moins un cours ou un professeur pour planifier ce créneau.');
+            return false;
+        }
+    });
+
     // Animation des select au changement
     document.querySelectorAll('select').forEach(select => {
         select.addEventListener('change', function() {
@@ -750,32 +551,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-});
-
-// Fonctions pour le modal de suppression
-function showDeleteModal() {
-    const modal = document.getElementById('deleteModal');
-    modal.style.display = 'flex';
-}
-
-function closeDeleteModal() {
-    const modal = document.getElementById('deleteModal');
-    modal.style.display = 'none';
-}
-
-// Fermer le modal en cliquant à l'extérieur
-document.addEventListener('click', function(event) {
-    const modal = document.getElementById('deleteModal');
-    if (event.target === modal) {
-        closeDeleteModal();
-    }
-});
-
-// Fermer le modal avec Escape
-document.addEventListener('keydown', function(event) {
-    if (event.key === 'Escape') {
-        closeDeleteModal();
-    }
 });
 </script>
 @endpush

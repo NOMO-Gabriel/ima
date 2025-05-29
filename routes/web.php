@@ -85,6 +85,18 @@ Route::prefix('{locale}')
 
             // Protected by admin role
             Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
+                Route::get('planning', [TimetableController::class, 'index'])->name('planning.index');
+                Route::post('planning/change-formation', [TimetableController::class, 'changeFormation'])->name('planning.change-formation');
+
+                // Slots routes avec actions spécifiques
+                Route::prefix('slots')->name('slots.')->group(function () {
+                    Route::get('create', [SlotController::class, 'create'])->name('create');
+                    Route::post('/', [SlotController::class, 'store'])->name('store');
+                    Route::get('{slot}/edit', [SlotController::class, 'edit'])->name('edit');
+                    Route::put('{slot}', [SlotController::class, 'update'])->name('update');
+                    Route::delete('{slot}', [SlotController::class, 'destroy'])->name('destroy');
+                });
+
                 Route::resource('transactions', TransactionController::class);
                 Route::get('transactions-stats', [TransactionController::class, 'stats'])->name('transactions.stats');
                 Route::get('transactions-export', [TransactionController::class, 'export'])->name('transactions.export');
@@ -157,7 +169,6 @@ Route::prefix('{locale}')
                 Route::resource('mock-exams', MockExamController::class);
 
                 // Planification
-                Route::resource('planning', TimetableController::class);
                 Route::resource('absences', AbsencesController::class);
 
                 // Finances
@@ -197,7 +208,6 @@ Route::prefix('{locale}')
                 Route::resource('history', HistoryController::class);
 
                 // Others
-                Route::resource('slots', SlotController::class);
             });
         });
      });

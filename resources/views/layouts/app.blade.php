@@ -1489,7 +1489,7 @@
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group collapsed" id="group-administration"> <!-- MODIFIED: Added collapsed -->
-                <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
+                {{-- <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
                     <i class="fas fa-id-badge"></i>
                     <span>Personnel</span>
                 </a>
@@ -1500,7 +1500,7 @@
                 <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Élèves</span>
-                </a> 
+                </a>  --}}
                 <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Utilisateurs</span>
@@ -1585,10 +1585,10 @@
                     <i class="fas fa-money-check-alt"></i>
                     <span>Transactions</span>
                 </a>
-                <a href="{{ route('admin.transactions-history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.transactions-history.*') ? 'active' : '' }}">
+                {{-- <a href="{{ route('admin.transactions-history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.transactions-history.*') ? 'active' : '' }}">
                     <i class="fas fa-history"></i>
                     <span>Historique</span>
-                </a>
+                </a> --}}
             </div>
 
             <div class="menu-category collapsed" data-category="resources"> <!-- MODIFIED: Added collapsed -->
@@ -1601,17 +1601,17 @@
                     <i class="fas fa-book"></i>
                     <span>Livres</span>
                 </a>
-                <a href="{{ route('admin.materials.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
+                {{-- <a href="{{ route('admin.materials.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
                     <i class="fas fa-tools"></i>
                     <span>Materiels</span>
                 </a>
                 <a href="{{ route('admin.commands.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.commands.*') ? 'active' : '' }}">
                     <i class="fas fa-box-open"></i>
                     <span>Commandes</span>
-                </a>
+                </a> --}}
             </div>
 
-            <div class="menu-category collapsed" data-category="account"> <!-- MODIFIED: Added collapsed -->
+{{--             <div class="menu-category collapsed" data-category="account"> <!-- MODIFIED: Added collapsed -->
                 <i class="fas fa-user-cog"></i>
                 <div class="menu-category-text">Compte</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
@@ -1626,7 +1626,7 @@
                     <span>Historique</span>
                 </a>
             </div>
-        </div>
+ --}}       {{--  </div>
 
         <!-- Logout button -->
         <div class="logout-container">
@@ -1637,7 +1637,7 @@
                     <span class="logout-text">Déconnexion</span>
                 </button>
             </form>
-        </div>
+        </div> --}}
     </aside>
 
     <!-- Main Content -->

@@ -36,48 +36,58 @@ class Timetable extends Model
         return $this->hasMany(Slot::class);
     }
 
-    public static function createWithDefaultSlots(Center $center, Carbon $weekStart): self
+    /**
+     * Créer un emploi du temps vide pour une semaine donnée
+     * Les slots seront créés à la demande par l'utilisateur
+     */
+    public static function createForWeek(Center $center, Carbon $weekStart): self
     {
-        $timetable = self::create([
+        return self::create([
             'center_id' => $center->id,
             'week_start_date' => $weekStart->toDateString(),
             'day_start_time' => '08:00:00',
             'day_end_time' => '16:30:00',
         ]);
+    }
 
-        $weekDays = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi'];
-        $slots = [
-            ['08:00:00','10:30:00'],
-            ['11:00:00','13:30:00'],
-            ['14:00:00','16:30:00'],
-        ];
+    /**
+     * Obtenir ou créer un emploi du temps pour une semaine donnée
+     */
+    public static function getOrCreateForWeek(Center $center, Carbon $weekStart): self
+    {
+        $timetable = $center->timetables()
+            ->whereDate('week_start_date', $weekStart)
+            ->first();
 
-        $formations = Formation::with('rooms')->get();
-
-        $slotData = [];
-        foreach ($weekDays as $day) {
-            foreach ($slots as [$start, $end]) {
-                foreach ($formations as $formation) {
-                    foreach ($formation->rooms as $room) {
-                        $slotData[] = [
-                            'start_time'   => $start,
-                            'end_time'     => $end,
-                            'week_day'     => $day,
-                            'room_id'      => $room->id,
-                            'formation_id' => $formation->id,
-                            'timetable_id' => $timetable->id,
-                            'teacher_id'   => null,
-                            'course_id'    => null,
-                            'created_at'   => now(),
-                            'updated_at'   => now(),
-                        ];
-                    }
-                }
-            }
+        if (!$timetable) {
+            $timetable = self::createForWeek($center, $weekStart);
         }
 
-        Slot::insert($slotData);
-
         return $timetable;
+    }
+
+    /**
+     * Vérifier si un slot existe pour un créneau donné
+     */
+    public function hasSlot(string $weekDay, string $startTime, string $endTime, int $roomId, int $formationId): bool
+    {
+        return $this->slots()
+            ->where('week_day', $weekDay)
+            ->where('start_time', $startTime)
+            ->where('end_time', $endTime)
+            ->where('room_id', $roomId)
+            ->where('formation_id', $formationId)
+            ->exists();
+    }
+
+    /**
+     * Obtenir tous les slots d'une formation pour cette semaine
+     */
+    public function getFormationSlots(int $formationId)
+    {
+        return $this->slots()
+            ->where('formation_id', $formationId)
+            ->with(['room', 'course', 'formation', 'teacher'])
+            ->get();
     }
 }
