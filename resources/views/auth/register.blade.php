@@ -68,7 +68,7 @@
                                     </svg>
                                 </div>
                                 <x-text-input id="first_name" class="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-[#E2E8F0] focus:ring-[#4CA3DD] focus:border-[#4CA3DD] text-[#1E293B]"
-                                              type="text" name="first_name" :value="old('first_name')" required autofocus autocomplete="first_name" placeholder="TEMGOUA" />
+                                              type="text" name="first_name" :value="old('first_name')" required autofocus autocomplete="first_name" placeholder="KROS" />
                             </div>
                             <x-input-error :messages="$errors->get('first_name')" class="mt-1 text-sm text-[#F87171]" />
                         </div>
@@ -83,7 +83,7 @@
                                     </svg>
                                 </div>
                                 <x-text-input id="last_name" class="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-[#E2E8F0] focus:ring-[#4CA3DD] focus:border-[#4CA3DD] text-[#1E293B]"
-                                              type="text" name="last_name" :value="old('last_name')" required autocomplete="last_name" placeholder="KROS" />
+                                              type="text" name="last_name" :value="old('last_name')" required autocomplete="last_name" placeholder="TEMGOUA" />
                             </div>
                             <x-input-error :messages="$errors->get('last_name')" class="mt-1 text-sm text-[#F87171]" />
                         </div>
