@@ -13,6 +13,7 @@ class Student extends Model
     protected $fillable = [
         'establishment',
         'user_id',
+        'parent_phone_number',
     ];
 
     // Relations

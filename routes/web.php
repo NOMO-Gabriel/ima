@@ -72,7 +72,7 @@ Route::prefix('{locale}')
         Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
         // Authentification
-        // Route::middleware('auth')->group(function () {
+        Route::middleware('auth')->group(function () {
             Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
             // Profile
@@ -83,8 +83,8 @@ Route::prefix('{locale}')
             Route::delete('/profile/photo', [ProfilePhotoController::class, 'destroy'])->name('profile.photo.destroy');
 
             // Protected by admin role
-            // Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
-                Route::prefix('admin')->name('admin.')->group(function () {
+            Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
+
                 // Administration
                 Route::resource('staff', StaffController::class);
                 Route::resource('teachers', TeacherController::class);
@@ -122,16 +122,20 @@ Route::prefix('{locale}')
 
                 // Others
                 Route::resource('slots', SlotController::class);
+
+                Route::resource('users', UserController::class);
             });
 
             // User only
-            Route::prefix('admin/users')->name('admin.users.')->middleware('permission:user.view.any')->group(function () {
-                Route::resource('/', UserController::class)->parameters(['' => 'user']);
+            // Route::prefix('admin/users')->name('admin.users.')->middleware('permission:user.view.any')->group(function () {
+                Route::prefix('admin/users')->name('admin.users.')->group(function () {
+                    Route::resource('/', UserController::class)->parameters(['' => 'user']);
                 Route::put('{user}/roles', [UserController::class, 'updateRoles'])
                     ->middleware('permission:user.role.assign')
                     ->name('update-roles');
             });
         });
-    // });
+     });
 
-// require __DIR__.'/auth.php';
+require __DIR__.'/auth.php';
+

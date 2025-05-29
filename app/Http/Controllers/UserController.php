@@ -23,7 +23,7 @@ class UserController extends Controller
 
         // Exclure le rôle 'eleve' des options disponibles
         $roles = Role::where('name', '!=', 'eleve')->get();
-        
+
         return view('admin.users.create', compact('roles'));
     }
 
@@ -85,10 +85,6 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        if ($this->user && !$this->user->can('user.view.any')) {
-            abort(403, 'Non autorisé');
-        }
-
         $query = User::query();
 
         // Filtrage par rôle si fourni
@@ -119,7 +115,7 @@ class UserController extends Controller
             });
         }
 
-        $users = $query->with(['roles', 'city'])->latest()->paginate(15);
+        $users = $query->with(['roles'])->latest()->paginate(15);
         $roles = Role::all();
 
         // Statistiques pour le dashboard
@@ -138,14 +134,11 @@ class UserController extends Controller
     /**
      * Affiche les détails d'un utilisateur avec informations détaillées pour les élèves
      */
-    public function show(User $user)
+    public function show($locale, User $user)
     {
-        if ($this->user && !$this->user->can('user.view.any')) {
-            abort(403, 'Non autorisé');
-        }
 
         // Charger les relations nécessaires
-        $user->load(['roles', 'city', 'financialValidator']);
+        $user->load(['roles']);
 
         // Récupérer les rôles si l'utilisateur peut les modifier
         $roles = $this->user->can('user.role.assign') ? Role::all() : collect();

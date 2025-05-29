@@ -73,27 +73,20 @@
                     @enderror
                 </div>
 
-                <h3 class="text-lg font-medium text-gray-800 mt-6 mb-4">Configuration</h3>
-                <div class="mb-4">
-                    <label for="lang" class="block text-sm font-medium text-gray-700 mb-1">Langue</label>
-                    <select name="lang" id="lang"
+                <div>
+                    <label for="director_id" class="block text-sm font-medium text-gray-700 mb-1">Directeur</label>
+                    <select name="director_id" id="director_id"
                             class="w-full rounded-md border-gray-300 shadow-sm focus:border-[#4CA3DD] focus:ring focus:ring-[#4CA3DD] focus:ring-opacity-50">
-                        <option value="">-- Sélectionner --</option>
-                        <option value="FR" {{ old('lang', $academy->lang) == 'FR' ? 'selected' : '' }}>Français</option>
-                        <option value="EN" {{ old('lang', $academy->lang) == 'EN' ? 'selected' : '' }}>Anglais</option>
+                        <option value="">-- Aucun --</option>
+                        @foreach($directors as $director)
+                            <option value="{{ $director->id }}" {{ old('director_id', $academy->director_id) == $director->id ? 'selected' : '' }}>
+                                {{ $director->first_name }} {{ $director->last_name }} ({{ $director->email }})
+                            </option>
+                        @endforeach
                     </select>
-                    @error('lang')
+                    @error('director_id')
                     <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                     @enderror
-                </div>
-
-                <div class="mb-4">
-                    <label for="is_active" class="flex items-center">
-                        <input type="checkbox" name="is_active" id="is_active" value="1"
-                               {{ old('is_active', $academy->is_active) ? 'checked' : '' }}
-                               class="h-4 w-4 text-[#4CA3DD] border-gray-300 rounded focus:ring-[#4CA3DD]">
-                        <span class="ml-2 text-sm text-gray-700">Activer cette académie</span>
-                    </label>
                 </div>
 
                 <div class="flex justify-end space-x-3 border-t pt-4">

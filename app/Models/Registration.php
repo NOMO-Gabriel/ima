@@ -10,8 +10,22 @@ class Registration extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'receipt_number'
+    ];
+
     public function formations()
     {
         return $this->belongsToMany(Formation::class, 'formation_registration');
+    }
+
+    public function installments()
+    {
+        return $this->hasMany(Installment::class);
+    }
+
+    public function student()
+    {
+        return $this->hasOne(Student::class);
     }
 }

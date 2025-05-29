@@ -42,7 +42,7 @@ class AcademyController extends Controller
     public function create()
     {
         // Récupérer tous les utilisateurs qui peuvent être directeurs
-        $directors = User::orderBy('name')->get();
+        $directors = User::all();
 
         return view('admin.academies.create', compact('directors'));
     }
@@ -76,7 +76,7 @@ class AcademyController extends Controller
             ]);
         }
 
-        return redirect()->route('admin.academies.index')
+        return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie créée avec succès.');
     }
 
@@ -85,16 +85,6 @@ class AcademyController extends Controller
      */
     public function show($locale,Academy $academy)
     {
-        // Charger les relations
-        $academy->load([
-            'director', 
-            'creator', 
-            'updater',
-            'users' => function($query) {
-                $query->withPivot('role')->orderBy('name');
-            }
-        ]);
-
         return view('admin.academies.show', compact('academy'));
     }
 
@@ -104,12 +94,7 @@ class AcademyController extends Controller
     public function edit($locale, Academy $academy)
     {
         // Récupérer tous les utilisateurs qui peuvent être directeurs
-        $directors = User::orderBy('name')->get();
-
-        // Charger les utilisateurs actuels de l'académie
-        $academy->load(['users' => function($query) {
-            $query->withPivot('role');
-        }]);
+        $directors = User::all();
 
         return view('admin.academies.edit', compact('academy', 'directors'));
     }
@@ -159,7 +144,7 @@ class AcademyController extends Controller
             }
         }
 
-        return redirect()->route('admin.academies.index')
+        return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie mise à jour avec succès.');
     }
 
@@ -176,7 +161,7 @@ class AcademyController extends Controller
         // Supprimer l'académie (la table pivot sera automatiquement nettoyée grâce à onDelete('cascade'))
         $academy->delete();
 
-        return redirect()->route('admin.academies.index')
+        return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie supprimée avec succès.');
     }
 

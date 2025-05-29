@@ -45,7 +45,7 @@
         </div>
 
         <!-- Section de droite avec le formulaire -->
-        <div class="w-full lg:w-1/2 bg-[#F8FAFC] flex items-center justify-center p-6">
+        <div class="w-full lg:w-1/2 bg-[#F8FAFC] flex items-center justify-center p-6 overflow-y-auto">
             <div class="w-full max-w-md">
                 <!-- En-tête du formulaire -->
                 <div class="text-center mb-8">
@@ -104,35 +104,68 @@
                         <x-input-error :messages="$errors->get('email')" class="mt-1 text-sm text-[#F87171]" />
                     </div>
 
-                    <!-- Téléphone -->
-                    <div>
-                        <x-input-label for="phone_number" :value="__('Téléphone')" class="block text-sm font-medium text-[#1E293B] mb-1" />
-                        <div class="relative rounded-md">
-                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#64748B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                                </svg>
+                    <!-- Téléphones -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Téléphone Élève -->
+                        <div>
+                            <x-input-label for="phone_number" :value="__('Votre Téléphone')" class="block text-sm font-medium text-[#1E293B] mb-1" />
+                            <div class="relative rounded-md">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#64748B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <x-text-input id="phone_number" class="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-[#E2E8F0] focus:ring-[#4CA3DD] focus:border-[#4CA3DD] text-[#1E293B]"
+                                              type="tel" name="phone_number" :value="old('phone_number')" required placeholder="+237 XXX XXX XXX" />
                             </div>
-                            <x-text-input id="phone_number" class="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-[#E2E8F0] focus:ring-[#4CA3DD] focus:border-[#4CA3DD] text-[#1E293B]"
-                                          type="tel" name="phone_number" :value="old('phone_number')" required placeholder="+237 XXX XXX XXX" />
+                            <x-input-error :messages="$errors->get('phone_number')" class="mt-1 text-sm text-[#F87171]" />
                         </div>
-                        <x-input-error :messages="$errors->get('phone_number')" class="mt-1 text-sm text-[#F87171]" />
+
+                        <!-- Téléphone Parent/Tuteur -->
+                        <div>
+                            <x-input-label for="parent_phone_number" :value="__('Téléphone Parent/Tuteur (Optionnel)')" class="block text-sm font-medium text-[#1E293B] mb-1" />
+                            <div class="relative rounded-md">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#64748B]" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <!-- Icône identique, OK -->
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                                    </svg>
+                                </div>
+                                <x-text-input id="parent_phone_number" class="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-[#E2E8F0] focus:ring-[#4CA3DD] focus:border-[#4CA3DD] text-[#1E293B]"
+                                              type="tel" name="parent_phone_number" :value="old('parent_phone_number')" placeholder="+237 YYY YYY YYY" />
+                            </div>
+                            <x-input-error :messages="$errors->get('parent_phone_number')" class="mt-1 text-sm text-[#F87171]" />
+                        </div>
                     </div>
 
-                    <!-- Ville -->
+                    <!-- Établissement actuel -->
                     <div>
-                        <x-input-label for="city_id" :value="__('Ville')" class="block text-sm font-medium text-[#1E293B] mb-1" />
+                        <x-input-label for="establishment" :value="__('Établissement actuel (Collège/Lycée)')" class="block text-sm font-medium text-[#1E293B] mb-1" />
                         <div class="relative rounded-md">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#64748B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor"> <!-- Icône pour établissement -->
+                                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                                </svg>
+                            </div>
+                            <x-text-input id="establishment" class="block w-full pl-10 pr-3 py-2.5 rounded-lg border border-[#E2E8F0] focus:ring-[#4CA3DD] focus:border-[#4CA3DD] text-[#1E293B]"
+                                          type="text" name="establishment" :value="old('establishment')" required placeholder="Ex: Lycée Bilingue de Yaoundé" />
+                        </div>
+                        <x-input-error :messages="$errors->get('establishment')" class="mt-1 text-sm text-[#F87171]" />
+                    </div>
+
+                    <!-- Centre de formation souhaité -->
+                    <div>
+                        <x-input-label for="center_id" :value="__('Centre de formation souhaité')" class="block text-sm font-medium text-[#1E293B] mb-1" />
+                        <div class="relative rounded-md">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#64748B]" fill="none" viewBox="0 0 24 24" stroke="currentColor"> <!-- Icône pour centre -->
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                                 </svg>
                             </div>
-                            <select id="city_id" name="city_id" class="block w-full pl-10 pr-10 py-2.5 rounded-lg border border-[#E2E8F0] focus:ring-[#4CA3DD] focus:border-[#4CA3DD] text-[#1E293B] appearance-none" required>
-                                <option value="">{{ __('Sélectionnez une ville') }}</option>
-                                @foreach($cities as $city)
-                                    <option value="{{ $city->id }}" {{ old('city_id') == $city->id ? 'selected' : '' }}>
-                                        {{ $city->name }}
+                            <select id="center_id" name="center_id" class="block w-full pl-10 pr-10 py-2.5 rounded-lg border border-[#E2E8F0] focus:ring-[#4CA3DD] focus:border-[#4CA3DD] text-[#1E293B] appearance-none" required>
+                                <option value="">{{ __('Sélectionnez un centre') }}</option>
+                                @foreach($centers as $center)
+                                    <option value="{{ $center->id }}" {{ old('center_id') == $center->id ? 'selected' : '' }}>
+                                        {{ $center->name }} @if(isset($center->city)) - ({{ $center->city }}) @endif
                                     </option>
                                 @endforeach
                             </select>
@@ -142,7 +175,7 @@
                                 </svg>
                             </div>
                         </div>
-                        <x-input-error :messages="$errors->get('city_id')" class="mt-1 text-sm text-[#F87171]" />
+                        <x-input-error :messages="$errors->get('center_id')" class="mt-1 text-sm text-[#F87171]" />
                     </div>
 
                     <!-- Mots de passe -->
@@ -207,7 +240,7 @@
                             <div class="ml-3">
                                 <h3 class="text-sm font-medium text-blue-800">Processus d'inscription</h3>
                                 <div class="mt-2 text-sm text-blue-700">
-                                    <p>Après votre inscription, votre compte sera en attente de validation. Notre équipe financière vous contactera pour compléter votre dossier avec les informations sur vos concours et votre contrat.</p>
+                                    <p>Après votre inscription, votre compte sera en attente de validation. Notre équipe financière vous contactera pour compléter votre dossier.</p>
                                 </div>
                             </div>
                         </div>
@@ -223,6 +256,8 @@
                             </button>
                         </label>
                     </div>
+                    <x-input-error :messages="$errors->get('terms')" class="mt-1 text-sm text-[#F87171]" />
+
 
                     <!-- Bouton d'inscription -->
                     <div>
@@ -248,15 +283,41 @@
         </div>
     </div>
 
-    <!-- Modal Conditions d'utilisation (identique à l'original) -->
-    <!-- ... (le modal reste le même) ... -->
+    <!-- Modal Conditions d'utilisation (à définir si ce n'est pas déjà fait) -->
+    <!-- Exemple de structure pour le modal (à adapter) -->
+    <div id="terms-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden items-center justify-center z-50">
+        <div class="relative mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('Conditions d\'utilisation') }}</h3>
+                <div class="mt-2 px-7 py-3 max-h-96 overflow-y-auto">
+                    <p class="text-sm text-gray-500 text-left">
+                        <!-- Mettez vos conditions d'utilisation ici -->
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam pulvinar risus non risus hendrerit venenatis.
+                        Pellentesque sit amet hendrerit risus, sed porttitor quam. Integer vitae pretium mauris.
+                        Aenean sollicitudin justo non massa consectetur, vitae maximus eros blandit.
+                        <br><br>
+                        Donec eget ligula eu lectus faucibus vestibulum. Morbi vitae finibus nibh.
+                        Pellentesque pretium libero et tortor consequat, ac faucibus arcu sollicitudin.
+                        Aliquam erat volutpat.
+                        <!-- ... plus de contenu ... -->
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button id="close-terms-modal" class="px-4 py-2 bg-[#4CA3DD] text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-[#2A7AB8] focus:outline-none focus:ring-2 focus:ring-[#4CA3DD]">
+                        {{ __('Fermer') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 // Système de basculement visibilité mot de passe
                 const togglePasswordButtons = document.querySelectorAll('.toggle-password');
-                
+
                 togglePasswordButtons.forEach(button => {
                     button.addEventListener('click', function() {
                         const targetId = this.getAttribute('data-target');
@@ -275,6 +336,37 @@
                         }
                     });
                 });
+
+                // Script pour le modal des conditions
+                const termsButton = document.getElementById('terms-button');
+                const termsModal = document.getElementById('terms-modal');
+                const closeTermsModalButton = document.getElementById('close-terms-modal');
+
+                if (termsButton && termsModal) {
+                    termsButton.addEventListener('click', (e) => {
+                        e.preventDefault(); // Empêcher le comportement par défaut si c'est un lien
+                        termsModal.classList.remove('hidden');
+                        termsModal.classList.add('flex'); // Ou 'block' selon votre mise en page du modal
+                    });
+                }
+
+                if (closeTermsModalButton && termsModal) {
+                     closeTermsModalButton.addEventListener('click', () => {
+                        termsModal.classList.add('hidden');
+                        termsModal.classList.remove('flex'); // Ou 'block'
+                    });
+                }
+
+                // Fermer le modal en cliquant à l'extérieur
+                if (termsModal) {
+                    termsModal.addEventListener('click', (event) => {
+                        // Si l'élément cliqué est le fond du modal lui-même
+                        if (event.target === termsModal) {
+                            termsModal.classList.add('hidden');
+                            termsModal.classList.remove('flex'); // Ou 'block'
+                        }
+                    });
+                }
             });
         </script>
     @endpush

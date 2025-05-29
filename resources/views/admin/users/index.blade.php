@@ -330,9 +330,9 @@
                                             <a href="{{ route('admin.users.show', ['locale' => app()->getLocale(), 'user' => $user->id]) }}" class="btn-action view" title="Voir le profil">
                                                 <i class="fas fa-eye"></i>
                                             </a>
-                                            <a href="{{ route('admin.users.edit', ['locale' => app()->getLocale(), 'user' => $user->id]) }}" class="btn-action edit" title="Modifier">
+                                            {{-- <a href="{{ route('admin.users.edit', ['locale' => app()->getLocale(), 'user' => $user->id]) }}" class="btn-action edit" title="Modifier">
                                                 <i class="fas fa-edit"></i>
-                                            </a>
+                                            </a> --}}
                                             <div class="dropdown d-inline-block">
                                                 <button class="btn-action more" type="button" data-bs-toggle="dropdown" title="Plus d'options">
                                                     <i class="fas fa-ellipsis-v"></i>
@@ -483,9 +483,9 @@
                                     <a href="{{ route('admin.users.show', ['locale' => app()->getLocale(), 'user' => $user->id]) }}" class="user-card-btn view" title="Voir le profil">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a href="{{ route('admin.users.edit', ['locale' => app()->getLocale(), 'user' => $user->id]) }}" class="user-card-btn edit" title="Modifier">
+                                    {{-- <a href="{{ route('admin.users.edit', ['locale' => app()->getLocale(), 'user' => $user->id]) }}" class="user-card-btn edit" title="Modifier">
                                         <i class="fas fa-edit"></i>
-                                    </a>
+                                    </a> --}}
                                     <div class="dropdown">
                                         <button class="user-card-btn more" type="button" data-bs-toggle="dropdown" title="Plus d'options">
                                             <i class="fas fa-ellipsis-v"></i>

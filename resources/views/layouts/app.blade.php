@@ -1455,7 +1455,7 @@
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-administration">
-                <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
+                {{-- <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
                     <i class="fas fa-id-badge"></i>
                     <span>Personnel</span>
                 </a>
@@ -1466,6 +1466,10 @@
                 <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Élèves</span>
+                </a> --}}
+                <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
+                    <i class="fas fa-user-graduate"></i>
+                    <span>Utilisateurs</span>
                 </a>
             </div>
 
@@ -1591,7 +1595,7 @@
         </div>
 
         <!-- Logout button -->
-        {{-- <div class="logout-container">
+        <div class="logout-container">
             <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
                 @csrf
                 <button type="submit" class="logout-btn">
@@ -1599,7 +1603,7 @@
                     <span class="logout-text">Déconnexion</span>
                 </button>
             </form>
-        </div> --}}
+        </div>
     </aside>
 
     <!-- Main Content -->
@@ -1674,13 +1678,13 @@
                                 <i class="fas fa-cog"></i>
                                 <span>Paramètres</span>
                             </a>
-                            {{-- <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
+                            <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
                                 @csrf
                                 <button type="submit" class="user-link text-danger">
                                     <i class="fas fa-sign-out-alt"></i>
                                     <span>Déconnexion</span>
                                 </button>
-                            </form> --}}
+                            </form>
                         </div>
                     </div>
                 </div>
