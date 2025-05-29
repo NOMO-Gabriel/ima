@@ -267,6 +267,7 @@
                                 {{ $academy->created_at->format('d/m/Y') }}
                             </div>
                         </td>
+                        @canany(['gestion.academy.read', 'gestion.academy.update', 'gestion.academy.delete'])
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <div class="flex justify-end space-x-3">
                                 @can('gestion.academy.read')
@@ -294,6 +295,7 @@
                                 @endcan
                             </div>
                         </td>
+                        @endcanany
                     </tr>
                 @empty
                     <tr>
