@@ -57,7 +57,7 @@
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-3">
-                    @can('department.create')
+                    @can('gestion.department.create')
                         <a href="{{ route('admin.departments.create', ['locale' => app()->getLocale()]) }}"
                            class="inline-flex items-center justify-center px-6 py-3 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-[#4CA3DD] hover:bg-[#3A8BC8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4CA3DD] transition-all duration-200">
                             <i class="fas fa-plus mr-2"></i>
@@ -75,7 +75,7 @@
             </div>
         </div>
 
-        @canany([ 'department.view', 'department.update', 'department.delete', 'department.create' ])
+        @canany([ 'gestion.department.read', 'gestion.department.update', 'gestion.department.delete', 'gestion.department.create' ])
             <!-- Statistiques rapides -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="rounded-xl shadow-sm p-6 transition-colors border"
@@ -243,7 +243,7 @@
                         <span class="text-sm transition-colors"
                               :class="darkMode ? 'text-gray-300' : 'text-gray-600'"
                               x-text="`${selectedItems.length} sélectionné(s)`"></span>
-                            @can('department.delete')
+                            @can('gestion.department.delete')
                                 <button @click="deleteSelected()"
                                         class="inline-flex items-center px-3 py-2 border border-transparent rounded-md text-xs font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200">
                                     <i class="fas fa-trash mr-1"></i>
@@ -286,10 +286,12 @@
                                     :class="darkMode ? 'text-gray-300' : 'text-gray-500'">
                                     Responsable
                                 </th>
+                                @canany(['gestion.department.update', 'gestion.department.delete', 'gestion.department.read'])
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider transition-colors"
                                     :class="darkMode ? 'text-gray-300' : 'text-gray-500'">
                                     Actions
                                 </th>
+                                @endcanany
                             </tr>
                             </thead>
                             <tbody class="divide-y transition-colors"
@@ -407,7 +409,7 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center space-x-2">
-                                            @can('department.view')
+                                            @can('gestion.department.read')
                                                 <a href="{{ route('admin.departments.show', ['locale' => app()->getLocale(), 'department' => $department]) }}"
                                                    class="inline-flex items-center p-2 border border-transparent rounded-md text-sm leading-4 font-medium transition-all duration-200"
                                                    :class="darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'"
@@ -416,7 +418,7 @@
                                                 </a>
                                             @endcan
 
-                                            @can('department.update')
+                                            @can('gestion.department.update')
                                                 <a href="{{ route('admin.departments.edit', ['locale' => app()->getLocale(), 'department' => $department]) }}"
                                                    class="inline-flex items-center p-2 border border-transparent rounded-md text-sm leading-4 font-medium text-orange-600 hover:text-orange-900 hover:bg-orange-100 transition-all duration-200"
                                                    title="Modifier">
@@ -424,7 +426,7 @@
                                                 </a>
                                             @endcan
 
-                                            @can('department.delete')
+                                            @can('gestion.department.delete')
                                                 <form action="{{ route('admin.departments.destroy', ['locale' => app()->getLocale(), 'department' => $department]) }}"
                                                       method="POST"
                                                       class="inline-block"
@@ -476,6 +478,34 @@
                         @endcan
                     </div>
                 @endif
+            </div>
+        @else
+            <!-- Message d'accès refusé -->
+            <div class="p-8 text-center rounded-lg border transition-colors"
+                 :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-white' : 'bg-white border-gray-200'">
+                <div class="flex flex-col items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-16 w-16 mb-4 transition-colors"
+                         :class="darkMode ? 'text-red-500' : 'text-red-400'"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <p class="text-xl font-medium mb-2 transition-colors"
+                       :class="darkMode ? 'text-white' : 'text-gray-800'">
+                        Accès refusé
+                    </p>
+                    <p class="mb-6 transition-colors"
+                       :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
+                        Vous n'avez pas les permissions nécessaires pour accéder à la gestion des phases.
+                    </p>
+                    <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"
+                       class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Retour au tableau de bord
+                    </a>
+                </div>
             </div>
         @endcanany
     </div>

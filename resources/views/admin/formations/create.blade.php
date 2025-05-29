@@ -33,7 +33,7 @@
         </ol>
     </nav>
 
-    @can('formation.create')
+    @can('gestion.formation.create')
     <div class="bg-white shadow-md rounded-lg p-6 mb-8">
         <!-- En-tête avec titre et icône -->
         <div class="flex items-center mb-6">

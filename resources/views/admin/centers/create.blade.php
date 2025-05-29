@@ -42,7 +42,7 @@
         </ol>
     </nav>
 
-    @can('center.create')
+    @can('gestion.center.create')
         <!-- En-tête -->
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
             <div class="flex items-center">
@@ -445,6 +445,7 @@
                     Annuler
                 </a>
 
+                @can('gestion.center.create')
                 <button type="submit"
                         class="inline-flex items-center justify-center px-8 py-3 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 order-1 sm:order-2">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -452,6 +453,7 @@
                     </svg>
                     Créer le centre
                 </button>
+                @endcan
             </div>
         </form>
     @else

@@ -41,7 +41,7 @@
         </ol>
     </nav>
 
-    @can('formation.update')
+    @can('gestion.formation.update')
     <div class="bg-white shadow-md rounded-lg p-5 mb-8">
         <!-- En-tête avec titre et boutons d'action -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">

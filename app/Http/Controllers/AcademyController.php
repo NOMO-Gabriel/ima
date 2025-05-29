@@ -18,7 +18,7 @@ class AcademyController extends Controller
     public function index(Request $request)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('academy.view')) {
+        if (!Auth::user()->can('gestion.academy.read')) {
             abort(403, 'Accès non autorisé');
         }
 
@@ -86,7 +86,7 @@ class AcademyController extends Controller
     public function create()
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('academy.create')) {
+        if (!Auth::user()->can('gestion.academy.create')) {
             abort(403, 'Accès non autorisé');
         }
 
@@ -104,7 +104,7 @@ class AcademyController extends Controller
     public function store(Request $request)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('academy.create')) {
+        if (!Auth::user()->can('gestion.academy.create')) {
             abort(403, 'Accès non autorisé');
         }
 
@@ -147,7 +147,7 @@ class AcademyController extends Controller
     public function show($locale, Academy $academy)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('academy.view')) {
+        if (!Auth::user()->can('gestion.academy.read')) {
             abort(403, 'Accès non autorisé');
         }
 
@@ -170,7 +170,7 @@ class AcademyController extends Controller
     public function edit($locale, Academy $academy)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('academy.update')) {
+        if (!Auth::user()->can('gestion.academy.update')) {
             abort(403, 'Accès non autorisé');
         }
 
@@ -188,7 +188,7 @@ class AcademyController extends Controller
     public function update($locale, Request $request, Academy $academy)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('academy.update')) {
+        if (!Auth::user()->can('gestion.academy.update')) {
             abort(403, 'Accès non autorisé');
         }
 
@@ -254,7 +254,7 @@ class AcademyController extends Controller
     public function destroy($locale, Academy $academy)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('academy.delete')) {
+        if (!Auth::user()->can('gestion.academy.delete')) {
             abort(403, 'Accès non autorisé');
         }
 
@@ -294,7 +294,7 @@ class AcademyController extends Controller
     public function export(Request $request)
     {
         // Vérifier les permissions
-        if (!Auth::user()->can('academy.view')) {
+        if (!Auth::user()->can('gestion.academy.read')) {
             abort(403, 'Accès non autorisé');
         }
 

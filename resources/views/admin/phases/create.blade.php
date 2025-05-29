@@ -42,7 +42,7 @@
         </ol>
     </nav>
 
-    @can('phase.create')
+    @can('gestion.phase.create')
     <div class="shadow-md rounded-lg p-6 mb-8" :class="darkMode ? 'bg-[#334155]' : 'bg-white'">
         <!-- En-tête avec titre -->
         <div class="flex items-center mb-8">

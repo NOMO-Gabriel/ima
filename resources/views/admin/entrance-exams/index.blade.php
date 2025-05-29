@@ -27,6 +27,7 @@
         </ol>
     </nav>
 
+    @canany(['gestion.entrance-exam.create', 'gestion.entrance-exam.read', 'gestion.entrance-exam.update', 'gestion.entrance-exam.delete'])
     <div class="shadow-md rounded-lg p-5 mb-8 transition-colors" :class="darkMode ? 'bg-[#1E293B] border border-[#2C3E50]' : 'bg-white'">
         <!-- En-tête avec titre et bouton d'ajout -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -36,12 +37,14 @@
                 </svg>
                 Gestion des Concours
             </h1>
+            @can('gestion.exam.create')
             <a href="{{ route('admin.entrance-exams.create', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Nouveau Concours
             </a>
+            @endcan
         </div>
 
         <!-- Messages d'alerte -->
@@ -244,12 +247,14 @@
                        :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
                         Commencez par créer un nouveau concours pour gérer vos examens d'entrée
                     </p>
+                    @can('gestion.exam.create')
                     <a href="{{ route('admin.entrance-exams.create', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
                         Créer un concours
                     </a>
+                    @endcan
                 </div>
             </div>
         @else
@@ -271,10 +276,12 @@
                             :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
                             Date de Création
                         </th>
+                        @canany(['gestion.entrance-exam.create', 'gestion.entrance-exam.update', 'gestion.entrance-exam.delete'])
                         <th scope="col" class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider transition-colors"
                             :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
                             Actions
                         </th>
+                        @endcanany
                     </tr>
                     </thead>
                     <tbody class="divide-y transition-colors"
@@ -351,9 +358,11 @@
                                     @endif
                                 </div>
                             </td>
+                            @canany([ 'gestion.entrance-exam.update', 'gestion.entrance-exam.delete'])
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <div class="flex items-center justify-center space-x-2">
                                     <!-- Bouton Modifier -->
+                                    @can('gestion.entrance-exam.update')
                                     <a href="{{ route('admin.entrance-exams.edit', ['locale' => app()->getLocale(), 'entrance_exam' => $exam->id]) }}"
                                        class="transition-colors duration-150 text-[#4CA3DD]"
                                        :class="darkMode ? 'text-yellow-400 hover:text-yellow-300' : 'text-yellow-600 hover:text-yellow-800'"
@@ -362,8 +371,10 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </a>
+                                    @endcan
 
                                     <!-- Bouton Supprimer -->
+                                    @can('gestion.entrance-exam.delete')
                                     <button type="button"
                                             onclick="confirmDelete({{ $exam->id }}, '{{ addslashes($exam->name) }}')"
                                             class="transition-colors duration-150 text-red-600"
@@ -373,8 +384,10 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
+                                    @endcan
                                 </div>
                             </td>
+                            @endcanany
                         </tr>
                     @endforeach
                     </tbody>
@@ -430,6 +443,35 @@
             </div>
         </div>
     </div>
+    @else
+        <!-- Message d'accès refusé -->
+        <div class="p-8 text-center rounded-lg border transition-colors"
+             :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-white' : 'bg-white border-gray-200'">
+            <div class="flex flex-col items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-16 w-16 mb-4 transition-colors"
+                     :class="darkMode ? 'text-red-500' : 'text-red-400'"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <p class="text-xl font-medium mb-2 transition-colors"
+                   :class="darkMode ? 'text-white' : 'text-gray-800'">
+                    Accès refusé
+                </p>
+                <p class="mb-6 transition-colors"
+                   :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
+                    Vous n'avez pas les permissions nécessaires pour accéder à la gestion des phases.
+                </p>
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"
+                   class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour au tableau de bord
+                </a>
+            </div>
+        </div>
+    @endcan
 @endsection
 
 @push('scripts')

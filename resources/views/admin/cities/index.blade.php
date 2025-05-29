@@ -30,7 +30,7 @@
         </ol>
     </nav>
 
-    @canany(['city.view', 'city.create', 'city.update', 'city.delete'])
+    @canany(['gestion.city.read', 'gestion.city.create', 'gestion.city.update', 'gestion.city.delete'])
         <div class="shadow-md rounded-lg p-5 mb-8 transition-colors duration-300"
              :class="{ 'bg-gray-800': darkMode, 'bg-white': !darkMode }">
             <!-- En-tête avec titre et bouton d'ajout -->
@@ -57,7 +57,7 @@
             <!-- Messages Flash -->
             <x-flash-message />
 
-            @can('city.view')
+            @can('gestion.city.read')
                 <!-- Section des statistiques -->
                 <div class="stats-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
                     <div class="stats-card rounded-lg p-4 shadow border flex flex-col transition-colors duration-300"
@@ -74,7 +74,7 @@
                         </div>
                         <div class="stats-content">
                             <h3 class="stats-value text-2xl font-bold transition-colors duration-300"
-                                :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">{{ $cities->total() }}</h3>
+                                :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">{{ $cities->count() }}</h3>
                             <p class="stats-label text-sm transition-colors duration-300"
                                :class="{ 'text-gray-400': darkMode, 'text-gray-600': !darkMode }">Villes</p>
                         </div>
@@ -198,7 +198,7 @@
                                 :class="{ 'text-gray-300': darkMode, 'text-gray-500': !darkMode }">
                                 Date de création
                             </th>
-                            @canany(['city.update', 'city.delete'])
+                            @canany(['gestion.city.update', 'gestion.city.delete'])
                                 <th scope="col" class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider transition-colors duration-300"
                                     :class="{ 'text-gray-300': darkMode, 'text-gray-500': !darkMode }">
                                     Actions
@@ -231,10 +231,10 @@
                                     :class="{ 'text-gray-300': darkMode, 'text-gray-500': !darkMode }">
                                     {{ $city->created_at->format('d/m/Y à H:i') }}
                                 </td>
-                                @canany(['city.update', 'city.delete'])
+                                @canany(['gestion.city.update', 'gestion.city.delete'])
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                         <div class="flex justify-center space-x-3">
-                                            @can('city.update')
+                                            @can('gestion.city.update')
                                                 <a href="{{ route('admin.cities.edit', [app()->getLocale(), $city]) }}"
                                                    class="text-yellow-600 hover:text-yellow-800 dark:text-yellow-400 dark:hover:text-yellow-300 transition-colors duration-150"
                                                    title="Modifier">
@@ -243,7 +243,7 @@
                                                     </svg>
                                                 </a>
                                             @endcan
-                                            @can('city.delete')
+                                            @can('gestion.city.delete')
                                                 <form action="{{ route('admin.cities.destroy', [app()->getLocale(), $city]) }}"
                                                       method="POST"
                                                       class="inline-block"
@@ -265,7 +265,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ canany(['city.update', 'city.delete']) ? '4' : '3' }}" class="px-6 py-10 text-center transition-colors duration-300"
+                                <td colspan="{{ canany(['gestion.city.update', 'gestion.city.delete']) ? '4' : '3' }}" class="px-6 py-10 text-center transition-colors duration-300"
                                     :class="{ 'text-gray-400': darkMode, 'text-gray-500': !darkMode }">
                                     <div class="flex flex-col items-center justify-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mb-4 transition-colors duration-300"
@@ -295,30 +295,35 @@
                         </tbody>
                     </table>
                 </div>
-
-                <!-- Pagination -->
-                @if($cities->hasPages())
-                    <div class="mt-6">
-                        {{ $cities->withQueryString()->links('vendor.pagination.tailwind') }}
-                    </div>
-                @endif
             @endcan
         </div>
     @else
-        <div class="shadow-md rounded-lg p-8 mb-8 text-center transition-colors duration-300"
-             :class="{ 'bg-gray-800': darkMode, 'bg-white': !darkMode }">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 transition-colors duration-300"
-                 :class="{ 'text-gray-500': darkMode, 'text-gray-400': !darkMode }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <h3 class="text-lg font-medium mb-2 transition-colors duration-300"
-                :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">
-                Accès non autorisé
-            </h3>
-            <p class="transition-colors duration-300"
-               :class="{ 'text-gray-400': darkMode, 'text-gray-600': !darkMode }">
-                Vous n'avez pas les permissions nécessaires pour accéder à cette section.
-            </p>
+        <!-- Message d'accès refusé -->
+        <div class="p-8 text-center rounded-lg border transition-colors"
+             :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-white' : 'bg-white border-gray-200'">
+            <div class="flex flex-col items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-16 w-16 mb-4 transition-colors"
+                     :class="darkMode ? 'text-red-500' : 'text-red-400'"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                <p class="text-xl font-medium mb-2 transition-colors"
+                   :class="darkMode ? 'text-white' : 'text-gray-800'">
+                    Accès refusé
+                </p>
+                <p class="mb-6 transition-colors"
+                   :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
+                    Vous n'avez pas les permissions nécessaires pour accéder à la gestion des phases.
+                </p>
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"
+                   class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Retour au tableau de bord
+                </a>
+            </div>
         </div>
     @endcanany
 @endsection

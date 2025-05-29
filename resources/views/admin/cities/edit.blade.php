@@ -73,6 +73,7 @@
             </a>
         </div>
 
+        @can('gestion_city_update')
         <!-- Informations rapides -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 p-4 rounded-lg transition-colors duration-300"
              :class="{ 'bg-gray-700': darkMode, 'bg-gray-50': !darkMode }">
@@ -218,6 +219,7 @@
             <!-- Boutons d'action -->
             <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t transition-colors duration-300"
                  :class="{ 'border-gray-700': darkMode, 'border-gray-200': !darkMode }">
+                @can('gestion.city.update')
                 <button type="submit" id="submit-btn"
                         class="inline-flex justify-center items-center px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-medium rounded-lg transition duration-150 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -225,6 +227,7 @@
                     </svg>
                     <span id="submit-text">Mettre à jour</span>
                 </button>
+                @endcan
 
                 <button type="button" id="reset-button"
                         class="inline-flex justify-center items-center px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg transition duration-150 ease-in-out hover:bg-gray-50"
@@ -248,6 +251,35 @@
                 </a>
             </div>
         </form>
+        @else
+            <!-- Message d'accès refusé -->
+            <div class="p-8 text-center rounded-lg border transition-colors"
+                 :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-white' : 'bg-white border-gray-200'">
+                <div class="flex flex-col items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                         class="h-16 w-16 mb-4 transition-colors"
+                         :class="darkMode ? 'text-red-500' : 'text-red-400'"
+                         fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <p class="text-xl font-medium mb-2 transition-colors"
+                       :class="darkMode ? 'text-white' : 'text-gray-800'">
+                        Accès refusé
+                    </p>
+                    <p class="mb-6 transition-colors"
+                       :class="darkMode ? 'text-gray-300' : 'text-gray-600'">
+                        Vous n'avez pas les permissions nécessaires pour accéder à la gestion des phases.
+                    </p>
+                    <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"
+                       class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Retour au tableau de bord
+                    </a>
+                </div>
+            </div>
+        @endcan
     </div>
 @endsection
 
