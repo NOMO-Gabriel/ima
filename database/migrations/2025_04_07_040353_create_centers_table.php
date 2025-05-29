@@ -10,35 +10,25 @@ return new class extends Migration
     {
         Schema::create('centers', function (Blueprint $table) {
             $table->id();
+
             $table->string('name');
-            $table->string('location')->nullable();
-            $table->unsignedBigInteger('city_id')->nullable();
-            $table->unsignedInteger('nb_students')->default(0);
-
-            // Responsables du centre (tous nullables)
-            $table->unsignedBigInteger('director_id')->nullable();
-            $table->unsignedBigInteger('head_id')->nullable();
-            $table->unsignedBigInteger('logistics_director_id')->nullable();
-            $table->unsignedBigInteger('finance_director_id')->nullable();
-            $table->unsignedBigInteger('academic_manager_id')->nullable();
-
-            // Liste des personnels (nullable, type JSON avec des IDs de users)
+            $table->string('code')->unique();
+            $table->text('description')->nullable();
+            $table->string('address');
+            $table->string('contact_email')->nullable();
+            $table->string('contact_phone')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->json('staff_ids')->nullable()->default(null);
 
-            $table->boolean('is_active')->default(true);
-            $table->timestamps();
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->foreignId('city_id')->nullable()->constrained('cities')->onDelete('set null');
+            $table->foreignId('director_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('logistics_director_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('finance_director_id')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('academy_id')->nullable()->constrained('academies')->onDelete('set null');
+            $table->foreignId('created_by')->nullable()->constrained('users')->onDelete('set null');
+            $table->foreignId('updated_by')->nullable()->constrained('users')->onDelete('set null');
 
-            // Clés étrangères
-            $table->foreign('city_id')->references('id')->on('cities')->onDelete('set null');
-            $table->foreign('director_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('head_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('logistics_director_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('finance_director_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('academic_manager_id')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('created_by')->references('id')->on('users')->onDelete('set null');
-            $table->foreign('updated_by')->references('id')->on('users')->onDelete('set null');
+            $table->timestamps();
         });
     }
 

@@ -194,14 +194,6 @@
                 </th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     <div class="flex items-center">
-                        Langue
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
-                    </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
                         Date de création
                         <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
                             <i class="fas fa-sort"></i>
@@ -235,19 +227,6 @@
                         <div class="text-sm text-gray-500 max-w-xs overflow-hidden text-ellipsis">
                             {{ Str::limit($academy->description, 50) ?? '—' }}
                         </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        @if($academy->lang === 'FR')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                    Français
-                                </span>
-                        @elseif($academy->lang === 'EN')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    Anglais
-                                </span>
-                        @else
-                            <span class="text-gray-500">—</span>
-                        @endif
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <div class="flex items-center">

@@ -162,7 +162,9 @@
                                             class="block w-full border-gray-300 focus:ring-[#4CA3DD] focus:border-[#4CA3DD] rounded-md @error('phase_id') border-red-300 text-red-900 placeholder-red-300 @enderror">
                                         <option value="">-- Sélectionner une phase --</option>
                                         @foreach($phases as $phase)
-                                            <option value="{{ $phase->id }}" {{ old('phase_id', $formation->phase_id) == $phase->id ? 'selected' : '' }}>{{ $phase->name }}</option>
+                                            <option value="{{ $phase->id }}" {{ old('phase_id', $formation->phase_id) == $phase->id ? 'selected' : '' }}>
+                                                {{ optional($formation->phase)->start ? \Carbon\Carbon::parse($formation->phase->start)->format('d/m/Y') : 'N/A' }} - {{ optional($formation->phase)->end ? \Carbon\Carbon::parse($formation->phase->end)->format('d/m/Y') : 'N/A' }}
+                                            </option>
                                         @endforeach
                                     </select>
                                     @error('phase_id')

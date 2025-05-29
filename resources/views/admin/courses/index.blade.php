@@ -320,7 +320,7 @@
                     Affichage de <span>{{ $courses->firstItem() ?? 0 }}</span> à <span>{{ $courses->lastItem() ?? 0 }}</span> sur <span>{{ $courses->total() }}</span> cours
                 </div>
                 <div class="pagination-controls">
-                    {{ $courses->links('vendor.pagination.tailwind') }}
+                    {{ $courses->links() }}
                 </div>
             </div>
         @endif

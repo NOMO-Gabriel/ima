@@ -269,7 +269,7 @@
                         </th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider transition-colors"
                             :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
-                            Informations
+                            Date de Création
                         </th>
                         <th scope="col" class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider transition-colors"
                             :class="darkMode ? 'text-gray-400' : 'text-gray-500'">

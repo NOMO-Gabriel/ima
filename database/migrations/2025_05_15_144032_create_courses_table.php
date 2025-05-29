@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description')->nullable();
 
+            $table->foreignId('department_id')->constrained('departments')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

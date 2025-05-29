@@ -104,7 +104,9 @@
                                 </p>
                                 <p class="mb-3">
                                     <span class="text-sm font-medium text-gray-500 block mb-1">Phase</span>
-                                    <span class="text-base text-gray-800">{{ $formation->phase->name ?? '—' }}</span>
+                                    <span class="text-base text-gray-800">
+                                        {{ optional($formation->phase)->start ? \Carbon\Carbon::parse($formation->phase->start)->format('d/m/Y') : 'N/A' }} - {{ optional($formation->phase)->end ? \Carbon\Carbon::parse($formation->phase->end)->format('d/m/Y') : 'N/A' }}
+                                    </span>
                                 </p>
                             </div>
                             <div class="flex flex-col">

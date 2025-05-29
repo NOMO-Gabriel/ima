@@ -19,8 +19,8 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->boolean('is_active')->default(true);
 
-            $table->unsignedBigInteger('academy_id');
-            $table->unsignedBigInteger('head_id')->nullable();
+            $table->foreignId('academy_id')->nullable()->constrained('academies')->onDelete('set null');
+            $table->foreignId('head_id')->nullable()->constrained('users')->onDelete('set null');
 
             $table->timestamps();
         });

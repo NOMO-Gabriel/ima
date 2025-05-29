@@ -10,9 +10,6 @@ class CourseController extends Controller
 {
     public function index()
     {
-        if ($this->user && !$this->user->can('course.view')) {
-            abort(403, 'Non autorisé');
-        }
 
         $courses = Course::latest()->paginate(10);
         return view('admin.courses.index', compact('courses'));
@@ -20,9 +17,6 @@ class CourseController extends Controller
 
     public function create()
     {
-        if ($this->user && !$this->user->can('course.create')) {
-            abort(403, 'Non autorisé');
-        }
 
         $formations = Formation::all();
 
@@ -31,9 +25,6 @@ class CourseController extends Controller
 
     public function store(Request $request)
     {
-        if ($this->user && !$this->user->can('course.create')) {
-            abort(403, 'Non autorisé');
-        }
 
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:courses,code',
@@ -60,18 +51,11 @@ class CourseController extends Controller
 
     public function show($locale, Course $course)
     {
-        if ($this->user && !$this->user->can('course.view')) {
-            abort(403, 'Non autorisé');
-        }
-
         return view('admin.courses.show', compact('course'));
     }
 
     public function edit($locale, Course $course)
     {
-        if ($this->user && !$this->user->can('course.update')) {
-            abort(403, 'Non autorisé');
-        }
 
         $formations = Formation::all();
 
@@ -80,9 +64,6 @@ class CourseController extends Controller
 
     public function update($locale, Request $request, Course $course)
     {
-        if ($this->user && !$this->user->can('course.update')) {
-            abort(403, 'Non autorisé');
-        }
 
         $validated = $request->validate([
             'code' => 'required|string|max:255|unique:courses,code,' . $course->id,
@@ -106,9 +87,6 @@ class CourseController extends Controller
 
     public function destroy($locale, Course $course)
     {
-        if ($this->user && !$this->user->can('course.delete')) {
-            abort(403, 'Non autorisé');
-        }
 
         $course->delete();
 

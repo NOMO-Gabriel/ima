@@ -16,12 +16,36 @@
                     Tableau de bord
                 </a>
             </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-3 h-3 mx-1" :class="darkMode ? 'text-gray-500' : 'text-gray-400'" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale()]) }}"
+                       class="ml-1 text-sm font-medium transition-colors duration-150"
+                       :class="darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-500 hover:text-[#4CA3DD]'">
+                        Emplois du temps
+                    </a>
+                </div>
+            </li>
+            <li>
+                <div class="flex items-center">
+                    <svg class="w-3 h-3 mx-1" :class="darkMode ? 'text-gray-500' : 'text-gray-400'" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'center_id' => $center->id]) }}"
+                       class="ml-1 text-sm font-medium transition-colors duration-150"
+                       :class="darkMode ? 'text-gray-300 hover:text-white' : 'text-gray-500 hover:text-[#4CA3DD]'">
+                        {{ $center->name }}
+                    </a>
+                </div>
+            </li>
             <li aria-current="page">
                 <div class="flex items-center">
                     <svg class="w-3 h-3 mx-1" :class="darkMode ? 'text-gray-500' : 'text-gray-400'" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
                     </svg>
-                    <span class="ml-1 text-sm font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">Emploi du Temps</span>
+                    <span class="ml-1 text-sm font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">{{ $formation->name }}</span>
                 </div>
             </li>
         </ol>
@@ -31,7 +55,7 @@
     <div class="shadow-lg rounded-xl p-6 mb-8 transition-all duration-150"
          :class="darkMode ? 'bg-[#334155] border border-[#475569]' : 'bg-white border border-[#E2E8F0]'">
 
-        <!-- En-tête avec informations du centre -->
+        <!-- En-tête avec informations du centre et de la formation -->
         <div class="mb-8">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                 <div class="flex items-center space-x-4">
@@ -44,7 +68,7 @@
                     <div>
                         <h1 class="text-2xl font-bold transition-colors duration-150"
                             :class="darkMode ? 'text-[#F1F5F9]' : 'text-[#1E293B]'">
-                            Emploi du temps
+                            {{ $formation->name }}
                         </h1>
                         <p class="text-sm transition-colors duration-150"
                            :class="darkMode ? 'text-[#94A3B8]' : 'text-[#64748B]'">
@@ -52,51 +76,70 @@
                         </p>
                     </div>
                 </div>
+
+                <!-- Badge du nombre de salles -->
+                <div class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+                     :class="darkMode ? 'bg-[#34D399]/20 text-[#34D399]' : 'bg-[#34D399]/10 text-[#059669]'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    {{ $formationRooms->count() }} salle{{ $formationRooms->count() > 1 ? 's' : '' }}
+                </div>
             </div>
         </div>
 
-        <!-- Sélection du centre et navigation -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            <!-- Sélecteur de centre -->
-            <div class="lg:col-span-1">
-                <form method="GET" action="{{ route('admin.timetables.index', app()->getLocale()) }}">
-                    <label for="center_id" class="block text-sm font-semibold mb-3 transition-colors duration-150"
+        <!-- Sélection de formation et navigation -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Sélecteur de formation -->
+            <div>
+                <form method="GET" action="{{ route('admin.planning.index', app()->getLocale()) }}">
+                    <label for="formation_id" class="block text-sm font-semibold mb-3 transition-colors duration-150"
                            :class="darkMode ? 'text-[#F1F5F9]' : 'text-[#1E293B]'">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-2 text-[#4CA3DD]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
-                        Changer de centre
+                        Changer de formation
                     </label>
-                    <div class="relative">
-                        <select name="center_id" id="center_id"
-                                class="w-full pl-10 pr-10 py-3 rounded-lg border-2 focus:ring-2 focus:ring-[#4CA3DD] focus:border-[#4CA3DD] transition-all duration-150 appearance-none"
-                                :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-[#F1F5F9]' : 'bg-[#F8FAFC] border-[#E2E8F0] text-[#1E293B]'"
-                                required onchange="this.form.submit()">
-                            @foreach (\App\Models\Center::all() as $c)
-                                <option value="{{ $c->id }}" {{ $center->id === $c->id ? 'selected' : '' }}>
-                                    {{ $c->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="darkMode ? 'text-[#94A3B8]' : 'text-[#64748B]'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
+                    <div class="flex space-x-3">
+                        <div class="relative flex-1">
+                            <select name="formation_id" id="formation_id"
+                                    class="w-full pl-10 pr-10 py-3 rounded-lg border-2 focus:ring-2 focus:ring-[#4CA3DD] focus:border-[#4CA3DD] transition-all duration-150 appearance-none"
+                                    :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-[#F1F5F9]' : 'bg-[#F8FAFC] border-[#E2E8F0] text-[#1E293B]'"
+                                    required>
+                                @foreach (\App\Models\Formation::whereHas('rooms', function($query) use ($center) { $query->where('center_id', $center->id); })->get() as $f)
+                                    <option value="{{ $f->id }}" {{ $formation->id === $f->id ? 'selected' : '' }}>
+                                        {{ $f->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" :class="darkMode ? 'text-[#94A3B8]' : 'text-[#64748B]'" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                            </div>
+                            <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                                <svg class="h-5 w-5" :class="darkMode ? 'text-[#94A3B8]' : 'text-[#64748B]'" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
                         </div>
-                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                            <svg class="h-5 w-5" :class="darkMode ? 'text-[#94A3B8]' : 'text-[#64748B]'" viewBox="0 0 20 20" fill="currentColor">
-                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        <button type="submit"
+                                class="px-4 py-3 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-all duration-200 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                             </svg>
-                        </div>
+                        </button>
                     </div>
+                    <input type="hidden" name="center_id" value="{{ $center->id }}">
                     <input type="hidden" name="week_start_date" value="{{ $weekStartDate->toDateString() }}">
                 </form>
             </div>
 
             <!-- Navigation des semaines -->
-            <div class="lg:col-span-2 flex justify-center lg:justify-end items-end">
+            <div class="flex justify-center lg:justify-end items-end">
                 <div class="flex items-center space-x-4">
-                    <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'week_start_date' => $prevWeek, 'center_id' => $center->id]) }}"
+                    <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'week_start_date' => $prevWeek, 'center_id' => $center->id, 'formation_id' => $formation->id]) }}"
                        class="inline-flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 bg-[#4CA3DD] text-white hover:bg-[#2A7AB8]">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -110,7 +153,7 @@
                         <div class="text-sm font-medium">{{ $weekStartDate->format('d M') }} - {{ $weekStartDate->copy()->addDays(6)->format('d M Y') }}</div>
                     </div>
 
-                    <a href="{{ route('admin.timetables.index', ['locale' => app()->getLocale(), 'week_start_date' => $nextWeek, 'center_id' => $center->id]) }}"
+                    <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale(), 'week_start_date' => $nextWeek, 'center_id' => $center->id, 'formation_id' => $formation->id]) }}"
                        class="inline-flex items-center px-6 py-3 rounded-lg font-medium transition-all duration-200 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 bg-[#4CA3DD] text-white hover:bg-[#2A7AB8]">
                         <span class="hidden sm:inline">Semaine suivante</span>
                         <span class="sm:hidden">Suivante</span>
@@ -119,6 +162,27 @@
                         </svg>
                     </a>
                 </div>
+            </div>
+        </div>
+
+        <!-- Informations sur les salles de la formation -->
+        <div class="mb-6 p-4 rounded-lg transition-colors duration-150"
+             :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
+            <h3 class="text-sm font-semibold mb-3 transition-colors duration-150"
+                :class="darkMode ? 'text-[#F1F5F9]' : 'text-gray-700'">
+                Salles de la formation {{ $formation->name }} :
+            </h3>
+            <div class="flex flex-wrap gap-2">
+                @foreach($formationRooms as $room)
+                    <div class="flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors duration-150"
+                         :class="darkMode ? 'bg-[#334155] text-[#F1F5F9]' : 'bg-white text-gray-700 shadow-sm'">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#4CA3DD]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="text-sm font-medium">{{ $room->name }}</span>
+                    </div>
+                @endforeach
             </div>
         </div>
 
@@ -149,7 +213,7 @@
             }
         @endphp
 
-            <!-- Légende des professeurs -->
+        <!-- Légende des professeurs -->
         @if(count($teacherColors) > 0)
             <div class="mb-6 p-4 rounded-lg transition-colors duration-150"
                  :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
@@ -165,8 +229,8 @@
                                 <div class="w-4 h-4 rounded-full" style="background-color: {{ $color }};"></div>
                                 <span class="text-sm transition-colors duration-150"
                                       :class="darkMode ? 'text-[#F1F5F9]' : 'text-gray-700'">
-                            {{ $teacher->first_name }} {{ $teacher->last_name }}
-                        </span>
+                                    {{ $teacher->first_name }} {{ $teacher->last_name }}
+                                </span>
                             </div>
                         @endif
                     @endforeach
@@ -188,7 +252,7 @@
                 </h3>
                 <p class="transition-colors duration-150"
                    :class="darkMode ? 'text-[#94A3B8]' : 'text-gray-600'">
-                    L'emploi du temps pour cette semaine n'a pas encore été créé pour ce centre.
+                    L'emploi du temps pour cette formation n'a pas encore été créé pour cette semaine.
                 </p>
             </div>
         @else
@@ -208,30 +272,19 @@
                             :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
                             Horaire
                         </th>
-                        @foreach ($formations as $formation)
-                            <th colspan="{{ $formation->rooms->count() ?: 1 }}"
-                                class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150"
-                                :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
-                                {{ $formation->name }}
-                            </th>
-                        @endforeach
+                        <th colspan="{{ $formationRooms->count() }}"
+                            class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150"
+                            :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
+                            {{ $formation->name }}
+                        </th>
                     </tr>
                     <tr class="transition-colors duration-150"
                         :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
-                        @foreach ($formations as $formation)
-                            @if($formation->rooms && $formation->rooms->count() > 0)
-                                @foreach ($formation->rooms as $room)
-                                    <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider border-r transition-colors duration-150"
-                                        :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
-                                        {{ $room->name }}
-                                    </th>
-                                @endforeach
-                            @else
-                                <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider border-r transition-colors duration-150"
-                                    :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
-                                    Salle principale
-                                </th>
-                            @endif
+                        @foreach ($formationRooms as $room)
+                            <th class="px-4 py-3 text-center text-xs font-medium uppercase tracking-wider border-r transition-colors duration-150"
+                                :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
+                                {{ $room->name }}
+                            </th>
                         @endforeach
                     </tr>
                     </thead>
@@ -258,83 +311,43 @@
                                     </div>
                                 </td>
 
-                                @foreach ($formations as $formation)
-                                    @if($formation->rooms && $formation->rooms->count() > 0)
-                                        @foreach ($formation->rooms as $room)
-                                            @php
-                                                $slot = $timetable->slots->firstWhere(fn($s) =>
-                                                    $s->week_day === $dayNames[$dayIndex] &&
-                                                    $s->start_time === $period['start'] &&
-                                                    $s->formation_id === $formation->id &&
-                                                    $s->room_id === $room->id
-                                                );
-                                            @endphp
-                                            <td class="px-2 py-3 text-center border-r transition-all duration-150 h-24"
-                                                :class="darkMode ? 'border-[#64748B]' : 'border-gray-200'">
-                                                @if ($slot)
-                                                    <a href="{{ route('admin.slots.edit', ['locale' => app()->getLocale(), 'slot' => $slot]) }}"
-                                                       class="block p-3 rounded-lg transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer h-full"
-                                                       style="background-color: {{ $teacherColors[$slot->teacher_id] ?? '#64748B' }}; color: white;">
-                                                        <div class="space-y-1">
-                                                            <div class="text-xs font-bold truncate">
-                                                                {{ $slot->course->title ?? 'Cours' }}
-                                                            </div>
-                                                            <div class="text-xs opacity-90 truncate">
-                                                                {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : 'Professeur' }}
-                                                            </div>
-                                                        </div>
-                                                    </a>
-                                                @else
-                                                    <a href="#"
-                                                       class="block p-3 rounded-lg border-2 border-dashed transition-all duration-200 hover:border-solid h-full flex items-center justify-center"
-                                                       :class="darkMode ? 'border-[#64748B] hover:border-[#4CA3DD] hover:bg-[#475569] text-[#94A3B8]' : 'border-gray-300 hover:border-[#4CA3DD] hover:bg-gray-50 text-gray-500'">
-                                                        <div class="text-xs">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                            </svg>
-                                                            Ajouter
-                                                        </div>
-                                                    </a>
-                                                @endif
-                                            </td>
-                                        @endforeach
-                                    @else
-                                        @php
-                                            $slot = $timetable->slots->firstWhere(fn($s) =>
-                                                $s->week_day === $dayNames[$dayIndex] &&
-                                                $s->start_time === $period['start'] &&
-                                                $s->formation_id === $formation->id
-                                            );
-                                        @endphp
-                                        <td class="px-2 py-3 text-center border-r transition-all duration-150 h-24"
-                                            :class="darkMode ? 'border-[#64748B]' : 'border-gray-200'">
-                                            @if ($slot)
-                                                <a href="{{ route('admin.slots.edit', ['locale' => app()->getLocale(), 'slot' => $slot]) }}"
-                                                   class="block p-3 rounded-lg transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer h-full"
-                                                   style="background-color: {{ $teacherColors[$slot->teacher_id] ?? '#64748B' }}; color: white;">
-                                                    <div class="space-y-1">
-                                                        <div class="text-xs font-bold truncate">
-                                                            {{ $slot->course->title ?? 'Cours' }}
-                                                        </div>
-                                                        <div class="text-xs opacity-90 truncate">
-                                                            {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : 'Professeur' }}
-                                                        </div>
+                                @foreach ($formationRooms as $room)
+                                    @php
+                                        $slot = $timetable->slots->firstWhere(fn($s) =>
+                                            $s->week_day === $dayNames[$dayIndex] &&
+                                            $s->start_time === $period['start'] &&
+                                            $s->formation_id === $formation->id &&
+                                            $s->room_id === $room->id
+                                        );
+                                    @endphp
+                                    <td class="px-2 py-3 text-center border-r transition-all duration-150 h-24"
+                                        :class="darkMode ? 'border-[#64748B]' : 'border-gray-200'">
+                                        @if ($slot)
+                                            <a href="{{ route('admin.slots.edit', ['locale' => app()->getLocale(), 'slot' => $slot]) }}"
+                                               class="block p-3 rounded-lg transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer h-full"
+                                               style="background-color: {{ $teacherColors[$slot->teacher_id] ?? '#64748B' }}; color: white;">
+                                                <div class="space-y-1">
+                                                    <div class="text-xs font-bold truncate">
+                                                        {{ $slot->course->title ?? 'Cours' }}
                                                     </div>
-                                                </a>
-                                            @else
-                                                <a href="#"
-                                                   class="block p-3 rounded-lg border-2 border-dashed transition-all duration-200 hover:border-solid h-full flex items-center justify-center"
-                                                   :class="darkMode ? 'border-[#64748B] hover:border-[#4CA3DD] hover:bg-[#475569] text-[#94A3B8]' : 'border-gray-300 hover:border-[#4CA3DD] hover:bg-gray-50 text-gray-500'">
-                                                    <div class="text-xs">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                        </svg>
-                                                        Ajouter
+                                                    <div class="text-xs opacity-90 truncate">
+                                                        {{ $slot->teacher ? $slot->teacher->first_name . ' ' . $slot->teacher->last_name : 'Professeur' }}
                                                     </div>
-                                                </a>
-                                            @endif
-                                        </td>
-                                    @endif
+                                                </div>
+                                            </a>
+                                        @else
+                                            <a href="#"
+                                               class="block p-3 rounded-lg border-2 border-dashed transition-all duration-200 hover:border-solid h-full flex items-center justify-center"
+                                               :class="darkMode ? 'border-[#64748B] hover:border-[#4CA3DD] hover:bg-[#475569] text-[#94A3B8]' : 'border-gray-300 hover:border-[#4CA3DD] hover:bg-gray-50 text-gray-500'">
+                                                <div class="text-xs">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                    </svg>
+                                                    Ajouter
+                                                </div>
+                                            </a>
+                                        @endif
+                                    </td>
                                 @endforeach
                             </tr>
                         @endforeach
@@ -384,166 +397,9 @@
 
         /* Responsive design */
         @media (max-width: 768px) {
-            .table-fixed {
-                min-width: 800px;
+            .overflow-x-auto {
+                overflow-x: scroll;
             }
-
-            .w-32 {
-                width: 100px;
-            }
-
-            .w-28 {
-                width: 80px;
-            }
-        }
-
-        /* Animation de chargement */
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #4CA3DD;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        /* Tooltips pour les créneaux */
-        .slot-tooltip {
-            position: relative;
-        }
-
-        .slot-tooltip:hover::after {
-            content: attr(data-tooltip);
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #1E293B;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            white-space: nowrap;
-            z-index: 20;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .slot-tooltip:hover::before {
-            content: '';
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%) translateY(100%);
-            border: 6px solid transparent;
-            border-top-color: #1E293B;
-            z-index: 20;
         }
     </style>
-@endpush
-
-@push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Gestion du changement de centre avec overlay de chargement
-            const centerSelect = document.getElementById('center_id');
-            if (centerSelect) {
-                centerSelect.addEventListener('change', function() {
-                    showLoadingOverlay();
-                });
-            }
-
-            function showLoadingOverlay() {
-                const overlay = document.createElement('div');
-                overlay.className = 'loading-overlay';
-                overlay.innerHTML = '<div class="spinner"></div>';
-                document.body.appendChild(overlay);
-            }
-
-            // Animation des créneaux au chargement
-            const slots = document.querySelectorAll('[style*="background-color"]');
-            slots.forEach((slot, index) => {
-                slot.style.opacity = '0';
-                slot.style.transform = 'scale(0.8)';
-                setTimeout(() => {
-                    slot.style.transition = 'all 0.5s ease';
-                    slot.style.opacity = '1';
-                    slot.style.transform = 'scale(1)';
-                }, index * 50);
-            });
-
-            // Gestion des raccourcis clavier
-            document.addEventListener('keydown', function(e) {
-                if (e.ctrlKey) {
-                    switch(e.key) {
-                        case 'ArrowLeft':
-                            e.preventDefault();
-                            const prevLink = document.querySelector('a[href*="week_start_date={{ $prevWeek }}"]');
-                            if (prevLink) {
-                                showLoadingOverlay();
-                                prevLink.click();
-                            }
-                            break;
-                        case 'ArrowRight':
-                            e.preventDefault();
-                            const nextLink = document.querySelector('a[href*="week_start_date={{ $nextWeek }}"]');
-                            if (nextLink) {
-                                showLoadingOverlay();
-                                nextLink.click();
-                            }
-                            break;
-                    }
-                }
-            });
-
-            // Amélioration de l'accessibilité
-            const focusableElements = document.querySelectorAll('a, button, select');
-            focusableElements.forEach(element => {
-                element.addEventListener('focus', function() {
-                    this.style.outline = '2px solid #4CA3DD';
-                    this.style.outlineOffset = '2px';
-                });
-
-                element.addEventListener('blur', function() {
-                    this.style.outline = 'none';
-                });
-            });
-
-            // Gestion du responsive - masquer certaines colonnes sur mobile
-            function handleResize() {
-                const isMobile = window.innerWidth < 768;
-                const table = document.querySelector('table');
-
-                if (table && isMobile) {
-                    // Logique pour optimiser l'affichage mobile si nécessaire
-                    table.style.fontSize = '12px';
-                } else if (table) {
-                    table.style.fontSize = '14px';
-                }
-            }
-
-            window.addEventListener('resize', handleResize);
-            handleResize();
-
-            console.log('Emploi du temps chargé avec succès!');
-        });
-    </script>
 @endpush

@@ -63,7 +63,7 @@ class RoomController extends Controller
             $query->orderBy('name', 'asc');
         }
 
-        $rooms = $query->get();
+        $rooms = $query->latest()->paginate(10);
         $formations = Formation::all();
 
         return view('admin.rooms.index', compact('rooms', 'formations'));

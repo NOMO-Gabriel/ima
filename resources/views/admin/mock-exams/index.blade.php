@@ -22,17 +22,17 @@
         </tr>
     </thead>
     <tbody>
-        @forelse($exams as $exam)
+        @forelse($mockExams as $mockExam)
             <tr>
-                <td>{{ $exam->id }}</td>
-                <td>{{ $exam->date->format('d/m/Y H:i') }}</td>
-                <td>{{ $exam->type }}</td>
-                <td>{{ $exam->duration }}</td>
-                <td>{{ $exam->formation->title ?? 'N/A' }}</td>
+                <td>{{ $mockExam->id }}</td>
+                <td>{{ $mockExam->date->format('d/m/Y H:i') }}</td>
+                <td>{{ $mockExam->type }}</td>
+                <td>{{ $mockExam->duration }}</td>
+                <td>{{ $mockExam->formation->name ?? 'N/A' }}</td>
                 <td>
-                    @if($exam->courses->count())
+                    @if($mockExam->courses->count())
                         <ul class="mb-0">
-                            @foreach($exam->courses as $course)
+                            @foreach($mockExam->courses as $course)
                                 <li>{{ $course->title }}</li>
                             @endforeach
                         </ul>
@@ -41,9 +41,9 @@
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('admin.mock-exams.show', ['locale' => app()->getLocale(), 'exam' => $exam->id]) }}" class="btn btn-info btn-sm">Voir</a>
-                    <a href="{{ route('admin.mock-exams.edit', ['locale' => app()->getLocale(), 'exam' => $exam->id]) }}" class="btn btn-warning btn-sm">Modifier</a>
-                    <form action="{{ route('admin.mock-exams.destroy', ['locale' => app()->getLocale(), 'exam' => $exam->id]) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Confirmer la suppression ?')">
+                    <a href="{{ route('admin.mock-exams.show', ['locale' => app()->getLocale(), 'mock_exam' => $mockExam->id]) }}" class="btn btn-info btn-sm">Voir</a>
+                    <a href="{{ route('admin.mock-exams.edit', ['locale' => app()->getLocale(), 'mock_exam' => $mockExam->id]) }}" class="btn btn-warning btn-sm">Modifier</a>
+                    <form action="{{ route('admin.mock-exams.destroy', ['locale' => app()->getLocale(), 'mock_exam' => $mockExam->id]) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Confirmer la suppression ?')">
                         @csrf
                         @method('DELETE')
                         <button class="btn btn-danger btn-sm" type="submit">Supprimer</button>
