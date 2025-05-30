@@ -23,9 +23,7 @@ class SlotController extends Controller
 
         $center = $timetable->center;
         $courses = Course::all();
-        $teachers = User::whereHas('roles', function($query) {
-            $query->where('name', 'enseignant');
-        })->get();
+        $teachers = User::all();
 
         $slotData = [
             'timetable_id' => $request->timetable_id,

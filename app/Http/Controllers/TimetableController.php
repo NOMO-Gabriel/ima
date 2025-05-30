@@ -25,17 +25,13 @@ class TimetableController extends Controller
 
         // Étape 2 : Sélection de la formation
         if (!$formationId) {
-            $formations = Formation::whereHas('rooms', function($query) use ($centerId) {
-                $query->where('center_id', $centerId);
-            })->get();
+            $formations = Formation::where('academy_id', $center->academy_id)->get();
 
             return view('admin.planning.select_formation', compact('center', 'formations'));
         }
 
         // Étape 3 : Affichage de l'emploi du temps pour la formation sélectionnée
-        $formation = Formation::with(['rooms' => function($query) use ($centerId) {
-            $query->where('center_id', $centerId);
-        }])->findOrFail($formationId);
+        $formation = Formation::with(['rooms'])->findOrFail($formationId);
 
         // Vérifier que la formation a des salles dans ce centre
         $formationRooms = $formation->rooms;
@@ -102,6 +98,8 @@ class TimetableController extends Controller
             'prevWeek' => $prevWeek,
             'nextWeek' => $nextWeek,
             'slots' => $slots,
+            // Ajouter toutes les formations pour le sélecteur
+            'allFormations' => Formation::where('academy_id', $center->academy_id)->get()
         ]);
     }
 

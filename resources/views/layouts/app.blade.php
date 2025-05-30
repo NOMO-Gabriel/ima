@@ -261,28 +261,16 @@
             overflow: hidden;
             transition: opacity var(--transition-speed);
             opacity: 1;
-            flex-grow: 1; /* Added to push icon to the end */
-            margin-left: 0.75rem; /* Space between category icon and text */
         }
-         .menu-category i:first-child { /* Style for the category icon */
-            min-width: 1.5rem;
-            font-size: 1.125rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
 
         .sidebar.collapsed .menu-category-text {
             opacity: 0;
             width: 0;
-            margin-left: 0; /* Remove margin when collapsed */
         }
 
         .menu-category i.toggle-icon {
             transition: transform var(--transition-speed);
             font-size: 0.75rem;
-            margin-left: auto; /* Pushes toggle icon to the far right */
         }
 
         .menu-category.collapsed i.toggle-icon {
@@ -293,16 +281,12 @@
             opacity: 0;
             width: 0;
         }
-         .sidebar.collapsed .menu-category i:first-child { /* Ensure category icon is still visible when sidebar is collapsed */
-            margin-right: 0;
-        }
-
 
         .menu-group {
             overflow: hidden;
-            max-height: 1000px; /* Arbitrary large value for open state */
-            transition: max-height var(--transition-speed) ease-in-out;
-            margin-left: 0.5rem; /* Indent menu items slightly */
+            max-height: 1000px;
+            transition: max-height var(--transition-speed);
+            margin-left: 0.5rem;
         }
 
         .menu-group.collapsed {
@@ -312,14 +296,13 @@
         .sidebar.collapsed .menu-group:not(.collapsed) {
             position: absolute;
             left: var(--sidebar-width-collapsed);
-            top: 0; /* Adjust as needed depending on where the category was clicked */
+            top: 0;
             background-color: white;
             width: 230px;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-md);
-            max-height: auto; /* Let content define height */
+            max-height: auto;
             padding: 0.5rem 0;
-            z-index: 40; /* Ensure it's above other sidebar items */
         }
 
         html.dark .sidebar.collapsed .menu-group:not(.collapsed) {
@@ -374,27 +357,11 @@
         .sidebar.collapsed .menu-item span {
             opacity: 0;
             width: 0;
-            overflow: hidden; /* Ensure text doesn't wrap or show */
         }
 
         .sidebar.collapsed .menu-item i {
             margin-right: 0;
         }
-
-        /* Styles for pop-out menu when sidebar is collapsed */
-        .sidebar.collapsed .menu-category:hover + .menu-group,
-        .sidebar.collapsed .menu-group:hover {
-            display: block; /* Show on hover */
-            opacity: 1;
-            visibility: visible;
-            /* position, top, left, background, etc., are handled by .sidebar.collapsed .menu-group:not(.collapsed) */
-        }
-        .sidebar.collapsed .menu-group { /* Initially hide for hover effect */
-            display: none;
-            opacity: 0;
-            visibility: hidden;
-        }
-
 
         .sidebar.collapsed .menu-group:not(.collapsed) .menu-item span {
             opacity: 1;
@@ -404,7 +371,6 @@
         .sidebar.collapsed .menu-group:not(.collapsed) .menu-item i {
             margin-right: 0.75rem;
         }
-
 
         /* Logout button at bottom */
         .logout-container {
@@ -1483,12 +1449,12 @@
                 <span>Tableau de bord</span>
             </a>
 
-            <div class="menu-category collapsed" data-category="administration"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-category" data-category="administration">
                 <i class="fas fa-cogs"></i>
                 <div class="menu-category-text">Administration</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group collapsed" id="group-administration"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-group" id="group-administration">
                 {{-- <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
                     <i class="fas fa-id-badge"></i>
                     <span>Personnel</span>
@@ -1500,19 +1466,19 @@
                 <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Élèves</span>
-                </a>  --}}
+                </a> --}}
                 <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Utilisateurs</span>
                 </a>
             </div>
 
-            <div class="menu-category collapsed" data-category="management"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-category" data-category="management">
                 <i class="fas fa-tasks"></i>
                 <div class="menu-category-text">Gestion</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group collapsed" id="group-management"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-group" id="group-management">
                 <a href="{{ route('admin.academies.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.academies.*') ? 'active' : '' }}">
                     <i class="fas fa-university"></i>
                     <span>Academies</span>
@@ -1555,12 +1521,12 @@
                 </a>
             </div>
 
-            <div class="menu-category collapsed" data-category="planification"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-category" data-category="planification">
                 <i class="fas fa-calendar-check"></i>
                 <div class="menu-category-text">Planification</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group collapsed" id="group-planification"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-group" id="group-planification">
                 <a href="{{ route('admin.planning.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.planning.*') ? 'active' : '' }}">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Planning</span>
@@ -1571,12 +1537,12 @@
                 </a>
             </div>
 
-            <div class="menu-category collapsed" data-category="finance"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-category" data-category="finance">
                 <i class="fas fa-wallet"></i>
                 <div class="menu-category-text">Finances</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group collapsed" id="group-finance"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-group" id="group-finance">
                 <a href="{{ route('admin.finance.students.pending', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.registrations.*') ? 'active' : '' }}">
                     <i class="fas fa-clipboard-list"></i>
                     <span>Inscriptions</span>
@@ -1585,38 +1551,38 @@
                     <i class="fas fa-money-check-alt"></i>
                     <span>Transactions</span>
                 </a>
-                {{-- <a href="{{ route('admin.transactions-history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.transactions-history.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.transactions-history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.transactions-history.*') ? 'active' : '' }}">
                     <i class="fas fa-history"></i>
                     <span>Historique</span>
-                </a> --}}
+                </a>
             </div>
 
-            <div class="menu-category collapsed" data-category="resources"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-category" data-category="resources">
                 <i class="fas fa-archive"></i>
                 <div class="menu-category-text">Ressources</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group collapsed" id="group-resources"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-group" id="group-resources">
                 <a href="{{ route('admin.books.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
                     <i class="fas fa-book"></i>
                     <span>Livres</span>
                 </a>
-                {{-- <a href="{{ route('admin.materials.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.materials.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.materials.*') ? 'active' : '' }}">
                     <i class="fas fa-tools"></i>
                     <span>Materiels</span>
                 </a>
                 <a href="{{ route('admin.commands.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.commands.*') ? 'active' : '' }}">
                     <i class="fas fa-box-open"></i>
                     <span>Commandes</span>
-                </a> --}}
+                </a>
             </div>
 
-{{--             <div class="menu-category collapsed" data-category="account"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-category" data-category="account">
                 <i class="fas fa-user-cog"></i>
                 <div class="menu-category-text">Compte</div>
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
-            <div class="menu-group collapsed" id="group-account"> <!-- MODIFIED: Added collapsed -->
+            <div class="menu-group" id="group-account">
                 <a href="{{ route('admin.profile.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
                     <i class="fas fa-user-circle"></i>
                     <span>Profil</span>
@@ -1626,7 +1592,7 @@
                     <span>Historique</span>
                 </a>
             </div>
- --}}       {{--  </div>
+        </div>
 
         <!-- Logout button -->
         <div class="logout-container">
@@ -1637,7 +1603,7 @@
                     <span class="logout-text">Déconnexion</span>
                 </button>
             </form>
-        </div> --}}
+        </div>
     </aside>
 
     <!-- Main Content -->
@@ -1714,7 +1680,7 @@
                             </a>
                             <form method="POST" action="{{ route('logout', ['locale' => app()->getLocale()]) }}">
                                 @csrf
-                                <button type="submit" class="user-link text-danger w-100" style="text-align: left;"> <!-- Added w-100 and text-align for button -->
+                                <button type="submit" class="user-link text-danger">
                                     <i class="fas fa-sign-out-alt"></i>
                                     <span>Déconnexion</span>
                                 </button>
@@ -1749,24 +1715,24 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>© {{ date('Y') }} Institut Maïeutique Avancé (IMA). Tous droits réservés.</p>
+            <p>&copy; {{ date('Y') }} Institut Maïeutique Avancé (IMA). Tous droits réservés.</p>
         </footer>
     </div>
 </div>
 
 <!-- Scripts -->
 <script>
-// Remplacez le script dans votre fichier HTML par celui-ci :
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle sidebar collapse
+        const toggleSidebar = document.querySelector('.toggle-sidebar');
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Toggle sidebar collapse
-    const toggleSidebar = document.querySelector('.toggle-sidebar');
-    const sidebar = document.querySelector('.sidebar');
+        toggleSidebar.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
 
-    // Fonction pour mettre à jour l'icône du toggle
-    function updateToggleIcon() {
-        if (toggleSidebar) {
-            const toggleIcon = toggleSidebar.querySelector('i');
+            // Change toggle icon
+            const toggleIcon = this.querySelector('i');
             if (sidebar.classList.contains('collapsed')) {
                 toggleIcon.classList.remove('fa-chevron-left');
                 toggleIcon.classList.add('fa-chevron-right');
@@ -1774,311 +1740,49 @@ document.addEventListener('DOMContentLoaded', function() {
                 toggleIcon.classList.remove('fa-chevron-right');
                 toggleIcon.classList.add('fa-chevron-left');
             }
-        }
-    }
-
-    // Fonction pour toggle la sidebar
-    function toggleSidebarState() {
-        if (sidebar.classList.contains('collapsed')) {
-            // Ouvrir la sidebar
-            sidebar.classList.remove('collapsed');
-            localStorage.setItem('sidebarCollapsed', 'false');
-            updateToggleIcon();
-            // Rouvrir le groupe actif quand on expand
-            reopenActiveGroup();
-        } else {
-            // Fermer la sidebar
-            sidebar.classList.add('collapsed');
-            localStorage.setItem('sidebarCollapsed', 'true');
-            updateToggleIcon();
-            // Fermer tous les groupes quand on collapse
-            closeAllMenuGroups();
-        }
-    }
-
-    if (toggleSidebar && sidebar) {
-        toggleSidebar.addEventListener('click', function() {
-            toggleSidebarState();
         });
 
-        // Restore sidebar state on page load
-        if (localStorage.getItem('sidebarCollapsed') === 'true') {
-            sidebar.classList.add('collapsed');
-            updateToggleIcon();
-        }
-    }
+        // Mobile menu toggle
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const sidebarOverlay = document.querySelector('.sidebar-overlay');
 
-    // Mobile menu toggle
-    const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-    const sidebarOverlay = document.querySelector('.sidebar-overlay');
-
-    if (mobileMenuToggle && sidebar && sidebarOverlay) {
-        mobileMenuToggle.addEventListener('click', function() {
-            // Sur mobile, on utilise la classe 'show' au lieu de 'collapsed'
-            if (sidebar.classList.contains('show')) {
-                sidebar.classList.remove('show');
-                sidebarOverlay.classList.remove('show');
-            } else {
+        if (mobileMenuToggle) {
+            mobileMenuToggle.addEventListener('click', function() {
                 sidebar.classList.add('show');
                 sidebarOverlay.classList.add('show');
-            }
-        });
-    }
+            });
+        }
 
-    if (sidebarOverlay && sidebar) {
-        sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('show');
-            sidebarOverlay.classList.remove('show');
-        });
-    }
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', function() {
+                sidebar.classList.remove('show');
+                sidebarOverlay.classList.remove('show');
+            });
+        }
 
-    // Toggle menu categories
-    const menuCategories = document.querySelectorAll('.menu-category');
+        // Toggle menu categories
+        const menuCategories = document.querySelectorAll('.menu-category');
 
-    menuCategories.forEach(category => {
-        if (category.dataset.category) {
-            const groupId = 'group-' + category.dataset.category;
-            const group = document.getElementById(groupId);
+        menuCategories.forEach(category => {
+            if (category.dataset.category) {
+                category.addEventListener('click', function() {
+                    const groupId = 'group-' + category.dataset.category;
+                    const group = document.getElementById(groupId);
 
-            if (group) {
-                // Click event pour ouvrir/fermer les sous-menus quand sidebar normale
-                category.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    
-                    if (!sidebar.classList.contains('collapsed')) {
-                        toggleMenuGroup(category, group);
+                    if (group) {
+                        group.classList.toggle('collapsed');
+                        category.classList.toggle('collapsed');
                     }
                 });
-
-                // Système de hover pour sidebar collapsed
-                setupHoverSystem(category, group);
-            }
-        }
-    });
-
-    // Fonction pour toggle un groupe de menu
-    function toggleMenuGroup(category, group) {
-        const isCurrentlyCollapsed = group.classList.contains('collapsed');
-        
-        if (isCurrentlyCollapsed) {
-            // Ouvrir ce groupe
-            group.classList.remove('collapsed');
-            category.classList.remove('collapsed');
-        } else {
-            // Fermer ce groupe
-            group.classList.add('collapsed');
-            category.classList.add('collapsed');
-        }
-    }
-
-    // Fonction pour fermer tous les groupes
-    function closeAllMenuGroups() {
-        menuCategories.forEach(cat => {
-            if (cat.dataset.category) {
-                const groupId = 'group-' + cat.dataset.category;
-                const group = document.getElementById(groupId);
-                if (group) {
-                    group.classList.add('collapsed');
-                    cat.classList.add('collapsed');
-                    // Cacher le popout s'il est visible
-                    hidePopout(group);
-                }
             }
         });
-    }
 
-    // Fonction pour rouvrir le groupe contenant l'élément actif
-    function reopenActiveGroup() {
-        const activeMenuItem = document.querySelector('.menu-item.active');
-        if (activeMenuItem) {
-            const parentGroup = activeMenuItem.closest('.menu-group');
-            if (parentGroup) {
-                parentGroup.classList.remove('collapsed');
-                const categoryId = parentGroup.id.replace('group-', '');
-                const category = document.querySelector(`.menu-category[data-category="${categoryId}"]`);
-                if (category) {
-                    category.classList.remove('collapsed');
-                }
-            }
-        }
-    }
+        // Toggle theme
+        const themeToggle = document.getElementById('theme-toggle');
+        const htmlElement = document.documentElement;
 
-    // Système de hover pour sidebar collapsed
-    function setupHoverSystem(category, group) {
-        let hoverTimeout;
-        let isHovering = false;
-
-        const showPopout = () => {
-            if (!sidebar.classList.contains('collapsed')) return;
-            
-            clearTimeout(hoverTimeout);
-            isHovering = true;
-            
-            // Positionner le popout
-            const rect = category.getBoundingClientRect();
-            const sidebarRect = sidebar.getBoundingClientRect();
-            
-            group.style.position = 'fixed';
-            group.style.left = sidebarRect.right + 'px';
-            group.style.top = rect.top + 'px';
-            group.style.zIndex = '1000';
-            group.style.width = '230px';
-            
-            // Adapter les couleurs selon le thème
-            if (document.documentElement.classList.contains('dark')) {
-                group.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-dark-secondary').trim() || '#2C3E50';
-                group.style.border = '1px solid rgba(75, 85, 99, 0.2)';
-            } else {
-                group.style.backgroundColor = 'white';
-                group.style.border = '1px solid #e5e7eb';
-            }
-            
-            group.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
-            group.style.borderRadius = '0.5rem';
-            group.style.padding = '0.5rem 0';
-            
-            // Afficher le groupe
-            group.classList.remove('collapsed');
-            group.style.display = 'block';
-            group.style.opacity = '1';
-            group.style.visibility = 'visible';
-            
-            // Afficher aussi le nom de la catégorie dans le popout
-            addCategoryTitle(group, category);
-        };
-
-        const hidePopout = (delay = 100) => {
-            clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(() => {
-                if (!isHovering || !sidebar.classList.contains('collapsed')) {
-                    hidePopoutImmediate(group);
-                }
-            }, delay);
-        };
-
-        const resetHover = () => {
-            isHovering = false;
-            hidePopout();
-        };
-
-        // Events pour la catégorie
-        category.addEventListener('mouseenter', () => {
-            isHovering = true;
-            showPopout();
-        });
-        
-        category.addEventListener('mouseleave', resetHover);
-
-        // Events pour le groupe
-        group.addEventListener('mouseenter', () => {
-            isHovering = true;
-            clearTimeout(hoverTimeout);
-        });
-        
-        group.addEventListener('mouseleave', resetHover);
-    }
-
-    // Fonction pour cacher immédiatement le popout
-    function hidePopoutImmediate(group) {
-        group.classList.add('collapsed');
-        group.style.opacity = '0';
-        group.style.visibility = 'hidden';
-        group.style.display = 'none';
-        group.style.position = '';
-        group.style.left = '';
-        group.style.top = '';
-        group.style.zIndex = '';
-        group.style.width = '';
-        group.style.backgroundColor = '';
-        group.style.boxShadow = '';
-        group.style.borderRadius = '';
-        group.style.padding = '';
-        group.style.border = '';
-        
-        // Retirer le titre de catégorie s'il existe
-        const categoryTitle = group.querySelector('.popout-category-title');
-        if (categoryTitle) {
-            categoryTitle.remove();
-        }
-    }
-
-    // Fonction générique pour cacher les popouts
-    function hidePopout(group) {
-        hidePopoutImmediate(group);
-    }
-
-    // Fonction pour ajouter le titre de catégorie dans le popout
-    function addCategoryTitle(group, category) {
-        // Éviter les doublons
-        let existingTitle = group.querySelector('.popout-category-title');
-        if (existingTitle) {
-            existingTitle.remove();
-        }
-        
-        const categoryText = category.querySelector('.menu-category-text')?.textContent || '';
-        const categoryIcon = category.querySelector('i:first-child')?.outerHTML || '';
-        
-        if (categoryText) {
-            const titleElement = document.createElement('div');
-            titleElement.className = 'popout-category-title';
-            titleElement.innerHTML = `${categoryIcon} ${categoryText}`;
-            titleElement.style.cssText = `
-                padding: 0.75rem 1rem;
-                font-weight: 600;
-                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-                margin-bottom: 0.5rem;
-                color: var(--primary);
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-            `;
-            
-            if (document.documentElement.classList.contains('dark')) {
-                titleElement.style.borderBottomColor = 'rgba(75, 85, 99, 0.2)';
-            }
-            
-            group.insertBefore(titleElement, group.firstChild);
-        }
-    }
-
-    // Cacher tous les popouts quand on clique ailleurs
-    document.addEventListener('click', function(e) {
-        if (!sidebar.contains(e.target)) {
-            menuCategories.forEach(category => {
-                if (category.dataset.category) {
-                    const groupId = 'group-' + category.dataset.category;
-                    const group = document.getElementById(groupId);
-                    if (group && sidebar.classList.contains('collapsed')) {
-                        hidePopoutImmediate(group);
-                    }
-                }
-            });
-        }
-    });
-
-    // Gestion du redimensionnement de la fenêtre
-    window.addEventListener('resize', function() {
-        if (sidebar.classList.contains('collapsed')) {
-            // Recacher tous les popouts lors du redimensionnement
-            menuCategories.forEach(category => {
-                if (category.dataset.category) {
-                    const groupId = 'group-' + category.dataset.category;
-                    const group = document.getElementById(groupId);
-                    if (group) {
-                        hidePopoutImmediate(group);
-                    }
-                }
-            });
-        }
-    });
-
-    // Toggle theme
-    const themeToggle = document.getElementById('theme-toggle');
-    const htmlElement = document.documentElement;
-
-    if (themeToggle && htmlElement) {
-        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        // Check saved theme preference
+        const savedTheme = localStorage.getItem('theme') || 'light';
         htmlElement.classList.toggle('dark', savedTheme === 'dark');
         updateThemeIcon();
 
@@ -2087,10 +1791,8 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('theme', htmlElement.classList.contains('dark') ? 'dark' : 'light');
             updateThemeIcon();
         });
-    }
 
-    function updateThemeIcon() {
-        if (themeToggle) {
+        function updateThemeIcon() {
             const icon = themeToggle.querySelector('i');
             if (htmlElement.classList.contains('dark')) {
                 icon.classList.remove('fa-moon');
@@ -2100,79 +1802,74 @@ document.addEventListener('DOMContentLoaded', function() {
                 icon.classList.add('fa-moon');
             }
         }
-    }
 
-    // Auto-expand active menu group au chargement (seulement si sidebar pas collapsed)
-    if (!sidebar.classList.contains('collapsed')) {
-        reopenActiveGroup();
-    }
+        // Auto-expand active menu group
+        const activeMenuItem = document.querySelector('.menu-item.active');
+        if (activeMenuItem) {
+            const parentGroup = activeMenuItem.closest('.menu-group');
+            if (parentGroup) {
+                parentGroup.classList.remove('collapsed');
 
-    // Dropdown handling
-    const dropdownToggles = {
-        'notification-toggle': 'notification-dropdown',
-        'language-toggle': 'language-dropdown',
-        'user-toggle': 'user-dropdown'
-    };
-
-    Object.keys(dropdownToggles).forEach(toggleId => {
-        const toggle = document.getElementById(toggleId);
-        const dropdownId = dropdownToggles[toggleId];
-        const dropdown = document.getElementById(dropdownId);
-
-        if (toggle && dropdown) {
-            toggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-
-                // Close all other dropdowns
-                Object.values(dropdownToggles).forEach(id => {
-                    if (id !== dropdownId) {
-                        const otherDropdown = document.getElementById(id);
-                        if (otherDropdown) otherDropdown.classList.remove('show');
-                    }
-                });
-                dropdown.classList.toggle('show');
-            });
-        }
-    });
-
-    // Close dropdowns when clicking outside
-    document.addEventListener('click', function(e) {
-        let isInsideDropdown = false;
-        Object.values(dropdownToggles).forEach(id => {
-            const dropdown = document.getElementById(id);
-            if (dropdown && dropdown.contains(e.target)) {
-                isInsideDropdown = true;
+                // Also expand the category
+                const categoryId = parentGroup.id.replace('group-', '');
+                const category = document.querySelector(`.menu-category[data-category="${categoryId}"]`);
+                if (category) {
+                    category.classList.remove('collapsed');
+                }
             }
-            const toggleId = Object.keys(dropdownToggles).find(key => dropdownToggles[key] === id);
-            const toggleElement = document.getElementById(toggleId);
-            if (toggleElement && toggleElement.contains(e.target)) {
-                isInsideDropdown = true;
+        }
+
+        // Dropdown handling
+        const dropdownToggles = {
+            'notification-toggle': 'notification-dropdown',
+            'language-toggle': 'language-dropdown',
+            'user-toggle': 'user-dropdown'
+        };
+
+        Object.keys(dropdownToggles).forEach(toggleId => {
+            const toggle = document.getElementById(toggleId);
+            const dropdown = document.getElementById(dropdownToggles[toggleId]);
+
+            if (toggle && dropdown) {
+                toggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+
+                    // Close all other dropdowns
+                    Object.values(dropdownToggles).forEach(id => {
+                        if (id !== dropdownToggles[toggleId]) {
+                            document.getElementById(id).classList.remove('show');
+                        }
+                    });
+
+                    dropdown.classList.toggle('show');
+                });
             }
         });
 
-        if (!isInsideDropdown) {
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
             Object.values(dropdownToggles).forEach(id => {
                 const dropdown = document.getElementById(id);
-                if (dropdown) dropdown.classList.remove('show');
+                if (dropdown && dropdown.classList.contains('show')) {
+                    dropdown.classList.remove('show');
+                }
             });
-        }
-    });
+        });
 
-    // Close alert messages
-    const alertCloseButtons = document.querySelectorAll('.alert-close');
-    alertCloseButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const alert = this.closest('.alert');
-            if (alert) {
-                alert.style.transition = 'opacity 0.3s ease-out';
-                alert.style.opacity = '0';
-                setTimeout(() => {
-                    alert.style.display = 'none';
-                }, 300);
-            }
+        // Close alert messages
+        const alertCloseButtons = document.querySelectorAll('.alert-close');
+        alertCloseButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const alert = this.closest('.alert');
+                if (alert) {
+                    alert.style.opacity = '0';
+                    setTimeout(() => {
+                        alert.style.display = 'none';
+                    }, 300);
+                }
+            });
         });
     });
-});
 </script>
 
 @stack('scripts')
