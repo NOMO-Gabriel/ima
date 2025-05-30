@@ -51,8 +51,8 @@
         </ol>
     </nav>
 
-    <!-- Conteneur principal -->
-    <div class="shadow-lg rounded-xl p-6 mb-8 transition-all duration-150"
+    <!-- Conteneur principal de la section planning -->
+    <div class="shadow-lg rounded-xl p-6 mb-8 transition-all duration-150 w-full"
          :class="darkMode ? 'bg-[#334155] border border-[#475569]' : 'bg-white border border-[#E2E8F0]'">
 
         <!-- En-tête avec informations du centre et de la formation -->
@@ -92,10 +92,9 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <!-- Sélecteur de formation -->
             <div>
-                {{-- MODIFICATION ICI: method="POST", action et @csrf --}}
                 <form id="changeFormationForm" method="POST" action="{{ route('admin.planning.change-formation', ['locale' => app()->getLocale()]) }}">
                     @csrf
-                    <label for="formation_id_select" class="block text-sm font-semibold mb-3 transition-colors duration-150" {{-- Changed id for clarity --}}
+                    <label for="formation_id_select" class="block text-sm font-semibold mb-3 transition-colors duration-150"
                            :class="darkMode ? 'text-[#F1F5F9]' : 'text-[#1E293B]'">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-2 text-[#4CA3DD]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -104,7 +103,6 @@
                     </label>
                     <div class="flex space-x-3">
                         <div class="relative flex-1">
-                            {{-- Changed id to avoid conflict if you have another #formation_id --}}
                             <select name="formation_id" id="formation_id_select"
                                     class="w-full pl-10 pr-10 py-3 rounded-lg border-2 focus:ring-2 focus:ring-[#4CA3DD] focus:border-[#4CA3DD] transition-all duration-150 appearance-none"
                                     :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-[#F1F5F9]' : 'bg-[#F8FAFC] border-[#E2E8F0] text-[#1E293B]'"
@@ -126,7 +124,6 @@
                                 </svg>
                             </div>
                         </div>
-                        {{-- Ce bouton est facultatif si le select soumet le formulaire, mais peut être conservé --}}
                         <button type="submit"
                                 class="px-4 py-3 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-all duration-200 shadow-sm">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -190,7 +187,6 @@
         </div>
 
         @php
-            // Supprimé 'use Illuminate\Support\Str;' car non utilisé visiblement ici
             // Grouper les slots par jour
             $slotsByDay = $slots->groupBy('week_day');
 
@@ -208,6 +204,15 @@
                     $teacherColors[$teacher->id] = $colors[$index % count($colors)];
                 }
             }
+
+            // Calcul précis de la largeur minimale de la table
+            $jourWidthPx = 96;      // Corresponds à la classe w-24 de Tailwind (6rem * 16px/rem)
+            $horaireWidthPx = 80;   // Corresponds à la classe w-20 de Tailwind (5rem * 16px/rem)
+            $salleWidthPx = 150;    // Corresponds à min-w-[150px]
+            $nombreSalles = $formationRooms->count();
+            // Calcule la largeur minimale nécessaire pour la table
+            // Ajouter une petite marge pour les bordures/padding si nécessaire
+            $minTableWidthPx = $jourWidthPx + $horaireWidthPx + ($nombreSalles * $salleWidthPx) + ($nombreSalles > 0 ? $nombreSalles * 2 : 0) ; // Approx 2px per border/padding
         @endphp
 
         <!-- Légende des professeurs -->
@@ -236,11 +241,10 @@
         @endif
 
         <!-- Emploi du temps -->
-        {{-- MODIFICATION ICI: Ajout de max-width: 100% pour forcer le div à respecter les limites de son parent --}}
-        <div class="overflow-x-auto rounded-lg border transition-colors duration-150 shadow-sm"
-             :class="darkMode ? 'border-[#475569]' : 'border-gray-200'" style="max-width: 100%;">
+        <div class="overflow-x-auto rounded-lg border transition-colors duration-150 shadow-sm w-full"
+             :class="darkMode ? 'border-[#475569]' : 'border-gray-200'">
 
-            <table class="min-w-full table-fixed" style="min-width: 800px;"> {{-- Ajustez min-width si nécessaire --}}
+            <table class="table-fixed" style="min-width: {{ $minTableWidthPx }}px;">
                 <thead>
                 <tr class="transition-colors duration-150"
                     :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
@@ -252,7 +256,7 @@
                         :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
                         Horaire
                     </th>
-                    <th colspan="{{ $formationRooms->count() }}"
+                    <th colspan="{{ $nombreSalles > 0 ? $nombreSalles : 1 }}"
                         class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider border-r transition-colors duration-150 whitespace-nowrap"
                         :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
                         {{ $formation->name }}
@@ -260,12 +264,19 @@
                 </tr>
                 <tr class="transition-colors duration-150"
                     :class="darkMode ? 'bg-[#475569]' : 'bg-gray-50'">
-                    @foreach ($formationRooms as $room)
+                    @if($nombreSalles > 0)
+                        @foreach ($formationRooms as $room)
+                            <th class="min-w-[150px] px-2 py-3 text-center text-xs font-medium uppercase tracking-wider border-r transition-colors duration-150 whitespace-nowrap"
+                                :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
+                                {{ $room->name }}
+                            </th>
+                        @endforeach
+                    @else
                         <th class="min-w-[150px] px-2 py-3 text-center text-xs font-medium uppercase tracking-wider border-r transition-colors duration-150 whitespace-nowrap"
                             :class="darkMode ? 'text-[#F1F5F9] border-[#64748B]' : 'text-white bg-[#4CA3DD] border-gray-200'">
-                            {{ $room->name }}
+                            -
                         </th>
-                    @endforeach
+                    @endif
                 </tr>
                 </thead>
                 <tbody class="divide-y transition-colors duration-150"
@@ -276,14 +287,14 @@
                             :class="darkMode ? 'hover:bg-[#475569]' : 'hover:bg-gray-50'">
                             @if ($periodIndex === 0)
                                 <td rowspan="{{ count($periods) }}"
-                                    class="px-1 py-4 text-center font-bold border-r transition-colors duration-150 whitespace-nowrap"
+                                    class="w-24 px-1 py-4 text-center font-bold border-r transition-colors duration-150 whitespace-nowrap"
                                     :class="darkMode ? 'text-[#F1F5F9] border-[#64748B] bg-[#475569]' : 'text-gray-900 border-gray-200 bg-gray-100'">
                                     <div class="text-xs">{{ substr($day->locale('fr')->isoFormat('dddd'), 0, 3) }}</div>
                                     <div class="text-xs font-normal opacity-75 mt-1">{{ $weekStartDate->copy()->addDays($dayIndex)->format('d/m') }}</div>
                                 </td>
                             @endif
 
-                            <td class="px-1 py-4 text-center font-semibold border-r transition-colors duration-150 whitespace-nowrap"
+                            <td class="w-20 px-1 py-4 text-center font-semibold border-r transition-colors duration-150 whitespace-nowrap"
                                 :class="darkMode ? 'text-[#F1F5F9] border-[#64748B] bg-[#475569]' : 'text-gray-900 border-gray-200 bg-gray-100'">
                                 <div class="text-xs">
                                     {{ \Carbon\Carbon::parse($period['start'])->format('H:i') }}
@@ -293,44 +304,51 @@
                                 </div>
                             </td>
 
-                            @foreach ($formationRooms as $room)
-                                @php
-                                    $slot = $slots->firstWhere(fn($s) =>
-                                        $s->week_day === $dayNames[$dayIndex] &&
-                                        $s->start_time === $period['start'] &&
-                                        $s->formation_id === $formation->id &&
-                                        $s->room_id === $room->id
-                                    );
-                                @endphp
-                                <td class="px-1 py-2 text-center border-r transition-all duration-150 h-20 whitespace-nowrap" {{-- Added whitespace-nowrap to cells with content --}}
+                            @if($nombreSalles > 0)
+                                @foreach ($formationRooms as $room)
+                                    @php
+                                        $slot = $slots->first(fn($s) =>
+                                            strtolower($s->week_day) === strtolower($dayNames[$dayIndex]) &&
+                                            \Carbon\Carbon::parse($s->start_time)->format('H:i') === \Carbon\Carbon::parse($period['start'])->format('H:i') &&
+                                            $s->formation_id == $formation->id &&
+                                            $s->room_id == $room->id
+                                        );
+                                    @endphp
+                                    <td class="min-w-[150px] px-1 py-2 text-center border-r transition-all duration-150 h-20 whitespace-nowrap"
+                                        :class="darkMode ? 'border-[#64748B]' : 'border-gray-200'">
+                                        @if ($slot)
+                                            <a href="{{ route('admin.slots.edit', ['locale' => app()->getLocale(), 'slot' => $slot]) }}"
+                                               class="block p-2 rounded-lg transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer h-full text-white slot-link"
+                                               style="background-color: {{ $teacherColors[$slot->teacher_id] ?? '#64748B' }};">
+                                                <div class="space-y-1 h-full flex flex-col justify-center">
+                                                    <div class="text-xs font-bold truncate leading-tight">
+                                                        {{ $slot->course ? $slot->course->title : 'Cours' }}
+                                                    </div>
+                                                    <div class="text-xs opacity-90 truncate leading-tight">
+                                                        {{ $slot->teacher ? ($slot->teacher->first_name . ' ' . substr($slot->teacher->last_name, 0, 1) . '.') : 'Professeur' }}
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        @else
+                                            <a href="{{ route('admin.slots.create', ['locale' => app()->getLocale()]) }}?timetable_id={{ $timetable->id }}&formation_id={{ $formation->id }}&room_id={{ $room->id }}&week_day={{ $dayNames[$dayIndex] }}&start_time={{ $period['start'] }}&end_time={{ $period['end'] }}"
+                                               class="block p-2 rounded-lg border-2 border-dashed transition-all duration-200 hover:border-solid h-full flex items-center justify-center slot-link"
+                                               :class="darkMode ? 'border-[#64748B] hover:border-[#4CA3DD] hover:bg-[#475569] text-[#94A3B8]' : 'border-gray-300 hover:border-[#4CA3DD] hover:bg-gray-50 text-gray-500'">
+                                                <div class="text-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                    </svg>
+                                                    <div class="text-xs">Planifier</div>
+                                                </div>
+                                            </a>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            @else
+                                <td class="min-w-[150px] px-1 py-2 text-center border-r transition-all duration-150 h-20 whitespace-nowrap"
                                     :class="darkMode ? 'border-[#64748B]' : 'border-gray-200'">
-                                    @if ($slot)
-                                        <a href="{{ route('admin.slots.edit', ['locale' => app()->getLocale(), 'slot' => $slot]) }}"
-                                           class="block p-2 rounded-lg transition-all duration-200 hover:shadow-md hover:scale-105 cursor-pointer h-full text-white slot-link"
-                                           style="background-color: {{ $teacherColors[$slot->teacher_id] ?? '#64748B' }};">
-                                            <div class="space-y-1 h-full flex flex-col justify-center">
-                                                <div class="text-xs font-bold truncate leading-tight">
-                                                    {{ $slot->course ? $slot->course->title : 'Cours' }}
-                                                </div>
-                                                <div class="text-xs opacity-90 truncate leading-tight">
-                                                    {{ $slot->teacher ? ($slot->teacher->first_name . ' ' . substr($slot->teacher->last_name, 0, 1) . '.') : 'Professeur' }}
-                                                </div>
-                                            </div>
-                                        </a>
-                                    @else
-                                        <a href="{{ route('admin.slots.create', ['locale' => app()->getLocale()]) }}?timetable_id={{ $timetable->id }}&formation_id={{ $formation->id }}&room_id={{ $room->id }}&week_day={{ $dayNames[$dayIndex] }}&start_time={{ $period['start'] }}&end_time={{ $period['end'] }}"
-                                           class="block p-2 rounded-lg border-2 border-dashed transition-all duration-200 hover:border-solid h-full flex items-center justify-center slot-link"
-                                           :class="darkMode ? 'border-[#64748B] hover:border-[#4CA3DD] hover:bg-[#475569] text-[#94A3B8]' : 'border-gray-300 hover:border-[#4CA3DD] hover:bg-gray-50 text-gray-500'">
-                                            <div class="text-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mx-auto mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                                </svg>
-                                                <div class="text-xs">Planifier</div>
-                                            </div>
-                                        </a>
-                                    @endif
+                                    <span class="text-xs" :class="darkMode ? 'text-gray-500' : 'text-gray-400'">Aucune salle assignée</span>
                                 </td>
-                            @endforeach
+                            @endif
                         </tr>
                     @endforeach
                 @endforeach
@@ -344,28 +362,28 @@
     <style>
         /* Amélioration du scroll horizontal */
         .overflow-x-auto {
-            /* max-width: 100%; a été déplacé en inline style sur le div pour spécificité */
             scrollbar-width: thin; /* Pour Firefox */
             scrollbar-color: #CBD5E1 #F1F5F9; /* Pouce et piste pour Firefox */
         }
 
         /* Pour Chrome, Edge, Safari */
         .overflow-x-auto::-webkit-scrollbar {
-            height: 8px;
+            height: 8px; /* Hauteur de la barre de défilement horizontale */
+            width: 8px; /* Largeur pour la barre de défilement verticale si nécessaire */
         }
 
         .overflow-x-auto::-webkit-scrollbar-track {
-            background: #F1F5F9;
+            background: #F1F5F9; /* Couleur de la piste */
             border-radius: 4px;
         }
 
         .overflow-x-auto::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
+            background: #CBD5E1; /* Couleur du pouce */
             border-radius: 4px;
         }
 
         .overflow-x-auto::-webkit-scrollbar-thumb:hover {
-            background: #94A3B8;
+            background: #94A3B8; /* Couleur du pouce au survol */
         }
 
         /* Animation pour les créneaux */
@@ -374,34 +392,18 @@
         }
 
         .slot-link:hover {
-            transform: translateY(-2px) scale(1.02); /* Ajusté pour un effet plus subtil */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1); /* Ajusté */
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
         }
 
-        /* Table responsive améliorée */
-        table {
-            table-layout: fixed; /* Important pour que min-width sur les th/td soit respecté */
-        }
+        /* table-layout: fixed; est appliqué via la classe Tailwind 'table-fixed' */
+        /* whitespace-nowrap et les largeurs de colonnes (w-X, min-w-X) sont aussi via Tailwind */
 
-        /* whitespace-nowrap a été ajouté directement aux th/td dans le HTML pour plus de contrôle */
-
-        /* Responsive design */
-        @media (max-width: 1024px) {
-            /* La table a déjà un min-width de 800px, ce qui est raisonnable.
-               Si vous avez besoin d'un min-width plus grand pour les tablettes, ajustez ici.
-               Par exemple:
-               table { min-width: 900px; }
-            */
-        }
-
-        @media (max-width: 768px) {
-            /* Pour les mobiles, 800px est probablement trop.
-               Si vous voulez un min-width différent pour mobile, par exemple 700px:
-               table { min-width: 700px; }
-            */
-            .planning-dashboard { /* Si vous avez une classe parente pour le padding */
-                padding: 0.75rem;
-            }
+        /* Forcer le contenu des cellules à ne pas déborder ou être coupé si `truncate` n'est pas suffisant */
+        td .truncate, th .truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     </style>
 @endpush

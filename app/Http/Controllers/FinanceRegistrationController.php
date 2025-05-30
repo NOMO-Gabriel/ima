@@ -233,12 +233,12 @@ class FinanceRegistrationController extends Controller
                 'special_conditions' => $validated['special_conditions'],
 
                 'student_id' => $user->student->id,
-                'formation_id' => $validated['formations'][0], // Formation principale
                 'center_id' => $validated['center_id'],
             ]);
 
-            // Ajouter toutes les formations sélectionnées
-            $registration->formations()->sync($validated['formations']);
+            if (!empty($validated['formations'])) {
+                $registration->formations()->sync($validated['formations']);
+            }
 
             // Créer le premier versement si un montant a été reçu
             if ($validated['amount_received'] > 0) {

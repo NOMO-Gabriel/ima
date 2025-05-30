@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Formation extends Model
 {
@@ -25,6 +27,16 @@ class Formation extends Model
         'hours' => 'integer',
         'price' => 'integer',
     ];
+
+    public function students()
+    {
+        return Student::whereIn('id', function ($query) {
+            $query->select('student_id')
+                ->from('registrations')
+                ->join('formation_registration', 'formation_registration.registration_id', '=', 'registrations.id')
+                ->where('formation_registration.formation_id', $this->id);
+        })->get();
+    }
 
     // Relations
     public function phase(): BelongsTo

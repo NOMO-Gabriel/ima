@@ -168,8 +168,12 @@ Route::prefix('{locale}')
                 Route::resource('entrance-exams', EntranceExamController::class);
                 Route::resource('mock-exams', MockExamController::class);
 
-                // Planification
-                Route::resource('absences', AbsencesController::class);
+                Route::prefix('absences')->name('absences.')->group(function () {
+                    Route::get('/', [AbsencesController::class, 'index'])->name('index');
+                    Route::get('/rooms', [AbsencesController::class, 'getRooms'])->name('rooms');
+                    Route::get('/students', [AbsencesController::class, 'getStudents'])->name('students');
+                    Route::post('/', [AbsencesController::class, 'store'])->name('store');
+                });
 
                 // Finances
                 Route::resource('registrations', RegistrationController::class);

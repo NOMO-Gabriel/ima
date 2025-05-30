@@ -15,11 +15,17 @@ class Room extends Model
         'name',
         'capacity',
         'formation_id',
+        'center_id',
     ];
 
     protected $casts = [
         'capacity' => 'integer',
     ];
+
+    public function center(): BelongsTo
+    {
+        return $this->belongsTo(Center::class);
+    }
 
     // Relations
     public function formation(): BelongsTo
