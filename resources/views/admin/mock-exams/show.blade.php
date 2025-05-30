@@ -39,7 +39,7 @@
         </ol>
     </nav>
 
-    @can('gestion.exam.view')
+    @can('gestion.exam.read')
         <div class="max-w-7xl mx-auto">
             <!-- En-tête avec titre et actions -->
             <div class="mb-8">

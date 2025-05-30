@@ -259,34 +259,193 @@
                         @foreach($mockExams as $mockExam)
                             <tr class="transition-colors duration-150"
                                 :class="darkMode ? 'hover:bg-[#2C3E50]' : 'hover:bg-gray-100'">
-                                <td class="px-6 py-4">
-                                    @if($mockExam->courses->count())
-                                        <div class="flex flex-wrap gap-1 max-w-xs">
-                                            @foreach($mockExam->courses->take(3) as $course)
-                                                <span class="px-2 py-1 text-xs font-medium rounded-full transition-colors"
-                                                      :class="darkMode ? 'bg-[#4CA3DD]/20 text-[#4CA3DD]' : 'bg-blue-100 text-blue-800'">
-                                                    {{ $course->title }}
-                                                </span>
-                                            @endforeach
-                                            @if($mockExam->courses->count() > 3)
-                                                <span class="px-2 py-1 text-xs font-medium rounded-full transition-colors"
-                                                      :class="darkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-100 text-gray-600'">
-                                                    +{{ $mockExam->courses->count() - 3 }}
-                                                </span>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center transition-colors
+                                                    @if($mockExam->type == 'QCM') text-green-500 @elseif($mockExam->type == 'REDACTION') text-yellow-500 @else text-purple-500 @endif"
+                                             :class="darkMode ? '@if($mockExam->type == 'QCM') bg-green-900/30 @elseif($mockExam->type == 'REDACTION') bg-yellow-900/30 @else bg-purple-900/30 @endif' : '@if($mockExam->type == 'QCM') bg-green-50 @elseif($mockExam->type == 'REDACTION') bg-yellow-50 @else bg-purple-50 @endif'">
+                                            @if($mockExam->type == 'QCM')
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                </svg>
+                                            @elseif($mockExam->type == 'REDACTION')
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                </svg>
+                                            @else
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.871 4A17.926 17.926 0 003 12c0 2.874.673 5.59 1.871 8m14.13 0a17.926 17.926 0 001.87-8c0-2.874-.673-5.59-1.87-8M9 9h1.246a1 1 0 01.961 1.243l-1.4 6C9.612 17.001 10.763 18 12.054 18h4.657a1 1 0 01.961 1.243l-1.687 7.5" />
+                                                </svg>
                                             @endif
                                         </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium transition-colors"
+                                                 :class="darkMode ? 'text-white' : 'text-gray-900'">
+                                                Concours #{{ $mockExam->id }}
+                                            </div>
+                                            <div class="text-sm transition-colors"
+                                                 :class="darkMode ? 'text-gray-300' : 'text-gray-500'">
+                                                <span class="px-2 py-1 text-xs font-semibold rounded-full
+                                                      @if($mockExam->type == 'QCM') bg-green-100 text-green-800
+                                                      @elseif($mockExam->type == 'REDACTION') bg-yellow-100 text-yellow-800
+                                                      @else bg-purple-100 text-purple-800 @endif">
+                                                    {{ $mockExam->type }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium transition-colors"
+                                         :class="darkMode ? 'text-white' : 'text-gray-900'">
+                                        {{ $mockExam->date->format('d/m/Y') }}
+                                    </div>
+                                    <div class="text-sm transition-colors"
+                                         :class="darkMode ? 'text-gray-300' : 'text-gray-500'">
+                                        {{ $mockExam->date->format('H:i') }} • {{ $mockExam->duration }} min
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm font-medium transition-colors"
+                                         :class="darkMode ? 'text-white' : 'text-gray-900'">
+                                        {{ $mockExam->formation->name ?? 'N/A' }}
+                                    </div>
+                                    @if($mockExam->formation)
+                                        <div class="text-sm transition-colors truncate"
+                                             :class="darkMode ? 'text-gray-300' : 'text-gray-500'">
+                                            {{ $mockExam->formation->description ?? 'Formation' }}
+                                        </div>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4" x-data="{ showTooltip: false, darkMode: localStorage.getItem('theme') === 'dark' }">
+                                    @if($mockExam->courses->count())
+                                        <div class="relative">
+                                            <!-- Affichage principal des cours -->
+                                            <div class="flex flex-wrap gap-1.5 max-w-sm">
+                                                @foreach($mockExam->courses->take(2) as $course)
+                                                    <span class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full transition-all duration-200 hover:scale-105"
+                                                          :class="darkMode ? 'bg-[#4CA3DD]/20 text-[#4CA3DD] border border-[#4CA3DD]/30 hover:bg-[#4CA3DD]/30' : 'bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100'"
+                                                          title="{{ $course->title }} @if($course->code)({{ $course->code }})@endif">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                        </svg>
+                        {{ Str::limit($course->title, 15) }}
+                    </span>
+                                                @endforeach
+
+                                                @if($mockExam->courses->count() > 2)
+                                                    <!-- Bouton pour afficher tous les cours -->
+                                                    <button @click="showTooltip = !showTooltip"
+                                                            @click.away="showTooltip = false"
+                                                            class="inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full transition-all duration-200 hover:scale-105 cursor-pointer"
+                                                            :class="darkMode ? 'bg-gray-700 text-gray-300 border border-gray-600 hover:bg-gray-600' : 'bg-gray-100 text-gray-600 border border-gray-300 hover:bg-gray-200'">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                        </svg>
+                                                        +{{ $mockExam->courses->count() - 2 }} autres
+                                                    </button>
+                                                @endif
+                                            </div>
+
+                                            <!-- Badge de comptage total -->
+                                            <div class="flex items-center mt-2">
+                <span class="inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full transition-colors"
+                      :class="darkMode ? 'bg-emerald-900/30 text-emerald-400' : 'bg-emerald-100 text-emerald-700'">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    {{ $mockExam->courses->count() }} cours total{{ $mockExam->courses->count() > 1 ? 'aux' : '' }}
+                </span>
+                                            </div>
+
+                                            <!-- Tooltip/Dropdown avec tous les cours -->
+                                            <div x-show="showTooltip"
+                                                 x-transition:enter="transition ease-out duration-200"
+                                                 x-transition:enter-start="opacity-0 transform scale-95"
+                                                 x-transition:enter-end="opacity-100 transform scale-100"
+                                                 x-transition:leave="transition ease-in duration-150"
+                                                 x-transition:leave-start="opacity-100 transform scale-100"
+                                                 x-transition:leave-end="opacity-0 transform scale-95"
+                                                 class="absolute left-0 top-full mt-2 w-80 max-h-64 overflow-y-auto rounded-lg shadow-lg border z-50 p-3"
+                                                 :class="darkMode ? 'bg-[#1E293B] border-[#374151]' : 'bg-white border-gray-200'"
+                                                 style="display: none;">
+
+                                                <div class="flex items-center mb-3 pb-2 border-b" :class="darkMode ? 'border-gray-600' : 'border-gray-200'">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                    </svg>
+                                                    <h4 class="font-medium text-sm transition-colors" :class="darkMode ? 'text-gray-200' : 'text-gray-800'">
+                                                        Cours associés ({{ $mockExam->courses->count() }})
+                                                    </h4>
+                                                </div>
+
+                                                <div class="space-y-2">
+                                                    @foreach($mockExam->courses as $course)
+                                                        <div class="flex items-start p-2 rounded-md transition-colors hover:bg-opacity-50"
+                                                             :class="darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-50'">
+                                                            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center mr-3"
+                                                                 :class="darkMode ? 'bg-[#4CA3DD]/20 text-[#4CA3DD]' : 'bg-blue-100 text-blue-600'">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                                </svg>
+                                                            </div>
+                                                            <div class="flex-1 min-w-0">
+                                                                <p class="text-sm font-medium transition-colors" :class="darkMode ? 'text-gray-200' : 'text-gray-900'">
+                                                                    {{ $course->title }}
+                                                                </p>
+                                                                @if($course->code)
+                                                                    <p class="text-xs transition-colors mt-0.5" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
+                                                                        Code: {{ $course->code }}
+                                                                    </p>
+                                                                @endif
+                                                                @if($course->description)
+                                                                    <p class="text-xs transition-colors mt-1 line-clamp-2" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">
+                                                                        {{ Str::limit($course->description, 80) }}
+                                                                    </p>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+
+                                                <!-- Footer du tooltip -->
+                                                <div class="mt-3 pt-2 border-t flex items-center justify-between" :class="darkMode ? 'border-gray-600' : 'border-gray-200'">
+                    <span class="text-xs transition-colors" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
+                        Concours #{{ $mockExam->id }}
+                    </span>
+                                                    <button @click="showTooltip = false"
+                                                            class="text-xs px-2 py-1 rounded transition-colors"
+                                                            :class="darkMode ? 'text-gray-400 hover:text-gray-200 hover:bg-gray-700' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'">
+                                                        Fermer
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @else
-                                        <span class="text-sm transition-colors"
-                                              :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
-                                            Aucun cours associé
-                                        </span>
+                                        <!-- État vide amélioré -->
+                                        <div class="flex items-center space-x-2">
+                                            <div class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+                                                 :class="darkMode ? 'bg-gray-700 text-gray-400' : 'bg-gray-100 text-gray-400'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                                </svg>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm font-medium transition-colors" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
+                                                    Aucun cours associé
+                                                </p>
+                                                <p class="text-xs transition-colors" :class="darkMode ? 'text-gray-500' : 'text-gray-400'">
+                                                    Évaluation générale
+                                                </p>
+                                            </div>
+                                        </div>
                                     @endif
                                 </td>
                                 @canany(['gestion.exam.read', 'gestion.exam.update', 'gestion.exam.delete'])
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
                                         <div class="flex justify-center space-x-3">
                                             @can('gestion.exam.read')
-                                                <a href="{{ route('admin.mock-exams.show', ['locale' => app()->getLocale(), 'exam' => $mockExam->id]) }}"
+                                                <a href="{{ route('admin.mock-exams.show', ['locale' => app()->getLocale(), 'mock_exam' => $mockExam->id]) }}"
                                                    class="transition-colors duration-150"
                                                    :class="darkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'"
                                                    title="Voir les détails">
@@ -297,7 +456,7 @@
                                                 </a>
                                             @endcan
                                             @can('gestion.exam.update')
-                                                <a href="{{ route('admin.mock-exams.edit', ['locale' => app()->getLocale(), 'exam' => $mockExam->id]) }}"
+                                                <a href="{{ route('admin.mock-exams.edit', ['locale' => app()->getLocale(), 'mock_exam' => $mockExam->id]) }}"
                                                    class="transition-colors duration-150"
                                                    :class="darkMode ? 'text-yellow-400 hover:text-yellow-300' : 'text-yellow-600 hover:text-yellow-800'"
                                                    title="Modifier">
@@ -374,10 +533,6 @@
 @push('styles')
     <style>
         /* Animations personnalisées */
-        .fade-in-up {
-            animation: fadeInUp 0.5s ease-out;
-        }
-
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -387,32 +542,6 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        /* Style pour les badges de type */
-        .type-badge {
-            transition: all 0.2s ease-in-out;
-        }
-
-        .type-badge:hover {
-            transform: scale(1.05);
-        }
-
-        /* Style pour les cours associés */
-        .course-badge {
-            transition: all 0.2s ease-in-out;
-            max-width: 120px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .course-badge:hover {
-            transform: scale(1.02);
-            max-width: none;
-            white-space: normal;
-            z-index: 10;
-            position: relative;
         }
 
         /* Responsive pour les tableaux */
@@ -426,30 +555,38 @@
                 padding: 0.5rem 0.75rem;
             }
         }
-
-        /* Styles pour les actions hover */
-        .action-button {
-            transition: all 0.15s ease-in-out;
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .action-button:hover {
-            transform: translateY(-1px);
+        /* Amélioration du scrollbar pour le tooltip */
+        .overflow-y-auto::-webkit-scrollbar {
+            width: 4px;
         }
 
-        /* Style pour les statistiques */
-        .stat-card {
-            transition: all 0.3s ease-in-out;
+        .overflow-y-auto::-webkit-scrollbar-track {
+            background: transparent;
         }
 
-        .stat-card:hover {
-            transform: translateY(-2px);
+        .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 2px;
         }
 
-        /* Amélioration des filtres */
-        .filter-input:focus,
-        .filter-select:focus {
-            box-shadow: 0 0 0 3px rgba(76, 163, 221, 0.1);
-            border-color: #4CA3DD;
+        .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: rgba(156, 163, 175, 0.8);
+        }
+
+        /* Mode sombre pour le scrollbar */
+        html.dark .overflow-y-auto::-webkit-scrollbar-thumb {
+            background: rgba(75, 85, 99, 0.5);
+        }
+
+        html.dark .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+            background: rgba(75, 85, 99, 0.8);
         }
     </style>
 @endpush
