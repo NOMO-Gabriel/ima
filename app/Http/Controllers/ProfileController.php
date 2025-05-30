@@ -24,7 +24,7 @@ class ProfileController extends Controller
         $canEditRoles = $user->can('user.role.assign'); // Vérifie si l'utilisateur a la permission de modifier les rôles
         $cities = \App\Models\City::where('is_active', true)->orderBy('name')->get();// Charger la liste des villes pour le formulaire
         $currentCity=\App\Models\City::find($user->city_id);
-        
+
         // dd($user->city_id);
         return view('profile.edit', [
             'user' => $user,
@@ -39,10 +39,10 @@ class ProfileController extends Controller
     /**
      * Mettre à jour les informations du profil de l'utilisateur.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update($locale, ProfileUpdateRequest $request): RedirectResponse
     {
         $user = $request->user();
-        
+
         // Mise à jour des informations de base du profil
         $user->fill($request->validated());
 
@@ -51,7 +51,7 @@ class ProfileController extends Controller
             if ($user->profile_photo_path) {
                 Storage::delete('public/' . $user->profile_photo_path);
             }
-    
+
             // Télécharger la nouvelle photo et stocker son chemin
             $path = $request->file('photo')->store('profile_photos', 'public');
             $user->profile_photo_path = $path;
@@ -68,7 +68,7 @@ class ProfileController extends Controller
 
         $user->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+        return Redirect::route('profile.edit', ['locale' => app()->getLocale()] )->with('status', 'profile-updated');
     }
 
     /**

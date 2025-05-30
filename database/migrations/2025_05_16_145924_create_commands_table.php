@@ -18,6 +18,9 @@ return new class extends Migration
 
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
 
+            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])
+                ->default('pending');
+
             $table->timestamps();
         });
     }

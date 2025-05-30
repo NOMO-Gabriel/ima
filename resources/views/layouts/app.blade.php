@@ -1466,7 +1466,7 @@
                 <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Élèves</span>
-                </a> 
+                </a>
                 <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Utilisateurs</span>
@@ -1583,7 +1583,7 @@
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-account">
-                <a href="{{ route('admin.profile.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+                <a href="{{ route('profile.edit', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
                     <i class="fas fa-user-circle"></i>
                     <span>Profil</span>
                 </a>
@@ -1693,7 +1693,7 @@
 
         <main class="content">
             <!-- Display flash messages -->
-            <x-flash-message />
+            {{--<x-flash-message />--}}
 
             <!-- Page header with breadcrumb -->
             @hasSection('breadcrumb')
