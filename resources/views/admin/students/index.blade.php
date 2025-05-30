@@ -358,7 +358,6 @@
     .status-badge.info { background-color: #17a2b8; }
     .status-badge.secondary { background-color: #6c757d; }
     .status-badge.dark { background-color: #343a40; }
-
     /* Users Grid Styles from your original if needed */
     .users-grid {
         display: grid;
@@ -422,7 +421,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-
     // Basculer entre les vues table/grille
     document.querySelectorAll('.view-btn').forEach(btn => {
         btn.addEventListener('click', function() {
@@ -436,13 +434,11 @@ document.addEventListener('DOMContentLoaded', function() {
             localStorage.setItem('students-view-preference', view);
         });
     });
-
     const savedView = localStorage.getItem('students-view-preference');
     const tableView = document.querySelector('.table-view');
     const gridView = document.querySelector('.grid-view');
     const tableButton = document.querySelector('.view-btn[data-view="table"]');
     const gridButton = document.querySelector('.view-btn[data-view="grid"]');
-
     if (tableView && gridView && tableButton && gridButton) {
         if (savedView === 'grid') {
             tableView.style.display = 'none';
@@ -456,8 +452,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tableButton.classList.add('active');
         }
     }
-
-
     // Menu d'actions des lignes/cartes
     document.querySelectorAll('.actions-trigger').forEach(trigger => {
         trigger.addEventListener('click', function(e) {
@@ -477,7 +471,6 @@ document.addEventListener('DOMContentLoaded', function() {
             dropdown.style.display = dropdown.classList.contains('active') ? 'block' : 'none';
         });
     });
-
     // Fermer les menus d'actions en cliquant n'importe où sur la page
     document.addEventListener('click', function() {
         document.querySelectorAll('.actions-dropdown.active').forEach(menu => {
@@ -485,7 +478,6 @@ document.addEventListener('DOMContentLoaded', function() {
             menu.style.display = 'none';
         });
     });
-
     // Tri des colonnes du tableau
     document.querySelectorAll('.data-table .sortable').forEach(header => {
         header.addEventListener('click', function() {
@@ -508,3 +500,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 @endpush
+Footer

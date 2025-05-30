@@ -42,7 +42,9 @@ class StudentController extends Controller
         }
 
         if ($request->filled('city_id')) {
-            $query->where('city_id', $request->city_id); // Fonctionnera si 'city_id' est sur User
+            $query->whereHas('StudentProfile', function ($q_profile) use ($request) {
+                $q_profile->where('city_id', $request->input('city_id'));
+            }); 
         }
 
         if ($request->filled('center_id')) {
@@ -52,6 +54,7 @@ class StudentController extends Controller
                 $q_enrollments->where('center_id', $request->center_id);
             });
         }
+        
 
         if ($request->filled('sort') && $request->filled('direction')) {
             $sortField = $request->sort;
@@ -69,7 +72,7 @@ class StudentController extends Controller
                                 'student', // Profil Student
                                 'student.enrollments.center', // Inscriptions (Registration) avec leur Centre
                                 'student.enrollments.formation', // Inscription (Registration) avec sa Formation principale (BelongsTo)
-                                'city' // Relation city() sur User
+                                // Relation city() sur User
                                ])
                                ->paginate(15)
                                ->appends($request->query());
