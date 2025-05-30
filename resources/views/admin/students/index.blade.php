@@ -1,812 +1,510 @@
-@extends('layouts.app')
+@extends('layouts.app') {{-- ou votre layout admin --}}
 
 @section('title', 'Gestion des Étudiants')
 
 @section('content')
-    <div class="students-dashboard">
-        <!-- En-tête de page avec actions principales -->
-        <div class="page-header">
-            <div class="header-content">
-                <div class="breadcrumb">
-                    <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}">
-                        <i class="fas fa-home"></i>
-                    </a>
-                    <i class="fas fa-chevron-right"></i>
-                    <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}">
-                        Administration
-                    </a>
-                    <i class="fas fa-chevron-right"></i>
-                    <span>Étudiants</span>
-                </div>
-                <h1 class="page-title">Gestion des Étudiants</h1>
-                <p class="page-description">Gérez tous les étudiants du système avec leurs profils et inscriptions.</p>
-            </div>
-            <div class="header-actions">
-                <a href="{{ route('admin.students.create', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Ajouter un étudiant</span>
+<div class="users-dashboard">
+    <!-- En-tête de page -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="breadcrumb">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}">
+                    <i class="fas fa-home"></i>
                 </a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Étudiants</span>
+            </div>
+            <h1 class="page-title">Gestion des Étudiants</h1>
+            <p class="page-description">Consulter les informations des étudiants.</p>
+        </div>
+    </div>
+
+    <!-- Métriques -->
+    <div class="metrics-grid">
+        <div class="metric-card primary">
+            <div class="metric-icon"><i class="fas fa-user-graduate"></i></div>
+            <div class="metric-content">
+                <div class="metric-value">{{ $stats['total'] ?? 0 }}</div>
+                <div class="metric-label">Total Étudiants</div>
             </div>
         </div>
-
-        <!-- Statistiques en une seule ligne -->
-        <div class="stats-container">
-            <div class="stats-card">
-                <div class="stats-icon primary">
-                    <i class="fas fa-user-graduate"></i>
-                </div>
-                <div class="stats-content">
-                    <h3 class="stats-value">{{ $stats['total'] ?? $studentUsers->total() }}</h3>
-                    <p class="stats-label">Total Étudiants</p>
-                </div>
-                <div class="stats-trend">
-                    <div class="progress-bar primary" style="width: 100%"></div>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-icon success">
-                    <i class="fas fa-user-check"></i>
-                </div>
-                <div class="stats-content">
-                    <h3 class="stats-value">{{ $stats['active'] ?? $studentUsers->where('status', 'active')->count() }}</h3>
-                    <p class="stats-label">Étudiants Actifs</p>
-                </div>
-                <div class="stats-trend">
-                    @php
-                        $activePercentage = ($studentUsers->total() > 0) ? ($studentUsers->where('status', 'active')->count() / $studentUsers->total()) * 100 : 0;
-                    @endphp
-                    <div class="progress-bar success" style="width: {{ $activePercentage }}%"></div>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-icon warning">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stats-content">
-                    <h3 class="stats-value">{{ $stats['pending_validation'] ?? $studentUsers->where('status', 'pending_validation')->count() }}</h3>
-                    <p class="stats-label">En Attente Validation</p>
-                </div>
-                <div class="stats-trend">
-                    @php
-                        $pendingPercentage = ($studentUsers->total() > 0) ? ($studentUsers->where('status', 'pending_validation')->count() / $studentUsers->total()) * 100 : 0;
-                    @endphp
-                    <div class="progress-bar warning" style="width: {{ $pendingPercentage }}%"></div>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-icon info">
-                    <i class="fas fa-file-contract"></i>
-                </div>
-                <div class="stats-content">
-                    <h3 class="stats-value">{{ $stats['pending_contract'] ?? $studentUsers->where('status', 'pending_contract')->count() }}</h3>
-                    <p class="stats-label">En Attente Contrat</p>
-                </div>
-                <div class="stats-trend">
-                    @php
-                        $contractPercentage = ($studentUsers->total() > 0) ? ($studentUsers->where('status', 'pending_contract')->count() / $studentUsers->total()) * 100 : 0;
-                    @endphp
-                    <div class="progress-bar info" style="width: {{ $contractPercentage }}%"></div>
-                </div>
+        <div class="metric-card success">
+            <div class="metric-icon"><i class="fas fa-user-check"></i></div>
+            <div class="metric-content">
+                <div class="metric-value">{{ $stats['active'] ?? 0 }}</div>
+                <div class="metric-label">Étudiants Actifs</div>
             </div>
         </div>
-
-        <!-- Filtres avancés -->
-        <div class="card filter-card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-filter"></i>Filtres
-                </h2>
-                <button class="btn btn-icon filter-toggle" type="button">
-                    <i class="fas fa-chevron-up"></i>
-                </button>
+        <div class="metric-card warning">
+            <div class="metric-icon"><i class="fas fa-clock"></i></div>
+            <div class="metric-content">
+                <div class="metric-value">{{ $stats['pending_validation'] ?? 0 }}</div>
+                <div class="metric-label">En Attente Validation</div>
             </div>
-            <div class="card-body filter-body">
-                <form action="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" method="GET" id="filterForm">
-                    <div class="filter-grid">
-                        <div class="form-group">
-                            <label for="status">
-                                <i class="fas fa-user-shield"></i>Statut
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="status" name="status" class="form-control">
-                                    <option value="">Tous les statuts</option>
-                                    @foreach($statuses as $value => $label)
-                                        <option value="{{ $value }}" {{ request('status') == $value ? 'selected' : '' }}>
-                                            {{ $label }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                        </div>
+        </div>
+    </div>
 
-                        <div class="form-group">
-                            <label for="establishment">
-                                <i class="fas fa-university"></i>Établissement
-                            </label>
-                            <div class="search-wrapper">
-                                <input type="text" id="establishment" name="establishment" value="{{ request('establishment') }}" class="form-control" placeholder="Nom de l'établissement...">
-                                <button type="button" class="search-clear" {{ request('establishment') ? '' : 'style=display:none' }}>
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="search">
-                                <i class="fas fa-search"></i>Recherche
-                            </label>
-                            <div class="search-wrapper">
-                                <input type="text" id="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Nom, email, téléphone...">
-                                <button type="button" class="search-clear" {{ request('search') ? '' : 'style=display:none' }}>
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <button type="submit" class="search-button">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
+    <!-- Section des filtres et recherche -->
+    <div class="filters-section">
+        <div class="section-header">
+            <h2 class="section-title"><i class="fas fa-filter"></i> Filtres et Recherche</h2>
+            <button class="section-toggle" type="button"><i class="fas fa-chevron-down"></i></button>
+        </div>
+        
+        <div class="section-content" style="display: block;">
+            <form action="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" method="GET" class="filters-form">
+                <div class="filters-grid">
+                    <!-- Recherche principale -->
+                    <div class="filter-group primary">
+                        <label class="filter-label"><i class="fas fa-search"></i> Recherche générale</label>
+                        <div class="search-input-group">
+                            <input type="text" name="search" value="{{ request('search') }}" placeholder="Nom, email, téléphone..." class="form-input">
                         </div>
                     </div>
 
-                    <div class="filter-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-filter"></i> Appliquer les filtres
-                        </button>
-                        <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-light">
-                            <i class="fas fa-redo-alt"></i> Réinitialiser
-                        </a>
+                    <!-- Filtre par Genre -->
+                    <div class="filter-group">
+                        <label class="filter-label"><i class="fas fa-venus-mars"></i> Genre</label>
+                        <select name="gender" class="form-select">
+                            <option value="">Tous les genres</option>
+                            @foreach($genders as $value => $label) {{-- $genders vient de User::getGenders() --}}
+                                <option value="{{ $value }}" {{ request('gender') == $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
-                </form>
+
+                    <!-- Filtre par Ville -->
+                    <div class="filter-group">
+                        <label class="filter-label"><i class="fas fa-city"></i> Ville</label>
+                        <select name="city_id" class="form-select">
+                            <option value="">Toutes les villes</option>
+                            @foreach($citiesForFilter as $id => $name)
+                                <option value="{{ $id }}" {{ request('city_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <!-- Filtre par Centre -->
+                    <div class="filter-group">
+                        <label class="filter-label"><i class="fas fa-school"></i> Centre</label>
+                        <select name="center_id" class="form-select">
+                            <option value="">Tous les centres</option>
+                            @foreach($centersForFilter as $id => $name)
+                                <option value="{{ $id }}" {{ request('center_id') == $id ? 'selected' : '' }}>
+                                    {{ $name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <!-- Filtre par statut -->
+                    <div class="filter-group">
+                        <label class="filter-label"><i class="fas fa-flag"></i> Statut</label>
+                        <select name="status" class="form-select">
+                            <option value="">Tous les statuts</option>
+                            @foreach($statuses as $value => $label) {{-- $statuses vient du contrôleur --}}
+                                <option value="{{ $value }}" {{ request('status') == $value ? 'selected' : '' }}>
+                                    {{ $label }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+
+                <div class="filters-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                    <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Effacer
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Liste des étudiants -->
+    <div class="data-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="fas fa-users"></i> Liste des Étudiants
+                <span class="section-badge">{{ $studentUsers->total() }}</span>
+            </h2>
+             <div class="section-actions">
+                <div class="view-switcher">
+                    <button type="button" class="view-btn active" data-view="table">
+                        <i class="fas fa-table"></i>
+                    </button>
+                    <button type="button" class="view-btn" data-view="grid">
+                        <i class="fas fa-th"></i>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Liste des étudiants -->
-        <div class="card data-card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-user-graduate"></i>Liste des étudiants
-                </h2>
-                <div class="view-actions">
-                    <div class="view-switcher">
-                        <button type="button" class="btn btn-icon active" id="tableViewBtn" title="Vue tableau">
-                            <i class="fas fa-list"></i>
-                        </button>
-                        <button type="button" class="btn btn-icon" id="cardViewBtn" title="Vue cartes">
-                            <i class="fas fa-th-large"></i>
-                        </button>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn btn-light dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown">
-                            <i class="fas fa-download"></i> Exporter
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-csv text-primary"></i>CSV</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel text-success"></i>Excel</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf text-danger"></i>PDF</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card-body p-0">
-                <!-- Vue tableau -->
-                <div class="table-view">
-                    <div class="table-responsive">
-                        <table class="table students-table">
-                            <thead>
+        <div class="section-content">
+            <!-- Vue tableau -->
+            <div class="table-view">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
                             <tr>
-                                <th class="sortable" data-sort="name">
-                                    <span>Étudiant</span>
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th>Contact & Établissement</th>
-                                <th>Profil Étudiant</th>
-                                <th class="sortable" data-sort="status">
-                                    <span>Statut</span>
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="created_at">
-                                    <span>Date d'inscription</span>
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="text-end">Actions</th>
+                                <th class="sortable" data-sort="first_name">Étudiant <i class="fas fa-sort"></i></th>
+                                <th class="sortable" data-sort="email">Contact <i class="fas fa-sort"></i></th>
+                                <th>Ville</th>
+                                <th>Centre Principal</th>
+                                <th class="sortable" data-sort="status">Statut <i class="fas fa-sort"></i></th>
+                                <th class="sortable" data-sort="created_at">Inscrit le <i class="fas fa-sort"></i></th>
+                                <th class="actions-col">Actions</th>
                             </tr>
-                            </thead>
-                            <tbody>
-                            @forelse ($studentUsers as $student)
-                                <tr>
-                                    <td>
+                        </thead>
+                        <tbody>
+                            @forelse($studentUsers as $studentUser)
+                                <tr class="table-row">
+                                    <td class="user-cell">
                                         <div class="user-info">
                                             <div class="user-avatar">
-                                                <img src="{{ $student->profile_photo_url }}" alt="{{ $student->first_name }}" class="avatar">
-                                                <span class="user-status {{ $student->is_online ? 'online' : 'offline' }}"></span>
+                                                <img src="{{ $studentUser->profile_photo_url }}" alt="{{ $studentUser->full_name }}">
+                                                <div class="status-indicator {{ $studentUser->status }}"></div>
                                             </div>
                                             <div class="user-details">
-                                                <div class="user-name">{{ $student->first_name }} {{ $student->last_name }}</div>
-                                                <div class="user-date">
-                                                    @if($student->student && $student->student->parent_phone_number)
-                                                        <span class="badge date-badge">
-                                                            <i class="fas fa-users"></i>Parent: {{ $student->student->parent_phone_number }}
-                                                        </span>
+                                                <div class="user-name">
+                                                    <a href="{{ route('admin.students.show', ['locale' => app()->getLocale(), 'studentUser' => $studentUser->id]) }}">
+                                                        {{ $studentUser->full_name }}
+                                                    </a>
+                                                </div>
+                                                <div class="user-meta">
+                                                    @if($studentUser->gender_label)
+                                                        <span class="meta-item"><i class="fas fa-venus-mars"></i> {{ $studentUser->gender_label }}</span>
                                                     @endif
-                                                    <span class="badge date-badge">
-                                                        <i class="far fa-calendar-alt"></i>{{ $student->created_at->format('d/m/Y') }}
-                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="user-contact">
-                                            <div class="contact-item">
-                                                <i class="fas fa-envelope"></i>
-                                                <span>{{ $student->email }}</span>
-                                            </div>
-                                            <div class="contact-item">
-                                                <i class="fas fa-phone-alt"></i>
-                                                <span>{{ $student->phone_number ?? 'Non renseigné' }}</span>
-                                            </div>
-                                            @if($student->student && $student->student->establishment)
-                                                <div class="contact-item">
-                                                    <i class="fas fa-university"></i>
-                                                    <span>{{ $student->student->establishment }}</span>
-                                                </div>
+                                    <td class="contact-cell">
+                                        <div class="contact-info">
+                                            <div class="contact-item"><i class="fas fa-envelope"></i> <a href="mailto:{{ $studentUser->email }}">{{ $studentUser->email }}</a></div>
+                                            @if($studentUser->phone_number)
+                                                <div class="contact-item"><i class="fas fa-phone"></i> <a href="tel:{{ $studentUser->phone_number }}">{{ $studentUser->phone_number }}</a></div>
                                             @endif
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="student-profile">
-                                            @if($student->student)
-                                                @if($student->city)
-                                                    <div class="profile-item">
-                                                        <i class="fas fa-map-marker-alt"></i>
-                                                        <span>{{ $student->city }}</span>
-                                                    </div>
-                                                @endif
-                                                @if($student->wanted_entrance_exams && count($student->wanted_entrance_exams) > 0)
-                                                    <div class="profile-item">
-                                                        <i class="fas fa-graduation-cap"></i>
-                                                        <span>{{ count($student->wanted_entrance_exams) }} concours souhaité(s)</span>
-                                                    </div>
-                                                @endif
-                                                @if($student->validated_at)
-                                                    <div class="profile-item">
-                                                        <i class="fas fa-check-circle text-success"></i>
-                                                        <span>Validé le {{ $student->validated_at->format('d/m/Y') }}</span>
-                                                    </div>
-                                                @endif
-                                            @else
-                                                <span class="text-muted">Profil non complété</span>
-                                            @endif
-                                        </div>
+                                    <td class="city-cell">
+                                        {{ $studentUser->city->name ?? ($studentUser->city ?? 'N/A') }}
                                     </td>
-                                    <td>
+                                    <td class="center-cell">
+                                        @if($studentUser->student && $studentUser->student->enrollments->isNotEmpty())
+                                            {{ $studentUser->student->enrollments->first()->center->name ?? 'N/A' }}
+                                            @if($studentUser->student->enrollments->count() > 1)
+                                                <span class="badge bg-info text-dark ms-1">+{{ $studentUser->student->enrollments->count() - 1 }}</span>
+                                            @endif
+                                        @else
+                                            <span class="no-data">Non inscrit</span>
+                                        @endif
+                                    </td>
+                                    <td class="status-cell">
                                         @php
-                                            $statusInfo = [
-                                                'pending_validation' => [
-                                                    'class' => 'warning',
-                                                    'icon' => 'hourglass-start',
-                                                    'text' => 'En attente de validation'
-                                                ],
-                                                'pending_contract' => [
-                                                    'class' => 'info',
-                                                    'icon' => 'file-contract',
-                                                    'text' => 'En attente de contrat'
-                                                ],
-                                                'active' => [
-                                                    'class' => 'success',
-                                                    'icon' => 'check-circle',
-                                                    'text' => 'Actif'
-                                                ],
-                                                'suspended' => [
-                                                    'class' => 'danger',
-                                                    'icon' => 'ban',
-                                                    'text' => 'Suspendu'
-                                                ],
-                                                'rejected' => [
-                                                    'class' => 'secondary',
-                                                    'icon' => 'times-circle',
-                                                    'text' => 'Rejeté'
-                                                ],
-                                                'archived' => [
-                                                    'class' => 'dark',
-                                                    'icon' => 'archive',
-                                                    'text' => 'Archivé'
-                                                ]
-                                            ];
-                                            $status = $statusInfo[$student->status] ?? ['class' => 'secondary', 'icon' => 'question', 'text' => ucfirst($student->status)];
+                                            $statusClass = 'secondary'; // Default
+                                            if ($studentUser->status === \App\Models\User::STATUS_ACTIVE) $statusClass = 'success';
+                                            elseif (in_array($studentUser->status, [\App\Models\User::STATUS_PENDING_VALIDATION, \App\Models\User::STATUS_PENDING_CONTRACT])) $statusClass = 'warning';
+                                            elseif (in_array($studentUser->status, [\App\Models\User::STATUS_SUSPENDED, \App\Models\User::STATUS_REJECTED])) $statusClass = 'danger';
                                         @endphp
-                                        <div class="status-badge {{ $status['class'] }}">
-                                            <i class="fas fa-{{ $status['icon'] }}"></i>
-                                            <span>{{ $status['text'] }}</span>
-                                        </div>
+                                        <span class="status-badge {{ $statusClass }}">
+                                            {{ $studentUser->status_label }}
+                                        </span>
                                     </td>
-                                    <td>
+                                    <td class="date-cell">
                                         <div class="date-info">
-                                            <div class="inscription-date">
-                                                <i class="far fa-calendar-alt"></i>
-                                                {{ $student->created_at->format('d/m/Y H:i') }}
-                                            </div>
-                                            @if($student->created_at->diffInDays() < 7)
-                                                <span class="recent-badge">récent</span>
-                                            @endif
+                                            <div class="date-primary">{{ $studentUser->created_at->format('d/m/Y') }}</div>
+                                            <div class="date-secondary">{{ $studentUser->created_at->format('H:i') }}</div>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="action-buttons">
-                                            <a href="{{ route('admin.students.show', ['locale' => app()->getLocale(), 'studentUser' => $student->id]) }}" class="btn-action view" title="Voir le profil">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.students.edit', ['locale' => app()->getLocale(), 'studentUser' => $student->id]) }}" class="btn-action edit" title="Modifier">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <div class="dropdown d-inline-block">
-                                                <button class="btn-action more" type="button" data-bs-toggle="dropdown" title="Plus d'options">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <i class="fas fa-file-alt text-primary"></i>Dossier d'inscription
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <i class="fas fa-chart-line text-primary"></i>Notes et résultats
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <i class="fas fa-calendar-check text-primary"></i>Présences
-                                                        </a>
-                                                    </li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    @if($student->status === 'pending_validation')
-                                                        <li>
-                                                            <a class="dropdown-item text-success" href="{{ route('admin.finance.students.finalize', ['locale' => app()->getLocale(), 'student' => $student->id]) }}">
-                                                                <i class="fas fa-check-circle"></i>Finaliser inscription
-                                                            </a>
-                                                        </li>
-                                                    @endif
-                                                    @if($student->status === 'active')
-                                                        <li>
-                                                            <form action="#" method="POST" class="dropdown-form">
-                                                                @csrf
-                                                                <button type="submit" class="dropdown-item text-warning">
-                                                                    <i class="fas fa-ban"></i>Suspendre
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    @elseif($student->status === 'suspended')
-                                                        <li>
-                                                            <form action="#" method="POST" class="dropdown-form">
-                                                                @csrf
-                                                                <button type="submit" class="dropdown-item text-success">
-                                                                    <i class="fas fa-check-circle"></i>Réactiver
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    @endif
-                                                    @if(auth()->id() !== $student->id)
-                                                        <li>
-                                                            <form action="{{ route('admin.students.destroy', ['locale' => app()->getLocale(), 'studentUser' => $student->id]) }}" method="POST" class="dropdown-form delete-form">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="dropdown-item text-danger">
-                                                                    <i class="fas fa-trash"></i>Supprimer
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    @endif
-                                                </ul>
+                                    <td class="actions-cell">
+                                        <div class="actions-menu">
+                                            <button type="button" class="actions-trigger"><i class="fas fa-ellipsis-h"></i></button>
+                                            <div class="actions-dropdown">
+                                                <a href="{{ route('admin.students.show', ['locale' => app()->getLocale(), 'studentUser' => $studentUser->id]) }}" class="action-item">
+                                                    <i class="fas fa-eye"></i> Voir le profil
+                                                </a>
                                             </div>
                                         </div>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6">
-                                        <div class="empty-state">
-                                            <div class="empty-icon">
-                                                <i class="fas fa-user-graduate"></i>
-                                            </div>
-                                            <h4>Aucun étudiant trouvé</h4>
-                                            <p>Essayez de modifier vos filtres ou d'ajouter un nouvel étudiant.</p>
-                                            <div class="empty-actions">
-                                                <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-light">
-                                                    <i class="fas fa-filter"></i>Réinitialiser les filtres
-                                                </a>
-                                                <a href="{{ route('admin.students.create', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">
-                                                    <i class="fas fa-user-plus"></i>Ajouter un étudiant
-                                                </a>
-                                            </div>
+                                    <td colspan="7" class="empty-state">
+                                        <div class="empty-content">
+                                            <div class="empty-icon"><i class="fas fa-user-graduate"></i></div>
+                                            <h3 class="empty-title">Aucun étudiant trouvé</h3>
+                                            <p class="empty-text">Aucun étudiant ne correspond à vos critères de recherche.</p>
+                                            <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-secondary">
+                                                <i class="fas fa-sync-alt"></i> Réinitialiser les filtres
+                                            </a>
                                         </div>
                                     </td>
                                 </tr>
                             @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Vue cartes -->
-                <div class="card-view" style="display: none;">
-                    <div class="student-cards">
-                        @forelse ($studentUsers as $student)
-                            <div class="student-card">
-                                <div class="student-card-header">
-                                    <div class="student-card-avatar">
-                                        <img src="{{ $student->profile_photo_url }}" alt="{{ $student->first_name }}">
-                                        <span class="user-status {{ $student->is_online ? 'online' : 'offline' }}"></span>
-                                    </div>
-                                    <div class="student-card-info">
-                                        <h3 class="student-card-name">{{ $student->first_name }} {{ $student->last_name }}</h3>
-                                        <div class="student-card-roles">
-                                            @foreach($student->roles as $role)
-                                                <span class="role-badge small teal">{{ $role->name }}</span>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    <div class="student-card-status">
-                                        @php
-                                            $status = $statusInfo[$student->status] ?? ['class' => 'secondary', 'icon' => 'question'];
-                                        @endphp
-                                        <span class="status-indicator {{ $status['class'] }}">
-                                            <i class="fas fa-{{ $status['icon'] }}"></i>
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="student-card-body">
-                                    <div class="student-card-detail">
-                                        <i class="fas fa-envelope"></i>
-                                        <span>{{ $student->email }}</span>
-                                    </div>
-                                    <div class="student-card-detail">
-                                        <i class="fas fa-phone-alt"></i>
-                                        <span>{{ $student->phone_number ?? 'Non renseigné' }}</span>
-                                    </div>
-                                    @if($student->student)
-                                        @if($student->student->establishment)
-                                            <div class="student-card-detail">
-                                                <i class="fas fa-university"></i>
-                                                <span>{{ $student->student->establishment }}</span>
-                                            </div>
-                                        @endif
-                                        @if($student->student->parent_phone_number)
-                                            <div class="student-card-detail">
-                                                <i class="fas fa-users"></i>
-                                                <span>Parent: {{ $student->student->parent_phone_number }}</span>
-                                            </div>
-                                        @endif
-                                        @if($student->city)
-                                            <div class="student-card-detail">
-                                                <i class="fas fa-map-marker-alt"></i>
-                                                <span>{{ $student->city }}</span>
-                                            </div>
-                                        @endif
-                                    @endif
-                                    <div class="student-card-detail">
-                                        <i class="far fa-calendar-alt"></i>
-                                        <span>Inscrit le {{ $student->created_at->format('d/m/Y') }}</span>
-                                    </div>
-                                </div>
-                                <div class="student-card-footer">
-                                    <a href="{{ route('admin.students.show', ['locale' => app()->getLocale(), 'studentUser' => $student->id]) }}" class="student-card-btn view" title="Voir le profil">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.students.edit', ['locale' => app()->getLocale(), 'studentUser' => $student->id]) }}" class="student-card-btn edit" title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <div class="dropdown">
-                                        <button class="student-card-btn more" type="button" data-bs-toggle="dropdown" title="Plus d'options">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li>
-                                                <a class="dropdown-item" href="#">
-                                                    <i class="fas fa-file-alt text-primary"></i>Dossier d'inscription
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item" href="#">
-                                                    <i class="fas fa-chart-line text-primary"></i>Notes et résultats
-                                                </a>
-                                            </li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            @if(auth()->id() !== $student->id)
-                                                <li>
-                                                    <form action="{{ route('admin.students.destroy', ['locale' => app()->getLocale(), 'studentUser' => $student->id]) }}" method="POST" class="dropdown-form delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="dropdown-item text-danger">
-                                                            <i class="fas fa-trash"></i>Supprimer
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            @endif
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <i class="fas fa-user-graduate"></i>
-                                </div>
-                                <h4>Aucun étudiant trouvé</h4>
-                                <p>Essayez de modifier vos filtres ou d'ajouter un nouvel étudiant.</p>
-                                <div class="empty-actions">
-                                    <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-light">
-                                        <i class="fas fa-filter"></i>Réinitialiser les filtres
-                                    </a>
-                                    <a href="{{ route('admin.students.create', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">
-                                        <i class="fas fa-user-plus"></i>Ajouter un étudiant
-                                    </a>
-                                </div>
-                            </div>
-                        @endforelse
-                    </div>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            @if($studentUsers->hasPages())
-                <div class="card-footer">
-                    <div class="pagination-info">
-                        Affichage de <span>{{ $studentUsers->firstItem() ?? 0 }}</span> à <span>{{ $studentUsers->lastItem() ?? 0 }}</span> sur <span>{{ $studentUsers->total() }}</span> étudiants
-                    </div>
-                    <div class="pagination-controls">
-                        {{ $studentUsers->links() }}
-                    </div>
+            <!-- Vue grille -->
+            <div class="grid-view" style="display: none;">
+                <div class="users-grid">
+                    @forelse($studentUsers as $studentUser)
+                        <div class="user-card">
+                            <div class="card-header">
+                                <div class="user-avatar">
+                                    <img src="{{ $studentUser->profile_photo_url }}" alt="{{ $studentUser->full_name }}">
+                                    <div class="status-indicator {{ $studentUser->status }}"></div>
+                                </div>
+                                <div class="card-actions">
+                                    <div class="actions-menu">
+                                        <button type="button" class="actions-trigger"><i class="fas fa-ellipsis-v"></i></button>
+                                        <div class="actions-dropdown">
+                                            <a href="{{ route('admin.students.show', ['locale' => app()->getLocale(), 'studentUser' => $studentUser->id]) }}" class="action-item">
+                                                <i class="fas fa-eye"></i> Voir
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h3 class="user-name">
+                                    <a href="{{ route('admin.students.show', ['locale' => app()->getLocale(), 'studentUser' => $studentUser->id]) }}">
+                                        {{ $studentUser->full_name }}
+                                    </a>
+                                </h3>
+                                <div class="user-meta mb-2" style="font-size: 0.85em; color: #6c757d;">
+                                    @if($studentUser->gender_label)
+                                        <span class="d-block"><i class="fas fa-venus-mars me-1"></i> {{ $studentUser->gender_label }}</span>
+                                    @endif
+                                    <span class="d-block"><i class="fas fa-city me-1"></i> {{ $studentUser->city->name ?? ($studentUser->city ?? 'N/A') }}</span>
+                                     @if($studentUser->student && $studentUser->student->enrollments->isNotEmpty())
+                                        <span class="d-block"><i class="fas fa-school me-1"></i> {{ $studentUser->student->enrollments->first()->center->name ?? 'N/A' }}</span>
+                                    @endif
+                                </div>
+                                <div class="user-contacts">
+                                    <div class="contact-item"><i class="fas fa-envelope me-1"></i> <span>{{ $studentUser->email }}</span></div>
+                                    @if($studentUser->phone_number)
+                                        <div class="contact-item"><i class="fas fa-phone me-1"></i> <span>{{ $studentUser->phone_number }}</span></div>
+                                    @endif
+                                </div>
+                            </div>
+                            <div class="card-footer">
+                                @php
+                                    $statusClass = 'secondary'; // Default
+                                    if ($studentUser->status === \App\Models\User::STATUS_ACTIVE) $statusClass = 'success';
+                                    elseif (in_array($studentUser->status, [\App\Models\User::STATUS_PENDING_VALIDATION, \App\Models\User::STATUS_PENDING_CONTRACT])) $statusClass = 'warning';
+                                    elseif (in_array($studentUser->status, [\App\Models\User::STATUS_SUSPENDED, \App\Models\User::STATUS_REJECTED])) $statusClass = 'danger';
+                                @endphp
+                                <span class="status-badge {{ $statusClass }}">
+                                    {{ $studentUser->status_label }}
+                                </span>
+                                <div class="card-date"><i class="fas fa-calendar me-1"></i> {{ $studentUser->created_at->format('d/m/Y') }}</div>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-12">
+                             <div class="empty-state" style="grid-column: 1 / -1;">
+                                <div class="empty-content">
+                                    <div class="empty-icon"><i class="fas fa-user-graduate"></i></div>
+                                    <h3 class="empty-title">Aucun étudiant trouvé</h3>
+                                    <p class="empty-text">Aucun étudiant ne correspond à vos critères de recherche.</p>
+                                    <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-secondary">
+                                        <i class="fas fa-sync-alt"></i> Réinitialiser les filtres
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
-            @endif
+            </div>
         </div>
-    </div>
 
-    <!-- Styles spécifiques aux étudiants -->
-    <style>
-        .student-profile .profile-item {
-            display: flex;
-            align-items: center;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .student-profile .profile-item i {
-            width: 16px;
-            margin-right: 0.5rem;
-            color: var(--text-secondary);
-        }
-        
-        .date-info .inscription-date {
-            display: flex;
-            align-items: center;
-            font-size: 0.875rem;
-        }
-        
-        .date-info .inscription-date i {
-            margin-right: 0.25rem;
-            color: var(--text-secondary);
-        }
-        
-        .student-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: var(--spacing-md);
-            padding: var(--spacing-md);
-        }
-        
-        .student-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid var(--border-color);
-        }
-        
-        .student-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .student-card-header {
-            padding: var(--spacing-md);
-            display: flex;
-            position: relative;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .student-card-avatar {
-            position: relative;
-            margin-right: var(--spacing-md);
-        }
-        
-        .student-card-avatar img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--card-bg);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .student-card-info {
-            flex: 1;
-        }
-        
-        .student-card-name {
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 0 0 var(--spacing-xs) 0;
-        }
-        
-        .student-card-roles {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-xs);
-        }
-        
-        .student-card-status {
-            position: absolute;
-            top: var(--spacing-md);
-            right: var(--spacing-md);
-        }
-        
-        .student-card-body {
-            padding: var(--spacing-md);
-        }
-        
-        .student-card-detail {
-            display: flex;
-            align-items: center;
-            margin-bottom: var(--spacing-sm);
-            font-size: 0.875rem;
-        }
-        
-        .student-card-detail i {
-            width: 16px;
-            margin-right: var(--spacing-md);
-            color: var(--text-secondary);
-        }
-        
-        .student-card-footer {
-            padding: var(--spacing-sm);
-            display: flex;
-            justify-content: flex-end;
-            gap: var(--spacing-sm);
-            background-color: var(--section-bg);
-        }
-        
-        .student-card-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--card-bg);
-            color: var(--text-secondary);
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .student-card-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-        
-        .student-card-btn.view:hover {
-            background-color: var(--info-light);
-            color: var(--info);
-        }
-        
-        .student-card-btn.edit:hover {
-            background-color: var(--success-light);
-            color: var(--success);
-        }
-        
-        /* Styles pour les badges de statut spécifiques aux étudiants */
-        .status-badge.warning {
-            background-color: var(--warning-light);
-            color: var(--warning);
-        }
-        
-        .status-badge.info {
-            background-color: var(--info-light);
-            color: var(--info);
-        }
-    </style>
+        <!-- Pagination -->
+        @if($studentUsers->hasPages())
+            <div class="section-footer">
+                <div class="pagination-info">
+                    <span>Affichage de {{ $studentUsers->firstItem() ?? 0 }} à {{ $studentUsers->lastItem() ?? 0 }} sur {{ $studentUsers->total() }} étudiants</span>
+                </div>
+                <div class="pagination-controls">
+                    {{ $studentUsers->links() }}
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
 @endsection
 
+@push('styles')
+<style>
+    .status-badge {
+        padding: 0.3em 0.6em;
+        border-radius: 0.25rem;
+        font-size: 0.85em;
+        font-weight: 600;
+        color: #fff;
+        text-align: center;
+    }
+    .status-badge.success { background-color: #28a745; }
+    .status-badge.warning { background-color: #ffc107; color: #212529; }
+    .status-badge.danger { background-color: #dc3545; }
+    .status-badge.info { background-color: #17a2b8; }
+    .status-badge.secondary { background-color: #6c757d; }
+    .status-badge.dark { background-color: #343a40; }
+
+    /* Users Grid Styles from your original if needed */
+    .users-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    .user-card {
+        background-color: #fff;
+        border: 1px solid #e3e6f0;
+        border-radius: 0.35rem;
+        box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+        display: flex;
+        flex-direction: column;
+    }
+    .user-card .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid #e3e6f0;
+    }
+    .user-card .user-avatar { position: relative; }
+    .user-card .user-avatar img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+    .user-card .user-avatar .status-indicator { /* Styles for online/offline dot */ }
+    .user-card .card-body { padding: 1.25rem; flex-grow: 1; }
+    .user-card .user-name { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .user-card .user-name a { color: #4e73df; text-decoration: none; }
+    .user-card .user-name a:hover { text-decoration: underline; }
+    .user-card .user-contacts .contact-item { display: flex; align-items: center; font-size: 0.9em; color: #5a5c69; margin-bottom: 0.25rem; }
+    .user-card .user-contacts .contact-item i { margin-right: 0.5em; color: #858796; }
+    .user-card .card-footer {
+        padding: 0.75rem 1.25rem;
+        background-color: #f8f9fc;
+        border-top: 1px solid #e3e6f0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.85em;
+    }
+    .user-card .card-date { color: #858796; }
+</style>
+@endpush
+
 @push('scripts')
-    <script>
-        // Script similaire aux enseignants
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vue tableau/cartes toggle
-            const tableViewBtn = document.getElementById('tableViewBtn');
-            const cardViewBtn = document.getElementById('cardViewBtn');
-            const tableView = document.querySelector('.table-view');
-            const cardView = document.querySelector('.card-view');
-
-            if (tableViewBtn && cardViewBtn && tableView && cardView) {
-                tableViewBtn.addEventListener('click', function() {
-                    tableView.style.display = 'block';
-                    cardView.style.display = 'none';
-                    tableViewBtn.classList.add('active');
-                    cardViewBtn.classList.remove('active');
-                    localStorage.setItem('students-view', 'table');
-                });
-
-                cardViewBtn.addEventListener('click', function() {
-                    tableView.style.display = 'none';
-                    cardView.style.display = 'block';
-                    cardViewBtn.classList.add('active');
-                    tableViewBtn.classList.remove('active');
-                    localStorage.setItem('students-view', 'card');
-                });
-
-                // Restaurer la préférence d'affichage
-                const savedView = localStorage.getItem('students-view');
-                if (savedView === 'card') {
-                    cardViewBtn.click();
-                }
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle des sections de filtres
+    document.querySelectorAll('.section-toggle').forEach(toggle => {
+        toggle.addEventListener('click', function() {
+            const content = this.closest('.filters-section').querySelector('.section-content');
+            const icon = this.querySelector('i');
+            
+            if (content.style.display === 'none' || content.style.display === '') {
+                content.style.display = 'block';
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            } else {
+                content.style.display = 'none';
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
             }
-
-            // Toggle des filtres
-            const filterToggle = document.querySelector('.filter-toggle');
-            const filterBody = document.querySelector('.filter-body');
-
-            if (filterToggle && filterBody) {
-                filterToggle.addEventListener('click', function() {
-                    const icon = this.querySelector('i');
-                    if (icon.classList.contains('fa-chevron-up')) {
-                        icon.classList.remove('fa-chevron-up');
-                        icon.classList.add('fa-chevron-down');
-                        filterBody.style.display = 'none';
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-up');
-                        filterBody.style.display = 'block';
-                    }
-                });
-            }
-
-            // Gestion des boutons d'effacement de la recherche
-            const searchInputs = document.querySelectorAll('input[type="text"]');
-            searchInputs.forEach(input => {
-                const clearBtn = input.parentNode.querySelector('.search-clear');
-                if (clearBtn) {
-                    input.addEventListener('input', function() {
-                        if (this.value) {
-                            clearBtn.style.display = 'flex';
-                        } else {
-                            clearBtn.style.display = 'none';
-                        }
-                    });
-
-                    clearBtn.addEventListener('click', function() {
-                        input.value = '';
-                        clearBtn.style.display = 'none';
-                        input.focus();
-                    });
-                }
-            });
-
-            // Gestion des confirmations de suppression
-            const deleteForms = document.querySelectorAll('.delete-form');
-            deleteForms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')) {
-                        this.submit();
-                    }
-                });
-            });
         });
-    </script>
+    });
+
+    // Basculer entre les vues table/grille
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const view = this.dataset.view;
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            document.querySelector('.table-view').style.display = view === 'table' ? 'block' : 'none';
+            document.querySelector('.grid-view').style.display = view === 'grid' ? 'block' : 'none';
+            
+            localStorage.setItem('students-view-preference', view);
+        });
+    });
+
+    const savedView = localStorage.getItem('students-view-preference');
+    const tableView = document.querySelector('.table-view');
+    const gridView = document.querySelector('.grid-view');
+    const tableButton = document.querySelector('.view-btn[data-view="table"]');
+    const gridButton = document.querySelector('.view-btn[data-view="grid"]');
+
+    if (tableView && gridView && tableButton && gridButton) {
+        if (savedView === 'grid') {
+            tableView.style.display = 'none';
+            gridView.style.display = 'block';
+            tableButton.classList.remove('active');
+            gridButton.classList.add('active');
+        } else { // Default to table view
+            tableView.style.display = 'block';
+            gridView.style.display = 'none';
+            gridButton.classList.remove('active');
+            tableButton.classList.add('active');
+        }
+    }
+
+
+    // Menu d'actions des lignes/cartes
+    document.querySelectorAll('.actions-trigger').forEach(trigger => {
+        trigger.addEventListener('click', function(e) {
+            e.stopPropagation(); // Empêche la fermeture immédiate si le dropdown est dans le trigger
+            const dropdown = this.nextElementSibling;
+            
+            // Fermer tous les autres menus ouverts
+            document.querySelectorAll('.actions-dropdown.active').forEach(menu => {
+                if (menu !== dropdown) {
+                    menu.classList.remove('active');
+                    menu.style.display = 'none';
+                }
+            });
+            
+            // Basculer le menu actuel
+            dropdown.classList.toggle('active');
+            dropdown.style.display = dropdown.classList.contains('active') ? 'block' : 'none';
+        });
+    });
+
+    // Fermer les menus d'actions en cliquant n'importe où sur la page
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.actions-dropdown.active').forEach(menu => {
+            menu.classList.remove('active');
+            menu.style.display = 'none';
+        });
+    });
+
+    // Tri des colonnes du tableau
+    document.querySelectorAll('.data-table .sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            const sortBy = this.dataset.sort;
+            const currentUrl = new URL(window.location);
+            const currentSort = currentUrl.searchParams.get('sort');
+            const currentDirection = currentUrl.searchParams.get('direction');
+            let newDirection = 'asc';
+            
+            if (currentSort === sortBy && currentDirection === 'asc') {
+                newDirection = 'desc';
+            }
+            
+            currentUrl.searchParams.set('sort', sortBy);
+            currentUrl.searchParams.set('direction', newDirection);
+            
+            window.location = currentUrl.toString();
+        });
+    });
+});
+</script>
 @endpush

@@ -1455,7 +1455,7 @@
                 <i class="fas fa-chevron-down toggle-icon"></i>
             </div>
             <div class="menu-group" id="group-administration">
-                {{-- <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
+                <a href="{{ route('admin.staff.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}">
                     <i class="fas fa-id-badge"></i>
                     <span>Personnel</span>
                 </a>
@@ -1466,7 +1466,7 @@
                 <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.students.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Élèves</span>
-                </a> --}}
+                </a> 
                 <a href="{{ route('admin.users.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
                     <i class="fas fa-user-graduate"></i>
                     <span>Utilisateurs</span>

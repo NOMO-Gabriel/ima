@@ -2,801 +2,360 @@
 
 @section('title', 'Gestion des Enseignants')
 
+@push('styles')
+<style>
+    .filter-card .card-body { display: block; }
+    .status-badge { padding: 0.3em 0.6em; border-radius: 0.25rem; font-size: 0.85em; font-weight: 600; color: #fff; text-align: center; }
+    .status-badge.success { background-color: #28a745; }
+    .status-badge.warning { background-color: #ffc107; color: #212529; }
+    .status-badge.danger { background-color: #dc3545; }
+    .status-badge.secondary { background-color: #6c757d; }
+    .teachers-table th i.fas.fa-sort { margin-left: 5px; color: #ccc; }
+    .teachers-table th.sortable:hover { cursor: pointer; background-color: #f8f9fa; }
+    .action-buttons .btn-action { border-radius: 50%; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; margin: 0 2px; border: 1px solid transparent; transition: all 0.2s ease-in-out; }
+    .action-buttons .btn-action.view { color: #17a2b8; border-color: #17a2b8; }
+    .action-buttons .btn-action.view:hover { background-color: #17a2b8; color: white; }
+    .action-buttons .btn-action.edit { color: #28a745; border-color: #28a745; }
+    .action-buttons .btn-action.edit:hover { background-color: #28a745; color: white; }
+    .action-buttons .btn-action.delete { color: #dc3545; border-color: #dc3545; }
+    .action-buttons .btn-action.delete:hover { background-color: #dc3545; color: white; }
+    .teacher-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; padding: 1rem 0;}
+    .teacher-card { background-color: #fff; border: 1px solid #e3e6f0; border-radius: .35rem; box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15); }
+    .teacher-card-header { padding: .75rem 1.25rem; border-bottom: 1px solid #e3e6f0; display: flex; align-items: center;}
+    .teacher-card-avatar img { width: 40px; height: 40px; border-radius: 50%; margin-right: .75rem; }
+    .teacher-card-name { font-weight: bold; margin-bottom: .1rem; }
+    .teacher-card-matricule { font-size: .8em; color: #858796; }
+    .teacher-card-body { padding: 1.25rem; }
+    .teacher-card-body p { margin-bottom: .5rem; font-size: .9em; }
+    .teacher-card-body i { margin-right: .5em; color: #858796; width:16px; text-align:center;}
+    .teacher-card-footer { padding: .75rem 1.25rem; background-color: #f8f9fc; border-top: 1px solid #e3e6f0; text-align: right; }
+</style>
+@endpush
+
 @section('content')
-    <div class="teachers-dashboard">
-        <!-- En-tête de page avec actions principales -->
-        <div class="page-header">
+    <div class="teachers-dashboard container-fluid">
+        <div class="page-header mb-4">
             <div class="header-content">
-                <div class="breadcrumb">
-                    <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}">
-                        <i class="fas fa-home"></i>
-                    </a>
-                    <i class="fas fa-chevron-right"></i>
-                    <a href="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}">
-                        Administration
-                    </a>
-                    <i class="fas fa-chevron-right"></i>
-                    <span>Enseignants</span>
-                </div>
-                <h1 class="page-title">Gestion des Enseignants</h1>
-                <p class="page-description">Gérez tous les enseignants du système avec leurs profils et assignations.</p>
+                <h1 class="page-title h3">Gestion des Enseignants</h1>
+                <p class="page-description text-muted">Gérez tous les enseignants du système.</p>
             </div>
             <div class="header-actions">
                 <a href="{{ route('admin.teachers.create', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Ajouter un enseignant</span>
+                    <i class="fas fa-user-plus me-1"></i> Ajouter un enseignant
                 </a>
             </div>
         </div>
 
-        <!-- Statistiques en une seule ligne -->
-        <div class="stats-container">
-            <div class="stats-card">
-                <div class="stats-icon primary">
-                    <i class="fas fa-chalkboard-teacher"></i>
-                </div>
-                <div class="stats-content">
-                    <h3 class="stats-value">{{ $stats['total'] ?? $teacherUsers->total() }}</h3>
-                    <p class="stats-label">Total Enseignants</p>
-                </div>
-                <div class="stats-trend">
-                    <div class="progress-bar primary" style="width: 100%"></div>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-icon success">
-                    <i class="fas fa-user-check"></i>
-                </div>
-                <div class="stats-content">
-                    <h3 class="stats-value">{{ $stats['active'] ?? $teacherUsers->where('status', 'active')->count() }}</h3>
-                    <p class="stats-label">Enseignants Actifs</p>
-                </div>
-                <div class="stats-trend">
-                    @php
-                        $activePercentage = ($teacherUsers->total() > 0) ? ($teacherUsers->where('status', 'active')->count() / $teacherUsers->total()) * 100 : 0;
-                    @endphp
-                    <div class="progress-bar success" style="width: {{ $activePercentage }}%"></div>
+        <div class="row mb-4">
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-primary shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Enseignants</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['total'] ?? 0 }}</div>
+                            </div>
+                            <div class="col-auto"><i class="fas fa-chalkboard-teacher fa-2x text-gray-300"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
-
-            <div class="stats-card">
-                <div class="stats-icon info">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
-                <div class="stats-content">
-                    <h3 class="stats-value">{{ $academies->count() ?? 0 }}</h3>
-                    <p class="stats-label">Académies</p>
-                </div>
-                <div class="stats-trend">
-                    <div class="progress-bar info" style="width: 100%"></div>
-                </div>
-            </div>
-
-            <div class="stats-card">
-                <div class="stats-icon warning">
-                    <i class="fas fa-building"></i>
-                </div>
-                <div class="stats-content">
-                    <h3 class="stats-value">{{ $departments->count() ?? 0 }}</h3>
-                    <p class="stats-label">Départements</p>
-                </div>
-                <div class="stats-trend">
-                    <div class="progress-bar warning" style="width: 100%"></div>
+            <div class="col-xl-3 col-md-6 mb-4">
+                <div class="card border-left-success shadow h-100 py-2">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Enseignants Actifs</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $stats['active'] ?? 0 }}</div>
+                            </div>
+                            <div class="col-auto"><i class="fas fa-user-check fa-2x text-gray-300"></i></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Filtres avancés -->
-        <div class="card filter-card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-filter"></i>Filtres
-                </h2>
-                <button class="btn btn-icon filter-toggle" type="button">
-                    <i class="fas fa-chevron-up"></i>
+        <div class="card shadow mb-4 filter-card">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-filter me-1"></i>Filtres</h6>
+                 <button class="btn btn-sm btn-light filter-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="true" aria-controls="filterCollapse">
+                    <i class="fas fa-chevron-down"></i>
                 </button>
             </div>
-            <div class="card-body filter-body">
-                <form action="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}" method="GET" id="filterForm">
-                    <div class="filter-grid">
-                        <div class="form-group">
-                            <label for="role">
-                                <i class="fas fa-user-tag"></i>Rôle
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="role" name="role" class="form-control">
-                                    <option value="">Tous les rôles</option>
-                                    @foreach($spatieRoles as $role)
-                                        <option value="{{ $role->name }}" {{ request('role') == $role->name ? 'selected' : '' }}>
-                                            {{ ucfirst($role->name) }}
-                                        </option>
+            <div class="collapse show" id="filterCollapse">
+                <div class="card-body">
+                    <form action="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}" method="GET">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="search" class="form-label">Recherche générale</label>
+                                <input type="text" id="search" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Nom, email, matricule...">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="matricule_filter" class="form-label">Matricule Spécifique</label>
+                                <input type="text" id="matricule_filter" name="matricule_filter" value="{{ request('matricule_filter') }}" class="form-control form-control-sm" placeholder="Filtrer par matricule">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="status" class="form-label">Statut Compte</label>
+                                <select id="status" name="status" class="form-select form-select-sm">
+                                    <option value="">Tous</option>
+                                    @foreach($statuses as $value => $label)
+                                        <option value="{{ $value }}" {{ request('status') == $value ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
-                                <i class="fas fa-chevron-down"></i>
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="status">
-                                <i class="fas fa-user-shield"></i>Statut
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="status" name="status" class="form-control">
-                                    <option value="">Tous les statuts</option>
-                                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Actif</option>
-                                    <option value="suspended" {{ request('status') == 'suspended' ? 'selected' : '' }}>Suspendu</option>
-                                    <option value="archived" {{ request('status') == 'archived' ? 'selected' : '' }}>Archivé</option>
+                            <div class="col-md-2">
+                                <label for="gender" class="form-label">Genre (Utilisateur)</label>
+                                <select id="gender" name="gender" class="form-select form-select-sm">
+                                    <option value="">Tous</option>
+                                    @foreach($genders as $value => $label)
+                                        <option value="{{ $value }}" {{ request('gender') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
                                 </select>
-                                <i class="fas fa-chevron-down"></i>
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="academy_id">
-                                <i class="fas fa-graduation-cap"></i>Académie
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="academy_id" name="academy_id" class="form-control">
-                                    <option value="">Toutes les académies</option>
+                            <div class="col-md-2">
+                                <label for="city_id" class="form-label">Ville (Profil Ens.)</label>
+                                <select id="city_id" name="city_id" class="form-select form-select-sm">
+                                    <option value="">Toutes</option>
+                                    @foreach($cities as $id => $name)
+                                        <option value="{{ $id }}" {{ request('city_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="academy_id" class="form-label">Académie</label>
+                                <select id="academy_id" name="academy_id" class="form-select form-select-sm">
+                                    <option value="">Toutes</option>
                                     @foreach($academies as $id => $name)
-                                        <option value="{{ $id }}" {{ request('academy_id') == $id ? 'selected' : '' }}>
-                                            {{ $name }}
-                                        </option>
+                                        <option value="{{ $id }}" {{ request('academy_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
                                     @endforeach
                                 </select>
-                                <i class="fas fa-chevron-down"></i>
                             </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="department_id">
-                                <i class="fas fa-building"></i>Département
-                            </label>
-                            <div class="select-wrapper">
-                                <select id="department_id" name="department_id" class="form-control">
-                                    <option value="">Tous les départements</option>
+                            <div class="col-md-3">
+                                <label for="department_id" class="form-label">Département</label>
+                                <select id="department_id" name="department_id" class="form-select form-select-sm">
+                                    <option value="">Tous</option>
                                     @foreach($departments as $id => $name)
-                                        <option value="{{ $id }}" {{ request('department_id') == $id ? 'selected' : '' }}>
-                                            {{ $name }}
-                                        </option>
+                                        <option value="{{ $id }}" {{ request('department_id') == $id ? 'selected' : '' }}>{{ $name }}</option>
                                     @endforeach
                                 </select>
-                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="col-md-12 text-end mt-3">
+                                <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-filter me-1"></i>Appliquer</button>
+                                <a href="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}" class="btn btn-secondary btn-sm"><i class="fas fa-redo-alt me-1"></i>Réinitialiser</a>
                             </div>
                         </div>
-
-                        <div class="form-group">
-                            <label for="search">
-                                <i class="fas fa-search"></i>Recherche
-                            </label>
-                            <div class="search-wrapper">
-                                <input type="text" id="search" name="search" value="{{ request('search') }}" class="form-control" placeholder="Nom, email, matricule...">
-                                <button type="button" class="search-clear" {{ request('search') ? '' : 'style=display:none' }}>
-                                    <i class="fas fa-times"></i>
-                                </button>
-                                <button type="submit" class="search-button">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="filter-actions">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-filter"></i> Appliquer les filtres
-                        </button>
-                        <a href="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}" class="btn btn-light">
-                            <i class="fas fa-redo-alt"></i> Réinitialiser
-                        </a>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <!-- Liste des enseignants -->
-        <div class="card data-card">
-            <div class="card-header">
-                <h2 class="card-title">
-                    <i class="fas fa-chalkboard-teacher"></i>Liste des enseignants
-                </h2>
-                <div class="view-actions">
-                    <div class="view-switcher">
-                        <button type="button" class="btn btn-icon active" id="tableViewBtn" title="Vue tableau">
-                            <i class="fas fa-list"></i>
-                        </button>
-                        <button type="button" class="btn btn-icon" id="cardViewBtn" title="Vue cartes">
-                            <i class="fas fa-th-large"></i>
-                        </button>
-                    </div>
-                    <div class="dropdown">
-                        <button class="btn btn-light dropdown-toggle" type="button" id="exportDropdown" data-bs-toggle="dropdown">
-                            <i class="fas fa-download"></i> Exporter
-                        </button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-csv text-primary"></i>CSV</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel text-success"></i>Excel</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf text-danger"></i>PDF</a></li>
-                        </ul>
-                    </div>
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary"><i class="fas fa-list me-1"></i>Liste des Enseignants ({{ $teacherUsers->total() }})</h6>
+                <div class="view-switcher">
+                    <button type="button" class="btn btn-sm btn-outline-secondary view-btn active" data-view="table" title="Vue Tableau"><i class="fas fa-table"></i></button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary view-btn" data-view="grid" title="Vue Grille"><i class="fas fa-th-large"></i></button>
                 </div>
             </div>
-
-            <div class="card-body p-0">
-                <!-- Vue tableau -->
+            <div class="card-body">
                 <div class="table-view">
                     <div class="table-responsive">
-                        <table class="table teachers-table">
+                        <table class="table table-hover teachers-table">
                             <thead>
                             <tr>
-                                <th class="sortable" data-sort="name">
-                                    <span>Enseignant</span>
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th>Contact & Académie</th>
-                                <th>Profil Enseignant</th>
-                                <th class="sortable" data-sort="status">
-                                    <span>Statut</span>
-                                    <i class="fas fa-sort"></i>
-                                </th>
-                                <th class="sortable" data-sort="salary">
-                                    <span>Salaire</span>
-                                    <i class="fas fa-sort"></i>
-                                </th>
+                                <th class="sortable" data-sort="first_name">Enseignant</th>
+                                <th>Contact (Utilisateur)</th>
+                                <th>Profil (Acad., Dép., Ville Ens.)</th>
+                                <th class="sortable" data-sort="status">Statut Compte</th>
                                 <th class="text-end">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
-                            @forelse ($teacherUsers as $teacher)
+                            @forelse ($teacherUsers as $teacherUser)
                                 <tr>
                                     <td>
-                                        <div class="user-info">
-                                            <div class="user-avatar">
-                                                <img src="{{ $teacher->profile_photo_url }}" alt="{{ $teacher->first_name }}" class="avatar">
-                                                <span class="user-status {{ $teacher->is_online ? 'online' : 'offline' }}"></span>
-                                            </div>
-                                            <div class="user-details">
-                                                <div class="user-name">{{ $teacher->first_name }} {{ $teacher->last_name }}</div>
-                                                <div class="user-date">
-                                                    @if($teacher->teacherProfile && $teacher->teacherProfile->matricule)
-                                                        <span class="badge date-badge">
-                                                            <i class="fas fa-id-badge"></i>{{ $teacher->teacherProfile->matricule }}
-                                                        </span>
-                                                    @endif
-                                                    <span class="badge date-badge">
-                                                        <i class="far fa-calendar-alt"></i>{{ $teacher->created_at->format('d/m/Y') }}
-                                                    </span>
-                                                </div>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{ $teacherUser->profile_photo_url }}" alt="{{ $teacherUser->full_name }}" class="rounded-circle me-2" width="40" height="40">
+                                            <div>
+                                                <a href="{{ route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id]) }}" class="fw-bold text-dark">
+                                                    {{ $teacherUser->full_name }}
+                                                </a>
+                                                @if($teacherUser->teacherProfile && $teacherUser->teacherProfile->matricule)
+                                                    <div class="text-muted small">Mat: {{ $teacherUser->teacherProfile->matricule }}</div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="user-contact">
-                                            <div class="contact-item">
-                                                <i class="fas fa-envelope"></i>
-                                                <span>{{ $teacher->email }}</span>
-                                            </div>
-                                            <div class="contact-item">
-                                                <i class="fas fa-phone-alt"></i>
-                                                <span>{{ $teacher->phone_number ?? 'Non renseigné' }}</span>
-                                            </div>
-                                            @if($teacher->teacherProfile && $teacher->teacherProfile->academy)
-                                                <div class="contact-item">
-                                                    <i class="fas fa-graduation-cap"></i>
-                                                    <span>{{ $teacher->teacherProfile->academy->name }}</span>
-                                                </div>
+                                        <div class="small">
+                                            <div><i class="fas fa-envelope fa-fw me-1 text-muted"></i>{{ $teacherUser->email }}</div>
+                                            @if($teacherUser->phone_number)
+                                            <div><i class="fas fa-phone fa-fw me-1 text-muted"></i>{{ $teacherUser->phone_number }}</div>
+                                            @endif
+                                            @if($teacherUser->gender_label)
+                                            <div><i class="fas fa-venus-mars fa-fw me-1 text-muted"></i>{{ $teacherUser->gender_label }}</div>
                                             @endif
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="teacher-profile">
-                                            @if($teacher->teacherProfile)
-                                                @if($teacher->teacherProfile->profession)
-                                                    <div class="profile-item">
-                                                        <i class="fas fa-briefcase"></i>
-                                                        <span>{{ $teacher->teacherProfile->profession }}</span>
-                                                    </div>
+                                        @if($teacherUser->teacherProfile)
+                                            <div class="small">
+                                                @if($teacherUser->teacherProfile->academy)
+                                                    <div><i class="fas fa-graduation-cap fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->academy->name }}</div>
                                                 @endif
-                                                @if($teacher->teacherProfile->departmentModel)
-                                                    <div class="profile-item">
-                                                        <i class="fas fa-building"></i>
-                                                        <span>{{ $teacher->teacherProfile->departmentModel->name }}</span>
-                                                    </div>
+                                                @if($teacherUser->teacherProfile->department)
+                                                    <div><i class="fas fa-building fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->department->name }}</div>
                                                 @endif
-                                                @if($teacher->teacherProfile->center)
-                                                    <div class="profile-item">
-                                                        <i class="fas fa-map-marker-alt"></i>
-                                                        <span>{{ $teacher->teacherProfile->center->name }}</span>
-                                                    </div>
+                                                @if($teacherUser->teacherProfile->city) {{-- Ville du profil enseignant --}}
+                                                    <div><i class="fas fa-city fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->city->name }}</div>
                                                 @endif
-                                            @else
-                                                <span class="text-muted">Profil non complété</span>
-                                            @endif
-                                        </div>
+                                                 @if($teacherUser->teacherProfile->profession)
+                                                    <div><i class="fas fa-briefcase fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->profession }}</div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <span class="text-muted small">Profil incomplet</span>
+                                        @endif
                                     </td>
                                     <td>
-                                        @php
-                                            $statusInfo = [
-                                                'active' => [
-                                                    'class' => 'success',
-                                                    'icon' => 'check-circle',
-                                                    'text' => 'Actif'
-                                                ],
-                                                'suspended' => [
-                                                    'class' => 'danger',
-                                                    'icon' => 'ban',
-                                                    'text' => 'Suspendu'
-                                                ],
-                                                'archived' => [
-                                                    'class' => 'dark',
-                                                    'icon' => 'archive',
-                                                    'text' => 'Archivé'
-                                                ]
-                                            ];
-                                            $status = $statusInfo[$teacher->status] ?? ['class' => 'secondary', 'icon' => 'question', 'text' => ucfirst($teacher->status)];
-                                        @endphp
-                                        <div class="status-badge {{ $status['class'] }}">
-                                            <i class="fas fa-{{ $status['icon'] }}"></i>
-                                            <span>{{ $status['text'] }}</span>
-                                        </div>
+                                        <span class="status-badge {{ $teacherUser->status === 'active' ? 'success' : ($teacherUser->status === 'suspended' ? 'danger' : 'secondary') }}">
+                                            {{ $teacherUser->status_label }}
+                                        </span>
                                     </td>
-                                    <td>
-                                        <div class="salary-info">
-                                            @if($teacher->teacherProfile && $teacher->teacherProfile->salary)
-                                                <div class="salary-amount">
-                                                    <i class="fas fa-money-bill-wave"></i>
-                                                    {{ number_format($teacher->teacherProfile->salary, 0, ',', ' ') }} FCFA
-                                                </div>
-                                            @else
-                                                <span class="text-muted">Non défini</span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    <td>
+                                    <td class="text-end">
                                         <div class="action-buttons">
-                                            <a href="{{ route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacher->id]) }}" class="btn-action view" title="Voir le profil">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            <a href="{{ route('admin.teachers.edit', ['locale' => app()->getLocale(), 'teacherUser' => $teacher->id]) }}" class="btn-action edit" title="Modifier">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
-                                            <div class="dropdown d-inline-block">
-                                                <button class="btn-action more" type="button" data-bs-toggle="dropdown" title="Plus d'options">
-                                                    <i class="fas fa-ellipsis-v"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <i class="fas fa-calendar-alt text-primary"></i>Planning
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <i class="fas fa-users text-primary"></i>Élèves assignés
-                                                        </a>
-                                                    </li>
-                                                    <li>
-                                                        <a class="dropdown-item" href="#">
-                                                            <i class="fas fa-chart-bar text-primary"></i>Statistiques
-                                                        </a>
-                                                    </li>
-                                                    <li><hr class="dropdown-divider"></li>
-                                                    @if($teacher->status === 'active')
-                                                        <li>
-                                                            <form action="#" method="POST" class="dropdown-form">
-                                                                @csrf
-                                                                <button type="submit" class="dropdown-item text-success">
-                                                                    <i class="fas fa-check-circle"></i>Réactiver
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    @endif
-                                                    @if(auth()->id() !== $teacher->id)
-                                                        <li>
-                                                            <form action="{{ route('admin.teachers.destroy', ['locale' => app()->getLocale(), 'teacherUser' => $teacher->id]) }}" method="POST" class="dropdown-form delete-form">
-                                                                @csrf
-                                                                @method('DELETE')
-                                                                <button type="submit" class="dropdown-item text-danger">
-                                                                    <i class="fas fa-trash"></i>Supprimer
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    @endif
-                                                </ul>
-                                            </div>
+                                            <a href="{{ route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id]) }}" class="btn-action view" title="Voir"><i class="fas fa-eye"></i></a>
+                                            <a href="{{ route('admin.teachers.edit', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id]) }}" class="btn-action edit" title="Modifier"><i class="fas fa-edit"></i></a>
+                                            @if(Auth::id() !== $teacherUser->id)
+                                            <form action="{{ route('admin.teachers.destroy', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id]) }}" method="POST" class="d-inline delete-form">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-action delete" title="Supprimer"><i class="fas fa-trash"></i></button>
+                                            </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>
                             @empty
-                                <tr>
-                                    <td colspan="6">
-                                        <div class="empty-state">
-                                            <div class="empty-icon">
-                                                <i class="fas fa-chalkboard-teacher"></i>
-                                            </div>
-                                            <h4>Aucun enseignant trouvé</h4>
-                                            <p>Essayez de modifier vos filtres ou d'ajouter un nouvel enseignant.</p>
-                                            <div class="empty-actions">
-                                                <a href="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}" class="btn btn-light">
-                                                    <i class="fas fa-filter"></i>Réinitialiser les filtres
-                                                </a>
-                                                <a href="{{ route('admin.teachers.create', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">
-                                                    <i class="fas fa-user-plus"></i>Ajouter un enseignant
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
+                                <tr><td colspan="5" class="text-center py-4"><i class="fas fa-exclamation-circle fa-3x text-muted mb-2"></i><p class="text-muted">Aucun enseignant trouvé.</p></td></tr>
                             @endforelse
                             </tbody>
                         </table>
                     </div>
                 </div>
-
-                <!-- Vue cartes -->
-                <div class="card-view" style="display: none;">
+                <div class="grid-view" style="display: none;">
                     <div class="teacher-cards">
-                        @forelse ($teacherUsers as $teacher)
+                        @forelse ($teacherUsers as $teacherUser)
                             <div class="teacher-card">
                                 <div class="teacher-card-header">
-                                    <div class="teacher-card-avatar">
-                                        <img src="{{ $teacher->profile_photo_url }}" alt="{{ $teacher->first_name }}">
-                                        <span class="user-status {{ $teacher->is_online ? 'online' : 'offline' }}"></span>
+                                    <div class="teacher-card-avatar"><img src="{{ $teacherUser->profile_photo_url }}" alt="{{ $teacherUser->full_name }}"></div>
+                                    <div>
+                                        <h5 class="teacher-card-name mb-0"><a href="{{ route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id]) }}" class="text-dark">{{ $teacherUser->full_name }}</a></h5>
+                                        @if($teacherUser->teacherProfile && $teacherUser->teacherProfile->matricule)
+                                            <p class="teacher-card-matricule mb-0">Mat: {{ $teacherUser->teacherProfile->matricule }}</p>
+                                        @endif
                                     </div>
-                                    <div class="teacher-card-info">
-                                        <h3 class="teacher-card-name">{{ $teacher->first_name }} {{ $teacher->last_name }}</h3>
-                                        <div class="teacher-card-roles">
-                                            @foreach($teacher->roles as $role)
-                                                <span class="role-badge small blue">{{ $role->name }}</span>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                    <div class="teacher-card-status">
-                                        @php
-                                            $status = $statusInfo[$teacher->status] ?? ['class' => 'secondary', 'icon' => 'question'];
-                                        @endphp
-                                        <span class="status-indicator {{ $status['class'] }}">
-                                            <i class="fas fa-{{ $status['icon'] }}"></i>
-                                        </span>
-                                    </div>
+                                    <span class="ms-auto status-badge {{ $teacherUser->status === 'active' ? 'success' : ($teacherUser->status === 'suspended' ? 'danger' : 'secondary') }}">{{ $teacherUser->status_label }}</span>
                                 </div>
                                 <div class="teacher-card-body">
-                                    <div class="teacher-card-detail">
-                                        <i class="fas fa-envelope"></i>
-                                        <span>{{ $teacher->email }}</span>
-                                    </div>
-                                    <div class="teacher-card-detail">
-                                        <i class="fas fa-phone-alt"></i>
-                                        <span>{{ $teacher->phone_number ?? 'Non renseigné' }}</span>
-                                    </div>
-                                    @if($teacher->teacherProfile)
-                                        @if($teacher->teacherProfile->matricule)
-                                            <div class="teacher-card-detail">
-                                                <i class="fas fa-id-badge"></i>
-                                                <span>{{ $teacher->teacherProfile->matricule }}</span>
-                                            </div>
-                                        @endif
-                                        @if($teacher->teacherProfile->academy)
-                                            <div class="teacher-card-detail">
-                                                <i class="fas fa-graduation-cap"></i>
-                                                <span>{{ $teacher->teacherProfile->academy->name }}</span>
-                                            </div>
-                                        @endif
-                                        @if($teacher->teacherProfile->salary)
-                                            <div class="teacher-card-detail">
-                                                <i class="fas fa-money-bill-wave"></i>
-                                                <span>{{ number_format($teacher->teacherProfile->salary, 0, ',', ' ') }} FCFA</span>
-                                            </div>
-                                        @endif
+                                    <p><i class="fas fa-envelope"></i>{{ $teacherUser->email }}</p>
+                                    @if($teacherUser->phone_number) <p><i class="fas fa-phone"></i>{{ $teacherUser->phone_number }}</p> @endif
+                                    @if($teacherUser->gender_label) <p><i class="fas fa-venus-mars"></i>{{ $teacherUser->gender_label }}</p> @endif
+                                    @if($teacherUser->teacherProfile)
+                                        @if($teacherUser->teacherProfile->city) <p><i class="fas fa-city"></i>Ville (Profil): {{ $teacherUser->teacherProfile->city->name }}</p> @endif
+                                        @if($teacherUser->teacherProfile->profession) <p><i class="fas fa-briefcase"></i>{{ $teacherUser->teacherProfile->profession }}</p> @endif
+                                        @if($teacherUser->teacherProfile->academy) <p><i class="fas fa-graduation-cap"></i>{{ $teacherUser->teacherProfile->academy->name }}</p> @endif
+                                        @if($teacherUser->teacherProfile->department) <p><i class="fas fa-building"></i>{{ $teacherUser->teacherProfile->department->name }}</p> @endif
+                                        @if($teacherUser->teacherProfile->salary) <p><i class="fas fa-money-bill-wave"></i>{{ number_format($teacherUser->teacherProfile->salary, 0, ',', ' ') }} XAF</p> @endif
                                     @endif
-                                    <div class="teacher-card-detail">
-                                        <i class="far fa-calendar-alt"></i>
-                                        <span>Créé le {{ $teacher->created_at->format('d/m/Y') }}</span>
-                                    </div>
                                 </div>
                                 <div class="teacher-card-footer">
-                                    <a href="{{ route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacher->id]) }}" class="teacher-card-btn view" title="Voir le profil">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
-                                    <a href="{{ route('admin.teachers.edit', ['locale' => app()->getLocale(), 'teacherUser' => $teacher->id]) }}" class="teacher-card-btn edit" title="Modifier">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <div class="dropdown">
-                                        <button class="teacher-card-btn more" type="button" data-bs-toggle="dropdown" title="Plus d'options">
-                                            <i class="fas fa-ellipsis-v"></i>
-                                        </button>
-                                        <ul class="dropdown-menu dropdown-menu-end">
-                                            <li>
-                                                <a class="dropdown-item" href="#">
-                                                    <i class="fas fa-calendar-alt text-primary"></i>Planning
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item" href="#">
-                                                    <i class="fas fa-users text-primary"></i>Élèves assignés
-                                                </a>
-                                            </li>
-                                            <li><hr class="dropdown-divider"></li>
-                                            @if(auth()->id() !== $teacher->id)
-                                                <li>
-                                                    <form action="{{ route('admin.teachers.destroy', ['locale' => app()->getLocale(), 'teacherUser' => $teacher->id]) }}" method="POST" class="dropdown-form delete-form">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="dropdown-item text-danger">
-                                                            <i class="fas fa-trash"></i>Supprimer
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            @endif
-                                        </ul>
-                                    </div>
+                                    <a href="{{ route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id]) }}" class="btn btn-sm btn-outline-info"><i class="fas fa-eye"></i></a>
+                                    <a href="{{ route('admin.teachers.edit', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id]) }}" class="btn btn-sm btn-outline-success ms-1"><i class="fas fa-edit"></i></a>
+                                    @if(Auth::id() !== $teacherUser->id)
+                                    <form action="{{ route('admin.teachers.destroy', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id]) }}" method="POST" class="d-inline delete-form ms-1">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                    @endif
                                 </div>
                             </div>
                         @empty
-                            <div class="empty-state">
-                                <div class="empty-icon">
-                                    <i class="fas fa-chalkboard-teacher"></i>
-                                </div>
-                                <h4>Aucun enseignant trouvé</h4>
-                                <p>Essayez de modifier vos filtres ou d'ajouter un nouvel enseignant.</p>
-                                <div class="empty-actions">
-                                    <a href="{{ route('admin.teachers.index', ['locale' => app()->getLocale()]) }}" class="btn btn-light">
-                                        <i class="fas fa-filter"></i>Réinitialiser les filtres
-                                    </a>
-                                    <a href="{{ route('admin.teachers.create', ['locale' => app()->getLocale()]) }}" class="btn btn-primary">
-                                        <i class="fas fa-user-plus"></i>Ajouter un enseignant
-                                    </a>
-                                </div>
-                            </div>
+                            <div class="col-12 text-center py-5"><i class="fas fa-exclamation-circle fa-3x text-muted mb-2"></i><p class="text-muted">Aucun enseignant.</p></div>
                         @endforelse
                     </div>
                 </div>
+                @if($teacherUsers->hasPages()) <div class="mt-4 d-flex justify-content-center">{{ $teacherUsers->links() }}</div> @endif
             </div>
-
-            @if($teacherUsers->hasPages())
-                <div class="card-footer">
-                    <div class="pagination-info">
-                        Affichage de <span>{{ $teacherUsers->firstItem() ?? 0 }}</span> à <span>{{ $teacherUsers->lastItem() ?? 0 }}</span> sur <span>{{ $teacherUsers->total() }}</span> enseignants
-                    </div>
-                    <div class="pagination-controls">
-                        {{ $teacherUsers->links() }}
-                    </div>
-                </div>
-            @endif
         </div>
     </div>
-
-    <!-- Styles spécifiques aux enseignants -->
-    <style>
-        .teacher-profile .profile-item {
-            display: flex;
-            align-items: center;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
-        }
-        
-        .teacher-profile .profile-item i {
-            width: 16px;
-            margin-right: 0.5rem;
-            color: var(--text-secondary);
-        }
-        
-        .salary-info .salary-amount {
-            display: flex;
-            align-items: center;
-            font-weight: 600;
-            color: var(--success);
-        }
-        
-        .salary-info .salary-amount i {
-            margin-right: 0.25rem;
-        }
-        
-        .teacher-cards {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: var(--spacing-md);
-            padding: var(--spacing-md);
-        }
-        
-        .teacher-card {
-            background-color: var(--card-bg);
-            border-radius: var(--border-radius-lg);
-            box-shadow: var(--shadow);
-            overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
-            border: 1px solid var(--border-color);
-        }
-        
-        .teacher-card:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .teacher-card-header {
-            padding: var(--spacing-md);
-            display: flex;
-            position: relative;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .teacher-card-avatar {
-            position: relative;
-            margin-right: var(--spacing-md);
-        }
-        
-        .teacher-card-avatar img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--card-bg);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .teacher-card-info {
-            flex: 1;
-        }
-        
-        .teacher-card-name {
-            font-size: 1rem;
-            font-weight: 600;
-            margin: 0 0 var(--spacing-xs) 0;
-        }
-        
-        .teacher-card-roles {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-xs);
-        }
-        
-        .teacher-card-status {
-            position: absolute;
-            top: var(--spacing-md);
-            right: var(--spacing-md);
-        }
-        
-        .teacher-card-body {
-            padding: var(--spacing-md);
-        }
-        
-        .teacher-card-detail {
-            display: flex;
-            align-items: center;
-            margin-bottom: var(--spacing-sm);
-            font-size: 0.875rem;
-        }
-        
-        .teacher-card-detail i {
-            width: 16px;
-            margin-right: var(--spacing-md);
-            color: var(--text-secondary);
-        }
-        
-        .teacher-card-footer {
-            padding: var(--spacing-sm);
-            display: flex;
-            justify-content: flex-end;
-            gap: var(--spacing-sm);
-            background-color: var(--section-bg);
-        }
-        
-        .teacher-card-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: var(--border-radius);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: var(--card-bg);
-            color: var(--text-secondary);
-            border: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .teacher-card-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow);
-        }
-        
-        .teacher-card-btn.view:hover {
-            background-color: var(--info-light);
-            color: var(--info);
-        }
-        
-        .teacher-card-btn.edit:hover {
-            background-color: var(--success-light);
-            color: var(--success);
-        }
-    </style>
 @endsection
 
 @push('scripts')
-    <script>
-        // Utiliser le même script que pour les utilisateurs avec quelques adaptations
-        document.addEventListener('DOMContentLoaded', function() {
-            // Vue tableau/cartes toggle
-            const tableViewBtn = document.getElementById('tableViewBtn');
-            const cardViewBtn = document.getElementById('cardViewBtn');
-            const tableView = document.querySelector('.table-view');
-            const cardView = document.querySelector('.card-view');
-
-            if (tableViewBtn && cardViewBtn && tableView && cardView) {
-                tableViewBtn.addEventListener('click', function() {
-                    tableView.style.display = 'block';
-                    cardView.style.display = 'none';
-                    tableViewBtn.classList.add('active');
-                    cardViewBtn.classList.remove('active');
-                    localStorage.setItem('teachers-view', 'table');
-                });
-
-                cardViewBtn.addEventListener('click', function() {
-                    tableView.style.display = 'none';
-                    cardView.style.display = 'block';
-                    cardViewBtn.classList.add('active');
-                    tableViewBtn.classList.remove('active');
-                    localStorage.setItem('teachers-view', 'card');
-                });
-
-                // Restaurer la préférence d'affichage
-                const savedView = localStorage.getItem('teachers-view');
-                if (savedView === 'card') {
-                    cardViewBtn.click();
-                }
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const filterToggle = document.querySelector('.filter-toggle');
+    const filterCollapse = document.getElementById('filterCollapse');
+    if (filterToggle && filterCollapse) {
+        filterToggle.addEventListener('click', function () {
+            const icon = this.querySelector('i');
+            if (filterCollapse.classList.contains('show')) {
+                icon.classList.remove('fa-chevron-up'); icon.classList.add('fa-chevron-down');
+            } else {
+                icon.classList.remove('fa-chevron-down'); icon.classList.add('fa-chevron-up');
             }
-
-            // Toggle des filtres
-            const filterToggle = document.querySelector('.filter-toggle');
-            const filterBody = document.querySelector('.filter-body');
-
-            if (filterToggle && filterBody) {
-                filterToggle.addEventListener('click', function() {
-                    const icon = this.querySelector('i');
-                    if (icon.classList.contains('fa-chevron-up')) {
-                        icon.classList.remove('fa-chevron-up');
-                        icon.classList.add('fa-chevron-down');
-                        filterBody.style.display = 'none';
-                    } else {
-                        icon.classList.remove('fa-chevron-down');
-                        icon.classList.add('fa-chevron-up');
-                        filterBody.style.display = 'block';
-                    }
-                });
-            }
-
-            // Gestion du bouton d'effacement de la recherche
-            const searchInput = document.getElementById('search');
-            const searchClear = document.querySelector('.search-clear');
-
-            if (searchInput && searchClear) {
-                searchInput.addEventListener('input', function() {
-                    if (this.value) {
-                        searchClear.style.display = 'flex';
-                    } else {
-                        searchClear.style.display = 'none';
-                    }
-                });
-
-                searchClear.addEventListener('click', function() {
-                    searchInput.value = '';
-                    searchClear.style.display = 'none';
-                    searchInput.focus();
-                });
-            }
-
-            // Gestion des confirmations de suppression
-            const deleteForms = document.querySelectorAll('.delete-form');
-            deleteForms.forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    if (confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?')) {
-                        this.submit();
-                    }
-                });
-            });
         });
-    </script>
-@endpush text-warning">
-                                                                    
+        if (!filterCollapse.classList.contains('show')) {
+            filterToggle.querySelector('i').classList.remove('fa-chevron-up'); filterToggle.querySelector('i').classList.add('fa-chevron-down');
+        }
+    }
+
+    document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const view = this.dataset.view;
+            document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            document.querySelector('.table-view').style.display = view === 'table' ? 'block' : 'none';
+            document.querySelector('.grid-view').style.display = view === 'grid' ? 'block' : 'none';
+            localStorage.setItem('teachers-view-preference', view);
+        });
+    });
+
+    const savedView = localStorage.getItem('teachers-view-preference');
+    const tableView = document.querySelector('.table-view');
+    const gridView = document.querySelector('.grid-view');
+    const tableButton = document.querySelector('.view-btn[data-view="table"]');
+    const gridButton = document.querySelector('.view-btn[data-view="grid"]');
+
+    if (tableView && gridView && tableButton && gridButton) {
+        if (savedView === 'grid') {
+            tableView.style.display = 'none'; gridView.style.display = 'block';
+            tableButton.classList.remove('active'); gridButton.classList.add('active');
+        } else {
+            tableView.style.display = 'block'; gridView.style.display = 'none';
+            gridButton.classList.remove('active'); tableButton.classList.add('active');
+        }
+    }
+
+    document.querySelectorAll('.teachers-table .sortable').forEach(header => {
+        header.addEventListener('click', function() {
+            const sortBy = this.dataset.sort;
+            const currentUrl = new URL(window.location);
+            const currentSort = currentUrl.searchParams.get('sort');
+            const currentDirection = currentUrl.searchParams.get('direction');
+            let newDirection = 'asc';
+            if (currentSort === sortBy && currentDirection === 'asc') newDirection = 'desc';
+            currentUrl.searchParams.set('sort', sortBy);
+            currentUrl.searchParams.set('direction', newDirection);
+            window.location = currentUrl.toString();
+        });
+    });
+
+    document.querySelectorAll('.delete-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cet enseignant ?')) e.preventDefault();
+        });
+    });
+});
+</script>
+@endpush

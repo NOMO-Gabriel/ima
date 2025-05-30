@@ -1,240 +1,395 @@
-@extends('layouts.app')
+@extends('layouts.app') {{-- ou votre layout admin --}}
 
-@section('title', 'Détails de l\'académie')
+@section('title', 'Profil Étudiant - ' . $studentUser->first_name . ' ' . $studentUser->last_name)
 
 @section('content')
-    <div class="py-4">
-        <!-- Fil d'Ariane -->
-        <nav class="flex mb-5" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                <li class="inline-flex items-center">
-                    <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-[#4CA3DD]">
-                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path></svg>
-                        Tableau de bord
-                    </a>
-                </li>
-                <li>
-                    <div class="flex items-center">
-                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                        <a href="{{ route('admin.academies.index', ['locale' => app()->getLocale()]) }}" class="ml-1 text-sm font-medium text-gray-700 hover:text-[#4CA3DD] md:ml-2">Académies</a>
-                    </div>
-                </li>
-                <li aria-current="page">
-                    <div class="flex items-center">
-                        <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path></svg>
-                        <span class="ml-1 text-sm font-medium text-[#4CA3DD] md:ml-2">{{ $academy->name }}</span>
-                    </div>
-                </li>
-            </ol>
-        </nav>
-
-        <!-- En-tête avec actions -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h1 class="text-2xl font-bold">Détails de l'académie</h1>
-                <p class="text-gray-600">Consulter les informations de l'académie "{{ $academy->name }}"</p>
+<div class="student-profile-page">
+    <!-- En-tête de page -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="breadcrumb">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}">Étudiants</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>{{ $studentUser->first_name }} {{ $studentUser->last_name }}</span>
             </div>
-            <div class="flex space-x-2">
-                <a href="{{ route('admin.academies.edit', ['locale' => app()->getLocale(), 'academy' => $academy->id]) }}"
-                   class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#4CA3DD] hover:bg-[#2A7AB8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#4CA3DD]">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
-                    Modifier
-                </a>
+            <h1 class="page-title">
+                Profil de {{ $studentUser->first_name }} {{ $studentUser->last_name }}
+            </h1>
+        </div>
+        <div class="header-actions">
+            <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+            {{-- <a href="{{-- route('admin.students.edit', ['locale' => app()->getLocale(), 'studentUser' => $studentUser->id]) --}}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Modifier l'étudiant
+            </a> --}}
+        </div>
+    </div>
+
+    <div class="profile-layout">
+        <!-- Colonne de gauche : Informations principales -->
+        <div class="profile-sidebar">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="{{ $studentUser->profile_photo_url }}" alt="Photo de {{ $studentUser->first_name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    <h4 class="card-title">{{ $studentUser->first_name }} {{ $studentUser->last_name }}</h4>
+                    <p class="text-muted">Étudiant</p>
+                    @php
+                        $statusConfig = App\Models\User::getStatuses();
+                        $currentStatusLabel = $statusConfig[$studentUser->status] ?? ucfirst(str_replace('_', ' ', $studentUser->status));
+                        $statusClass = '';
+                        if ($studentUser->status === 'active') $statusClass = 'success';
+                        elseif (in_array($studentUser->status, ['pending_validation', 'pending_finalization'])) $statusClass = 'warning';
+                        elseif (in_array($studentUser->status, ['suspended', 'rejected'])) $statusClass = 'danger';
+                        else $statusClass = 'secondary';
+                    @endphp
+                    <span class="badge bg-{{ $statusClass }} p-2">{{ $currentStatusLabel }}</span>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-envelope fa-fw me-2"></i>{{ $studentUser->email }}</li>
+                    @if($studentUser->phone_number)
+                    <li class="list-group-item"><i class="fas fa-phone fa-fw me-2"></i>{{ $studentUser->phone_number }}</li>
+                    @endif
+                    @if($studentUser->gender && isset(App\Http\Controllers\StudentController::getGenders()[$studentUser->gender]))
+                    <li class="list-group-item"><i class="fas fa-venus-mars fa-fw me-2"></i>{{ App\Http\Controllers\StudentController::getGenders()[$studentUser->gender] }}</li>
+                    @endif
+                    <li class="list-group-item"><i class="fas fa-city fa-fw me-2"></i>{{ $studentUser->city ?? 'N/A' }}</li>
+                    <li class="list-group-item"><i class="fas fa-map-marker-alt fa-fw me-2"></i>{{ $studentUser->address ?? 'N/A' }}</li>
+                    <li class="list-group-item"><i class="fas fa-calendar-alt fa-fw me-2"></i>Inscrit le: {{ $studentUser->created_at->format('d/m/Y H:i') }}</li>
+                    @if($studentUser->last_login_at)
+                    <li class="list-group-item"><i class="fas fa-sign-in-alt fa-fw me-2"></i>Dernière connexion: {{ $studentUser->last_login_at->format('d/m/Y H:i') }}</li>
+                    @endif
+                </ul>
+            </div>
+
+            @if($studentUser->student)
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-user-graduate fa-fw me-2"></i>Informations Étudiant (Profil)</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @if($studentUser->student->parent_phone_number)
+                    <li class="list-group-item"><i class="fas fa-user-friends fa-fw me-2"></i>Tel. Parent: {{ $studentUser->student->parent_phone_number }}</li>
+                    @endif
+                    @if($studentUser->student->establishment)
+                    <li class="list-group-item"><i class="fas fa-school fa-fw me-2"></i>Établissement: {{ $studentUser->student->establishment }}</li>
+                    @endif
+                    {{-- Ajoutez d'autres champs du modèle Student ici --}}
+                </ul>
+            </div>
+            @endif
+
+            <div class="card mt-4">
+                 <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-history fa-fw me-2"></i>Historique du compte</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @if($studentUser->validated_by && $studentUser->validated_at)
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Validé par: {{ $studentUser->validator->name ?? 'N/A' }}
+                        <small class="d-block text-muted">{{ $studentUser->validated_at->format('d/m/Y H:i') }}</small>
+                    </li>
+                    @endif
+                     @if($studentUser->finalized_by && $studentUser->finalized_at)
+                    <li class="list-group-item">
+            @extends('layouts.app') {{-- ou votre layout admin --}}
+
+@section('title', 'Profil Étudiant - ' . $studentUser->full_name)
+
+@section('content')
+<div class="student-profile-page">
+    <!-- En-tête de page -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="breadcrumb">
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"><i class="fas fa-home"></i></a>
+                <i class="fas fa-chevron-right"></i>
+                <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}">Étudiants</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>{{ $studentUser->full_name }}</span>
+            </div>
+            <h1 class="page-title">
+                Profil de {{ $studentUser->full_name }}
+            </h1>
+        </div>
+        <div class="header-actions">
+            <a href="{{ route('admin.students.index', ['locale' => app()->getLocale()]) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left"></i> Retour à la liste
+            </a>
+        </div>
+    </div>
+
+    <div class="profile-layout">
+        <!-- Colonne de gauche : Informations principales -->
+        <div class="profile-sidebar">
+            <div class="card">
+                <div class="card-body text-center">
+                    <img src="{{ $studentUser->profile_photo_url }}" alt="Photo de {{ $studentUser->full_name }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    <h4 class="card-title">{{ $studentUser->full_name }}</h4>
+                    <p class="text-muted">{{ $studentUser->account_type_label }}</p>
+                    @php
+                        $statusClass = 'secondary'; // Default
+                        if ($studentUser->status === \App\Models\User::STATUS_ACTIVE) $statusClass = 'success';
+                        elseif (in_array($studentUser->status, [\App\Models\User::STATUS_PENDING_VALIDATION, \App\Models\User::STATUS_PENDING_CONTRACT])) $statusClass = 'warning';
+                        elseif (in_array($studentUser->status, [\App\Models\User::STATUS_SUSPENDED, \App\Models\User::STATUS_REJECTED])) $statusClass = 'danger';
+                    @endphp
+                    <span class="badge status-badge-profile {{ $statusClass }} p-2">{{ $studentUser->status_label }}</span>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><i class="fas fa-envelope fa-fw me-2"></i>{{ $studentUser->email }}</li>
+                    @if($studentUser->phone_number)
+                    <li class="list-group-item"><i class="fas fa-phone fa-fw me-2"></i>{{ $studentUser->phone_number }}</li>
+                    @endif
+                    @if($studentUser->gender_label)
+                    <li class="list-group-item"><i class="fas fa-venus-mars fa-fw me-2"></i>{{ $studentUser->gender_label }}</li>
+                    @endif
+                    <li class="list-group-item"><i class="fas fa-city fa-fw me-2"></i>{{ $studentUser->city->name ?? ($studentUser->city ?? 'N/A') }}</li>
+                    <li class="list-group-item"><i class="fas fa-map-marker-alt fa-fw me-2"></i>{{ $studentUser->address ?? 'N/A' }}</li>
+                    <li class="list-group-item"><i class="fas fa-calendar-alt fa-fw me-2"></i>Membre depuis: {{ $studentUser->created_at->format('d/m/Y') }}</li>
+                    @if($studentUser->last_login_at)
+                    <li class="list-group-item"><i class="fas fa-sign-in-alt fa-fw me-2"></i>Dernière connexion: {{ $studentUser->last_login_at->format('d/m/Y H:i') }}</li>
+                    @endif
+                </ul>
+            </div>
+
+            @if($studentUser->student) {{-- Vérifie si le profil étudiant existe --}}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-user-graduate fa-fw me-2"></i>Détails Étudiant</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @if($studentUser->student->parent_phone_number)
+                    <li class="list-group-item"><i class="fas fa-user-friends fa-fw me-2"></i>Tel. Parent: {{ $studentUser->student->parent_phone_number }}</li>
+                    @endif
+                    @if($studentUser->student->establishment)
+                    <li class="list-group-item"><i class="fas fa-school fa-fw me-2"></i>Établissement: {{ $studentUser->student->establishment }}</li>
+                    @endif
+                    {{-- <li class="list-group-item">
+                        <i class="fas fa-file-signature fa-fw me-2"></i>Entièrement inscrit: 
+                        <span class="badge bg-{{ $studentUser->student->full_registered ? 'success' : 'warning' }}">
+                            {{ $studentUser->student->full_registered ? 'Oui' : 'Non' }}
+                        </span>
+                    </li> --}}
+                </ul>
+            </div>
+            @endif
+
+            <div class="card mt-4">
+                 <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-history fa-fw me-2"></i>Historique du compte</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    @if($studentUser->validated_by && $studentUser->validated_at)
+                    <li class="list-group-item">
+                        <i class="fas fa-check-circle fa-fw me-2 text-success"></i>Validé par: {{ $studentUser->validator->full_name ?? 'N/A' }}
+                        <small class="d-block text-muted">{{ $studentUser->validated_at->format('d/m/Y H:i') }}</small>
+                    </li>
+                    @endif
+                     @if($studentUser->finalized_by && $studentUser->finalized_at)
+                    <li class="list-group-item">
+                        <i class="fas fa-flag-checkered fa-fw me-2 text-primary"></i>Finalisé par: {{ $studentUser->finalizer->full_name ?? 'N/A' }}
+                         <small class="d-block text-muted">{{ $studentUser->finalized_at->format('d/m/Y H:i') }}</small>
+                    </li>
+                    @endif
+                     @if($studentUser->status === \App\Models\User::STATUS_REJECTED && $studentUser->rejection_reason)
+                    <li class="list-group-item">
+                        <i class="fas fa-times-circle fa-fw me-2 text-danger"></i>Motif du rejet:
+                        <p class="mb-0 mt-1"><small>{{ $studentUser->rejection_reason }}</small></p>
+                    </li>
+                    @endif
+                </ul>
             </div>
         </div>
 
-        <!-- Carte d'information -->
-        <div class="bg-white rounded-md shadow-sm overflow-hidden">
-            <!-- En-tête de la carte -->
-            <div class="p-4 bg-[#4CA3DD] text-white rounded-t-md">
-                <h2 class="text-lg font-medium">Informations de l'académie</h2>
-            </div>
-
-            <!-- Contenu de la carte -->
-            <div class="p-5">
-                <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
-                    <div class="col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Nom</dt>
-                        <dd class="mt-1 text-lg font-medium text-gray-900">{{ $academy->name }}</dd>
-                    </div>
-
-                    <div class="col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Code</dt>
-                        <dd class="mt-1 text-lg font-medium text-gray-900">{{ $academy->code ?? '—' }}</dd>
-                    </div>
-
-                    <div class="col-span-2">
-                        <dt class="text-sm font-medium text-gray-500">Description</dt>
-                        <dd class="mt-1 text-base text-gray-900">{{ $academy->description ?? '—' }}</dd>
-                    </div>
-
-                    <div class="col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Langue</dt>
-                        <dd class="mt-1 text-base text-gray-900">
-                            @if($academy->lang === 'FR')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                Français
-                            </span>
-                            @elseif($academy->lang === 'EN')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                Anglais
-                            </span>
-                            @else
-                                —
-                            @endif
-                        </dd>
-                    </div>
-
-                    <div class="col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Statut</dt>
-                        <dd class="mt-1 text-base text-gray-900">
-                            @if($academy->is_active)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <svg class="mr-1.5 h-2 w-2 text-green-400" fill="currentColor" viewBox="0 0 8 8">
-                                    <circle cx="4" cy="4" r="3" />
-                                </svg>
-                                Actif
-                            </span>
-                            @else
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                <svg class="mr-1.5 h-2 w-2 text-red-400" fill="currentColor" viewBox="0 0 8 8">
-                                    <circle cx="4" cy="4" r="3" />
-                                </svg>
-                                Inactif
-                            </span>
-                            @endif
-                        </dd>
-                    </div>
-
-                    @if($academy->director)
-                        <div class="col-span-2">
-                            <dt class="text-sm font-medium text-gray-500">Directeur</dt>
-                            <dd class="mt-1 text-base text-gray-900">
-                                <div class="flex items-center">
-                                    <div class="h-10 w-10 flex-shrink-0">
-                                        <img class="h-10 w-10 rounded-full" src="{{ $academy->director->profile_photo_url ?? 'https://ui-avatars.com/api/?name='.urlencode($academy->director->first_name.' '.$academy->director->last_name).'&color=7F9CF5&background=EBF4FF' }}" alt="{{ $academy->director->full_name }}">
+        <!-- Colonne de droite : Inscriptions et autres détails -->
+        <div class="profile-main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-id-card-alt fa-fw me-2"></i>Inscriptions</h5>
+                </div>
+                <div class="card-body">
+                    @if($studentUser->student && $studentUser->student->enrollments->isNotEmpty())
+                        @foreach($studentUser->student->enrollments as $enrollment)
+                            <div class="enrollment-card {{ !$loop->last ? 'mb-3' : '' }} p-3 border rounded">
+                                <h6 class="fw-bold text-primary">{{ $enrollment->formation->name ?? 'Formation non spécifiée' }}</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p class="mb-1">
+                                            <strong>Centre:</strong> {{ $enrollment->center->name ?? 'Centre non spécifié' }}
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Date d'inscription:</strong> {{ $enrollment->created_at->format('d/m/Y') }}
+                                        </p>
                                     </div>
-                                    <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">{{ $academy->director->full_name }}</div>
-                                        <div class="text-sm text-gray-500">{{ $academy->director->email }}</div>
+                                    <div class="col-md-6">
+                                        <p class="mb-1">
+                                            <strong>N° Reçu:</strong> {{ $enrollment->receipt_number }}
+                                        </p>
+                                        <p class="mb-1">
+                                            <strong>Montant Contrat:</strong> {{ number_format($enrollment->contract, 0, ',', ' ') }} XAF
+                                        </p>
                                     </div>
                                 </div>
-                            </dd>
+                                @if($enrollment->special_conditions)
+                                <hr class="my-2">
+                                <p class="mb-0">
+                                    <strong>Conditions spéciales:</strong><br>
+                                    <small class="text-muted">{{ nl2br(e($enrollment->special_conditions)) }}</small>
+                                </p>
+                                @endif
+
+                                {{-- Si vous avez la relation additionalFormations() et qu'elle est pertinente ici --}}
+                                @if(method_exists($enrollment, 'additionalFormations') && $enrollment->additionalFormations->isNotEmpty())
+                                    <hr class="my-2">
+                                    <p class="mb-1"><strong>Formations additionnelles (via table pivot) :</strong></p>
+                                    <ul>
+                                        @foreach($enrollment->additionalFormations as $addFormation)
+                                            <li><small>{{ $addFormation->name }}</small></li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                            <p class="mb-0">Cet étudiant n'a aucune inscription pour le moment.</p>
                         </div>
                     @endif
-
-                    <div class="col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Date de création</dt>
-                        <dd class="mt-1 text-base text-gray-900">{{ $academy->created_at->format('d/m/Y à H:i') }}</dd>
-                    </div>
-
-                    <div class="col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Dernière mise à jour</dt>
-                        <dd class="mt-1 text-base text-gray-900">{{ $academy->updated_at->format('d/m/Y à H:i') }}</dd>
-                    </div>
-                </dl>
-            </div>
-        </div>
-
-        <!-- Statistiques -->
-        <div class="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-[#4CA3DD] rounded-md p-3">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dt class="text-sm font-medium text-gray-500 truncate">Départements</dt>
-                            <dd class="flex items-baseline">
-                                <div class="text-2xl font-semibold text-gray-900">{{ $academy->departments->count() }}</div>
-                            </dd>
-                        </div>
-                    </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-4 sm:px-6">
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-[#4CA3DD] hover:text-[#2A7AB8]">Voir tous les départements</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-[#4CA3DD] rounded-md p-3">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
-                            </svg>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dt class="text-sm font-medium text-gray-500 truncate">Centres</dt>
-                            <dd class="flex items-baseline">
-                                <div class="text-2xl font-semibold text-gray-900">{{ $academy->centers->count() }}</div>
-                            </dd>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-4 sm:px-6">
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-[#4CA3DD] hover:text-[#2A7AB8]">Voir tous les centres</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white overflow-hidden shadow rounded-lg">
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 bg-[#4CA3DD] rounded-md p-3">
-                            <svg class="h-6 w-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                            </svg>
-                        </div>
-                        <div class="ml-5 w-0 flex-1">
-                            <dt class="text-sm font-medium text-gray-500 truncate">Enseignants</dt>
-                            <dd class="flex items-baseline">
-                                <div class="text-2xl font-semibold text-gray-900">
-                                    {{ $academy->departments->flatMap->teachers->count() ?? 0 }}
-                                </div>
-                            </dd>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-4 sm:px-6">
-                    <div class="text-sm">
-                        <a href="#" class="font-medium text-[#4CA3DD] hover:text-[#2A7AB8]">Voir tous les enseignants</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Boutons d'action en bas -->
-        <div class="mt-8 flex justify-between items-center">
-            <a href="{{ route('admin.academies.index', ['locale' => app()->getLocale()]) }}"
-               class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                <svg class="mr-2 -ml-1 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                Retour à la liste
-            </a>
-
-            <div class="flex space-x-2">
-                <form action="{{ route('admin.academies.destroy', ['locale' => app()->getLocale(), 'academy' => $academy->id]) }}" method="POST"
-                      onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette académie ?');">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        <svg class="mr-2 -ml-1 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                        Supprimer
-                    </button>
-                </form>
             </div>
         </div>
     </div>
+</div>
+@endsection
+
+@push('styles')
+<style>
+    .profile-layout {
+        display: flex;
+        gap: 1.5rem; /* Espace entre les colonnes */
+    }
+    .profile-sidebar {
+        flex: 0 0 340px; /* Largeur fixe pour la sidebar */
+        min-width: 300px;
+    }
+    .profile-main-content {
+        flex: 1; /* Prend l'espace restant */
+        min-width: 0; /* Important pour le flex-shrink */
+    }
+    .card .card-header h5 i { vertical-align: -0.125em; } /* Ajustement icônes titres */
+    .list-group-item i.fa-fw { color: #858796; } /* Couleur icônes liste */
+    
+    .enrollment-card { background-color: #f8f9fc; }
+    .enrollment-card h6 { font-size: 1.1rem; }
+
+    .status-badge-profile { /* Assurez-vous que ces classes sont définies comme dans index.blade.php ou globalement */
+        padding: 0.4em 0.8em;
+        border-radius: 0.25rem;
+        font-size: 0.9em;
+        font-weight: 600;
+        color: #fff;
+    }
+    .status-badge-profile.success { background-color: #1cc88a; }
+    .status-badge-profile.warning { background-color: #f6c23e; color: #5a5c69;}
+    .status-badge-profile.danger { background-color: #e74a3b; }
+    .status-badge-profile.secondary { background-color: #858796; }
+
+
+    @media (max-width: 991.98px) { /* Bootstrap lg breakpoint */
+        .profile-layout {
+            flex-direction: column;
+        }
+        .profile-sidebar {
+            flex: 0 0 auto; /* Réinitialise la largeur pour l'empilement */
+            margin-bottom: 1.5rem; /* Ajoute de l'espace en dessous quand empilé */
+        }
+    }
+</style>
+@endpush            <i class="fas fa-flag-checkered fa-fw me-2 text-primary"></i>Finalisé par: {{ $studentUser->finalizer->name ?? 'N/A' }}
+                         <small class="d-block text-muted">{{ $studentUser->finalized_at->format('d/m/Y H:i') }}</small>
+                    </li>
+                    @endif
+                     @if($studentUser->status === 'rejected' && $studentUser->rejection_reason)
+                    <li class="list-group-item">
+                        <i class="fas fa-times-circle fa-fw me-2 text-danger"></i>Motif du rejet:
+                        <p class="mb-0 mt-1"><small>{{ $studentUser->rejection_reason }}</small></p>
+                    </li>
+                    @endif
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Colonne de droite : Inscriptions et autres détails -->
+        <div class="profile-main-content">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-id-card-alt fa-fw me-2"></i>Inscriptions</h5>
+                </div>
+                <div class="card-body">
+                    @if($studentUser->student && $studentUser->student->enrollments->isNotEmpty())
+                        @foreach($studentUser->student->enrollments as $enrollment)
+                            <div class="enrollment-card {{ !$loop->last ? 'mb-3' : '' }} p-3 border rounded">
+                                <h6 class="text-primary">{{ $enrollment->formation->name ?? 'Formation non spécifiée' }}</h6>
+                                <p class="mb-1">
+                                    <strong>Centre:</strong> {{ $enrollment->center->name ?? 'Centre non spécifié' }} <br>
+                                    <strong>Date d'inscription:</strong> {{ $enrollment->created_at->format('d/m/Y') }} <br>
+                                    <strong>N° Reçu:</strong> {{ $enrollment->receipt_number }} <br>
+                                    <strong>Montant Contrat:</strong> {{ number_format($enrollment->contract, 2, ',', ' ') }} XAF
+                                </p>
+                                @if($enrollment->special_conditions)
+                                <p class="mb-0">
+                                    <strong>Conditions spéciales:</strong><br>
+                                    <small>{{ nl2br(e($enrollment->special_conditions)) }}</small>
+                                </p>
+                                @endif
+                            </div>
+                        @endforeach
+                    @else
+                        <div class="alert alert-info text-center">
+                            <i class="fas fa-info-circle fa-2x mb-2"></i>
+                            <p class="mb-0">Cet étudiant n'a aucune inscription pour le moment.</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Vous pouvez ajouter d'autres sections ici : notes, paiements, etc. --}}
+            <!-- <div class="card mt-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0"><i class="fas fa-money-check-alt fa-fw me-2"></i>Historique des Paiements</h5>
+                </div>
+                <div class="card-body">
+                    <p>Aucun paiement enregistré pour le moment.</p>
+                </div>
+            </div> -->
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-layout {
+        display: flex;
+        gap: 1.5rem;
+    }
+    .profile-sidebar {
+        flex: 0 0 320px; /* Fixed width for sidebar */
+    }
+    .profile-main-content {
+        flex: 1; /* Takes remaining space */
+    }
+    .card-title i { vertical-align: middle; }
+    .enrollment-card { background-color: #f8f9fa; }
+    @media (max-width: 991px) {
+        .profile-layout {
+            flex-direction: column;
+        }
+        .profile-sidebar {
+            flex: 0 0 auto; /* Reset width for stacking */
+        }
+    }
+</style>
 @endsection

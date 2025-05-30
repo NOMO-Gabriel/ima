@@ -20,7 +20,7 @@ class Teacher extends Model
         'department',
         'academy_id',
         'department_id',
-        'center_id',
+        'city_id',
         'user_id',
     ];
 
@@ -42,11 +42,16 @@ class Teacher extends Model
 
     public function department(): BelongsTo
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Department::class, 'department_id');
     }
 
     public function center(): BelongsTo
     {
         return $this->belongsTo(Center::class);
+    }
+
+    public function city(): BelongsTo 
+    { 
+        return $this->belongsTo(City::class); 
     }
 }

@@ -14,7 +14,6 @@ class Registration extends Model
         'receipt_number',
         'contract',
         'student_id',
-        'formation_id',
         'center_id',
         'special_conditions',
     ];

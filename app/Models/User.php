@@ -22,15 +22,15 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'parent_phone_number',
-        'city_id',
-        'city', // Pour la compatibilité
+        // 'city_id',
+        // 'city', // Pour la compatibilité
         'address',
         'account_type',
         'profile_photo_path',
         'status',
-        'establishment', // Pour les élèves
-        'wanted_entrance_exams', // Pour les élèves
-        'contract_details', // Détails du contrat
+        // 'establishment', // Pour les élèves
+        // 'wanted_entrance_exams', // Pour les élèves
+        // 'contract_details', // Détails du contrat
         'validated_by',
         'validated_at',
         'finalized_by',
@@ -52,6 +52,7 @@ class User extends Authenticatable
         'finalized_at' => 'datetime',
         'wanted_entrance_exams' => 'array', // Cast en array pour stocker les concours
         'contract_details' => 'array', // Cast en array pour stocker les détails du contrat
+        'gender' => 'integer',
     ];
 
     // Statuts possibles pour les utilisateurs
@@ -61,6 +62,66 @@ class User extends Authenticatable
     const STATUS_SUSPENDED = 'suspended';
     const STATUS_REJECTED = 'rejected';
     const STATUS_ARCHIVED = 'archived';
+
+
+    /**
+     * Retourne un tableau associatif des statuts possibles avec leurs labels.
+     * Utilisé pour peupler les dropdowns de filtre, par exemple.
+     *
+     * @return array
+     */
+    public static function getStatuses(): array
+    {
+        return [
+            self::STATUS_PENDING_VALIDATION => 'En attente de validation',
+            self::STATUS_PENDING_CONTRACT => 'En attente de contrat',
+            // self::STATUS_PENDING_FINALIZATION => 'En attente de finalisation', // Ajouté
+            self::STATUS_ACTIVE => 'Actif',
+            self::STATUS_SUSPENDED => 'Suspendu',
+            self::STATUS_REJECTED => 'Rejeté',
+            self::STATUS_ARCHIVED => 'Archivé',
+        ];
+    }
+
+    /**
+     * Accessor pour obtenir le label lisible du statut actuel de l'utilisateur.
+     * Utilisé pour l'affichage : $user->status_label
+     *
+     * @return string
+     */
+    public function getStatusLabelAttribute(): string
+    {
+        return self::getStatuses()[$this->status] ?? ucfirst(str_replace('_', ' ', $this->status ?? 'Inconnu'));
+    }
+
+
+    //les genres
+
+    const GENDER_UNSPECIFIED = 0; // Ou ce que vous avez comme défaut
+    const GENDER_MALE = 1;        // Adaptez les valeurs si nécessaire
+    const GENDER_FEMALE = 2;
+
+    public static function getGenders()
+    {
+        return [
+            self::GENDER_MALE => 'Masculin',
+            self::GENDER_FEMALE => 'Féminin',
+            // self::GENDER_UNSPECIFIED => 'Non spécifié', // Optionnel
+        ];
+    }
+    public function getGenderLabelAttribute(): ?string
+    {
+        return self::getGenders()[$this->gender] ?? null;
+    }
+    // public function city(): BelongsTo // <--- AJOUTÉ ICI
+    // {
+    //     return $this->belongsTo(City::class, 'city_id');
+    // }
+
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class, 'user_id');
+    }
 
     // Accessor pour le nom complet
     public function getFullNameAttribute()
@@ -153,15 +214,12 @@ class User extends Authenticatable
     }
 
     // Relations pour les étudiants
-    public function student(): HasOne
-    {
-        return $this->hasOne(Student::class, 'user_id');
-    }
 
-    public function enrollments(): HasMany
-    {
-        return $this->hasMany(Enrollment::class, 'student_id');
-    }
+
+    // public function enrollments(): HasMany
+    // {
+    //     return $this->hasMany(Enrollment::class, 'student_id');
+    // }
 
     public function absences(): HasMany
     {
@@ -260,19 +318,19 @@ class User extends Authenticatable
             && !$this->headedDepartments()->exists();
     }
 
-    public function getStatusLabelAttribute(): string
-    {
-        $labels = [
-            self::STATUS_PENDING_VALIDATION => 'En attente de validation',
-            self::STATUS_PENDING_CONTRACT => 'En attente de contrat',
-            self::STATUS_ACTIVE => 'Actif',
-            self::STATUS_SUSPENDED => 'Suspendu',
-            self::STATUS_REJECTED => 'Rejeté',
-            self::STATUS_ARCHIVED => 'Archivé',
-        ];
+    // public function getStatusLabelAttribute(): string
+    // {
+    //     $labels = [
+    //         self::STATUS_PENDING_VALIDATION => 'En attente de validation',
+    //         self::STATUS_PENDING_CONTRACT => 'En attente de contrat',
+    //         self::STATUS_ACTIVE => 'Actif',
+    //         self::STATUS_SUSPENDED => 'Suspendu',
+    //         self::STATUS_REJECTED => 'Rejeté',
+    //         self::STATUS_ARCHIVED => 'Archivé',
+    //     ];
 
-        return $labels[$this->status] ?? 'Statut inconnu';
-    }
+    //     return $labels[$this->status] ?? 'Statut inconnu';
+    // }
 
     public function getAccountTypeLabelAttribute(): string
     {

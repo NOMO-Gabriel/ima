@@ -52,7 +52,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'WAMBA',
                 'email' => 'pca@ima-icorp.com',
                 'phone_number' => '+237698000001',
-                'city' => 'YAOUNDE',
+                ////
             ],
             [
                 'role' => 'cn',
@@ -60,7 +60,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'National',
                 'email' => 'controleur@ima-icorp.com',
                 'phone_number' => '+237698000002',
-                'city' => 'YAOUNDE',
+               //
             ],
             [
                 'role' => 'dg',
@@ -68,7 +68,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'Général',
                 'email' => 'dg@ima-icorp.com',
                 'phone_number' => '+237698000003',
-                'city' => 'YAOUNDE',
+               //
             ],
             [
                 'role' => 'sg',
@@ -76,7 +76,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'Général',
                 'email' => 'sg@ima-icorp.com',
                 'phone_number' => '+237698000004',
-                'city' => 'YAOUNDE',
+               //
             ],
             [
                 'role' => 'da',
@@ -84,7 +84,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'Francophone',
                 'email' => 'da-francophone@ima-icorp.com',
                 'phone_number' => '+237698000005',
-                'city' => 'YAOUNDE',
+               //
             ],
             [
                 'role' => 'da',
@@ -92,7 +92,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'Anglophone',
                 'email' => 'da-anglophone@ima-icorp.com',
                 'phone_number' => '+237698000006',
-                'city' => 'YAOUNDE',
+               //
             ],
             [
                 'role' => 'rl',
@@ -100,7 +100,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'Livres National',
                 'email' => 'rl-national@ima-icorp.com',
                 'phone_number' => '+237698000007',
-                'city' => 'YAOUNDE',
+               //
             ],
             [
                 'role' => 'df-n',
@@ -108,7 +108,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'Nationale',
                 'email' => 'df-national@ima-icorp.com',
                 'phone_number' => '+237698000008',
-                'city' => 'YAOUNDE',
+               //
             ],
             [
                 'role' => 'dl-n',
@@ -116,7 +116,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => 'National',
                 'email' => 'dl-national@ima-icorp.com',
                 'phone_number' => '+237698000009',
-                'city' => 'YAOUNDE',
+               //
             ],
         ];
 
@@ -159,7 +159,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => "Opérationnel {$cityName}",
                     'email' => "ddo-{$cityCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}001",
-                    'city' => $cityName,
+                   //
                 ],
                 [
                     'role' => 'sup',
@@ -167,7 +167,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $cityName,
                     'email' => "superviseur-{$cityCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}002",
-                    'city' => $cityName,
+                   //
                 ],
                 [
                     'role' => 'df-v',
@@ -175,7 +175,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $cityName,
                     'email' => "df-{$cityCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}003",
-                    'city' => $cityName,
+                   //
                 ],
                 [
                     'role' => 'dl-v',
@@ -183,7 +183,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $cityName,
                     'email' => "dl-{$cityCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}004",
-                    'city' => $cityName,
+                   //
                 ],
                 [
                     'role' => 'af',
@@ -191,7 +191,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $cityName,
                     'email' => "af-{$cityCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}005",
-                    'city' => $cityName,
+                   //
                 ],
                 [
                     'role' => 'ra-v',
@@ -199,7 +199,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $cityName,
                     'email' => "ra-{$cityCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}006",
-                    'city' => $cityName,
+                   //
                 ],
             ];
 
@@ -240,7 +240,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $centerName,
                     'email' => "cc-{$centerCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}01",
-                    'city' => $this->getCityName($centerName, $cities),
+                   //
                 ],
                 [
                     'role' => 'ra-c',
@@ -248,7 +248,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $centerName,
                     'email' => "ra-{$centerCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}02",
-                    'city' => $this->getCityName($centerName, $cities),
+                   //
                 ],
                 [
                     'role' => 'rf-c',
@@ -256,7 +256,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $centerName,
                     'email' => "rf-{$centerCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}03",
-                    'city' => $this->getCityName($centerName, $cities),
+                   //
                 ],
                 [
                     'role' => 'RL-C',
@@ -264,7 +264,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $centerName,
                     'email' => "rl-{$centerCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}04",
-                    'city' => $this->getCityName($centerName, $cities),
+                   //
                 ],
                 [
                     'role' => 'pc',
@@ -272,7 +272,7 @@ class AdminUserSeeder extends Seeder
                     'last_name' => $centerName,
                     'email' => "personnel-{$centerCode}@ima-icorp.com",
                     'phone_number' => "+237{$phoneBase}05",
-                    'city' => $this->getCityName($centerName, $cities),
+                   //
                 ],
             ];
 
@@ -317,7 +317,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => "{$deptName} National",
                 'email' => "cd-n-{$deptCode}@ima-icorp.com",
                 'phone_number' => "+237{$phoneBase}01",
-                'city' => 'YAOUNDÉ',
+                //
             ];
 
             $user = $this->createUser($nationalHead);
@@ -330,7 +330,7 @@ class AdminUserSeeder extends Seeder
                 'last_name' => "{$deptName} Douala",
                 'email' => "cd-v-{$deptCode}@ima-icorp.com",
                 'phone_number' => "+237{$phoneBase}02",
-                'city' => 'DOUALA',
+                //
             ];
 
             $user2 = $this->createUser($cityHead);
@@ -352,7 +352,7 @@ class AdminUserSeeder extends Seeder
             'email' => $userData['email'],
             'password' => Hash::make('password123'),
             'phone_number' => $userData['phone_number'],
-            'city' => $userData['city'],
+            // 'city' => $userData['city'],
             'address' => 'Adresse administrateur',
             'account_type' => 'staff',
             'status' => User::STATUS_ACTIVE,
