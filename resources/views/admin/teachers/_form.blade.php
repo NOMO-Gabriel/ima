@@ -46,38 +46,28 @@
             </div>
             
             @if(!isset($teacherUser)) {{-- Uniquement pour la création --}}
-            <div class="mb-3">
-                <label for="password" class="form-label">Mot de passe <span class="text-danger">*</span></label>
-                <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
-                @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
-            </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label">Mot de passe <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password" required>
+                    @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
 
-            <div class="mb-3">
-                <label for="password_confirmation" class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
-                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
-            </div>
+                <div class="mb-3">
+                    <label for="password_confirmation" class="form-label">Confirmer le mot de passe <span class="text-danger">*</span></label>
+                    <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" required>
+                </div>
             @else {{-- Pour l'édition --}}
-            <div class="mb-3">
-                <label for="status" class="form-label">Statut du compte <span class="text-danger">*</span></label>
-                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                    @foreach($statuses as $value => $label)
-                        <option value="{{ $value }}" {{ old('status', $teacherUser->status ?? '') == $value ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
-                </select>
-                @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
-            </div>
+                <div class="mb-3">
+                    <label for="status" class="form-label">Statut du compte <span class="text-danger">*</span></label>
+                    <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                        @foreach($statuses as $value => $label)
+                            <option value="{{ $value }}" {{ old('status', $teacherUser->status ?? '') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    @error('status') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                </div>
 
-            <hr>
-            <p class="text-muted small">Laissez les champs de mot de passe vides si vous ne souhaitez pas le modifier.</p>
-            <div class="mb-3">
-                <label for="password" class="form-label">Nouveau mot de passe</label>
-                <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
-                @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
-            </div>
-            <div class="mb-3">
-                <label for="password_confirmation" class="form-label">Confirmer le nouveau mot de passe</label>
-                <input type="password" class="form-control" id="password_confirmation" name="password_confirmation">
-            </div>
+                {{-- SECTION MOT DE PASSE SUPPRIMÉE POUR L'ÉDITION --}}
             @endif
         </fieldset>
     </div>

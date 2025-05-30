@@ -197,26 +197,36 @@
                                             @endif
                                         </div>
                                     </td>
-                                    <td>
-                                        @if($teacherUser->teacherProfile)
-                                            <div class="small">
-                                                @if($teacherUser->teacherProfile->academy)
-                                                    <div><i class="fas fa-graduation-cap fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->academy->name }}</div>
-                                                @endif
-                                                @if($teacherUser->teacherProfile->department)
-                                                    <div><i class="fas fa-building fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->department->name }}</div>
-                                                @endif
-                                                @if($teacherUser->teacherProfile->city) {{-- Ville du profil enseignant --}}
-                                                    <div><i class="fas fa-city fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->city->name }}</div>
-                                                @endif
-                                                 @if($teacherUser->teacherProfile->profession)
-                                                    <div><i class="fas fa-briefcase fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->profession }}</div>
-                                                @endif
-                                            </div>
-                                        @else
-                                            <span class="text-muted small">Profil incomplet</span>
-                                        @endif
-                                    </td>
+                                    {{-- Section corrigée pour la vue teachers/index.blade.php --}}
+<td>
+    @if($teacherUser->teacherProfile)
+        <div class="small">
+            {{-- Academy relation --}}
+            @if($teacherUser->teacherProfile->academy)
+                <div><i class="fas fa-graduation-cap fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->academy->name }}</div>
+            @endif
+            
+            {{-- Department - vérifier si c'est un objet ou une string --}}
+            @if($teacherUser->teacherProfile->department_id && $teacherUser->teacherProfile->department)
+                <div><i class="fas fa-building fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->department}}</div>
+            @elseif($teacherUser->teacherProfile->department && is_string($teacherUser->teacherProfile->department))
+                <div><i class="fas fa-building fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->department }}</div>
+            @endif
+            
+            {{-- City relation --}}
+            @if($teacherUser->teacherProfile->city_id && $teacherUser->teacherProfile->city)
+                <div><i class="fas fa-city fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->city->name }}</div>
+            @endif
+            
+            {{-- Profession --}}
+            @if($teacherUser->teacherProfile->profession)
+                <div><i class="fas fa-briefcase fa-fw me-1 text-muted"></i>{{ $teacherUser->teacherProfile->profession }}</div>
+            @endif
+        </div>
+    @else
+        <span class="text-muted small">Profil incomplet</span>
+    @endif
+</td>
                                     <td>
                                         <span class="status-badge {{ $teacherUser->status === 'active' ? 'success' : ($teacherUser->status === 'suspended' ? 'danger' : 'secondary') }}">
                                             {{ $teacherUser->status_label }}
@@ -265,7 +275,7 @@
                                         @if($teacherUser->teacherProfile->city) <p><i class="fas fa-city"></i>Ville (Profil): {{ $teacherUser->teacherProfile->city->name }}</p> @endif
                                         @if($teacherUser->teacherProfile->profession) <p><i class="fas fa-briefcase"></i>{{ $teacherUser->teacherProfile->profession }}</p> @endif
                                         @if($teacherUser->teacherProfile->academy) <p><i class="fas fa-graduation-cap"></i>{{ $teacherUser->teacherProfile->academy->name }}</p> @endif
-                                        @if($teacherUser->teacherProfile->department) <p><i class="fas fa-building"></i>{{ $teacherUser->teacherProfile->department->name }}</p> @endif
+                                        @if($teacherUser->teacherProfile->department) <p><i class="fas fa-building"></i>{{ $teacherUser->teacherProfile->department}}</p> @endif
                                         @if($teacherUser->teacherProfile->salary) <p><i class="fas fa-money-bill-wave"></i>{{ number_format($teacherUser->teacherProfile->salary, 0, ',', ' ') }} XAF</p> @endif
                                     @endif
                                 </div>
