@@ -41,11 +41,6 @@ class FinanceRegistrationController extends Controller
             });
         }
 
-        // Filtre par ville
-        if ($request->filled('city')) {
-            $query->where('city', $request->city);
-        }
-
         // Filtre par établissement
         if ($request->filled('establishment')) {
             $query->whereHas('student', function($q) use ($request) {
@@ -68,13 +63,6 @@ class FinanceRegistrationController extends Controller
             ->whereHas('student', fn ($q) => $q->where('fully_registered', false))
             ->with(['student.registration', 'roles'])
             ->paginate(15);
-
-        // Données pour les filtres
-        $cities = User::where('account_type', 'student')
-            ->whereNotNull('city')
-            ->distinct()
-            ->pluck('city')
-            ->sort();
 
         $centers = Center::where('is_active', true)
             ->orderBy('name')
@@ -104,7 +92,6 @@ class FinanceRegistrationController extends Controller
 
         return view('admin.finance.students.pending', compact(
             'pendingStudents',
-            'cities',
             'centers',
             'establishments',
             'stats'
