@@ -56,26 +56,20 @@ class User extends Authenticatable
     ];
 
     // Statuts possibles pour les utilisateurs
-    const STATUS_PENDING_VALIDATION = 'pending_validation'; // En attente de validation par responsable financière
-    const STATUS_PENDING_CONTRACT = 'pending_contract'; // En attente d'assignation de contrat et concours
-    const STATUS_ACTIVE = 'active'; // Compte activé
-    const STATUS_SUSPENDED = 'suspended';
-    const STATUS_REJECTED = 'rejected';
-    const STATUS_ARCHIVED = 'archived';
+    public const STATUS_PENDING_VALIDATION = 'pending_validation';
+    public const STATUS_PENDING_CONTRACT = 'pending_contract';
+    // public const STATUS_PENDING_FINALIZATION = 'pending_finalization'; // Si vous l'ajoutez
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_SUSPENDED = 'suspended';
+    public const STATUS_REJECTED = 'rejected';
+    public const STATUS_ARCHIVED = 'archived';
 
-
-    /**
-     * Retourne un tableau associatif des statuts possibles avec leurs labels.
-     * Utilisé pour peupler les dropdowns de filtre, par exemple.
-     *
-     * @return array
-     */
     public static function getStatuses(): array
     {
         return [
             self::STATUS_PENDING_VALIDATION => 'En attente de validation',
             self::STATUS_PENDING_CONTRACT => 'En attente de contrat',
-            // self::STATUS_PENDING_FINALIZATION => 'En attente de finalisation', // Ajouté
+            // self::STATUS_PENDING_FINALIZATION => 'En attente de finalisation',
             self::STATUS_ACTIVE => 'Actif',
             self::STATUS_SUSPENDED => 'Suspendu',
             self::STATUS_REJECTED => 'Rejeté',
@@ -84,14 +78,74 @@ class User extends Authenticatable
     }
 
     /**
-     * Accessor pour obtenir le label lisible du statut actuel de l'utilisateur.
-     * Utilisé pour l'affichage : $user->status_label
+     * Récupère le libellé lisible pour le statut actuel de l'utilisateur.
      *
      * @return string
      */
     public function getStatusLabelAttribute(): string
     {
-        return self::getStatuses()[$this->status] ?? ucfirst(str_replace('_', ' ', $this->status ?? 'Inconnu'));
+        return self::getStatuses()[$this->status] ?? ucfirst(str_replace('_', ' ', $this->status));
+    }
+
+    /**
+     * Fournit la configuration de style pour chaque statut.
+     *
+     * @param string $status
+     * @return array
+     */
+    public static function getStatusConfig(string $status): array
+    {
+        $statuses = self::getStatuses();
+        $label = $statuses[$status] ?? ucfirst(str_replace('_', ' ', $status));
+
+        $config = [
+            self::STATUS_PENDING_VALIDATION => [
+                'label' => $label,
+                'text_color' => 'text-yellow-700', 'bg_color' => 'bg-yellow-100',
+                'dark_text_color' => 'dark:text-yellow-300', 'dark_bg_color' => 'dark:bg-yellow-600/30',
+                'icon' => 'fas fa-hourglass-half',
+            ],
+            self::STATUS_PENDING_CONTRACT => [
+                'label' => $label,
+                'text_color' => 'text-blue-700', 'bg_color' => 'bg-blue-100',
+                'dark_text_color' => 'dark:text-blue-300', 'dark_bg_color' => 'dark:bg-blue-600/30',
+                'icon' => 'fas fa-file-signature',
+            ],
+            self::STATUS_ACTIVE => [
+                'label' => $label,
+                'text_color' => 'text-green-700', 'bg_color' => 'bg-green-100',
+                'dark_text_color' => 'dark:text-green-300', 'dark_bg_color' => 'dark:bg-green-700/30',
+                'icon' => 'fas fa-check-circle',
+            ],
+            self::STATUS_SUSPENDED => [
+                'label' => $label,
+                'text_color' => 'text-red-700', 'bg_color' => 'bg-red-100',
+                'dark_text_color' => 'dark:text-red-300', 'dark_bg_color' => 'dark:bg-red-700/30',
+                'icon' => 'fas fa-ban',
+            ],
+            self::STATUS_REJECTED => [
+                'label' => $label,
+                'text_color' => 'text-pink-700', 'bg_color' => 'bg-pink-100', // Ou une autre couleur distinctive
+                'dark_text_color' => 'dark:text-pink-300', 'dark_bg_color' => 'dark:bg-pink-700/30',
+                'icon' => 'fas fa-times-circle',
+            ],
+            self::STATUS_ARCHIVED => [
+                'label' => $label,
+                'text_color' => 'text-gray-700', 'bg_color' => 'bg-gray-100',
+                'dark_text_color' => 'dark:text-gray-300', 'dark_bg_color' => 'dark:bg-gray-600/30',
+                'icon' => 'fas fa-archive',
+            ],
+        ];
+
+        // Fallback pour un statut inconnu
+        $defaultConfig = [
+            'label' => $label,
+            'text_color' => 'text-gray-700', 'bg_color' => 'bg-gray-100',
+            'dark_text_color' => 'dark:text-gray-300', 'dark_bg_color' => 'dark:bg-gray-600/30',
+            'icon' => 'fas fa-question-circle',
+        ];
+
+        return $config[$status] ?? $defaultConfig;
     }
 
 
@@ -135,14 +189,14 @@ class User extends Authenticatable
         if ($this->profile_photo_path) {
             return asset('storage/' . $this->profile_photo_path);
         }
-        
+
         // Photo par défaut basée sur le type de compte
         $defaultPhotos = [
             'staff' => 'images/default-staff.png',
             'teacher' => 'images/default-teacher.png',
             'student' => 'images/default-student.png',
         ];
-        
+
         return asset($defaultPhotos[$this->account_type] ?? 'images/default-user.png');
     }
 
@@ -155,7 +209,7 @@ class User extends Authenticatable
     }
 
     // Méthodes pour vérifier les niveaux de rôles
-    public function hasRoleLevel(string $level): bool 
+    public function hasRoleLevel(string $level): bool
     {
         return $this->roles()->where('level', $level)->exists();
     }
@@ -313,8 +367,8 @@ class User extends Authenticatable
     public function canBeDeleted(): bool
     {
         // Un utilisateur peut être supprimé s'il n'a pas de dépendances critiques
-        return !$this->directedAcademies()->exists() 
-            && !$this->directedCenters()->exists() 
+        return !$this->directedAcademies()->exists()
+            && !$this->directedCenters()->exists()
             && !$this->headedDepartments()->exists();
     }
 

@@ -79,10 +79,10 @@ class TeacherController extends Controller
                 $q->where('matricule', 'like', '%' . $request->input('matricule_filter') . '%');
             });
         }
-        
+
         $sortField = $request->input('sort', 'users.created_at');
         $sortDirection = $request->input('direction', 'desc');
-        $allowedSortFields = ['first_name', 'email', 'status', 'users.created_at']; 
+        $allowedSortFields = ['first_name', 'email', 'status', 'users.created_at'];
         if (in_array($sortField, $allowedSortFields)) {
             $query->orderBy($sortField, $sortDirection);
              if ($sortField === 'first_name') {
@@ -124,10 +124,11 @@ class TeacherController extends Controller
         $academies = Academy::orderBy('name')->pluck('name', 'id');
         $departments = Department::orderBy('name')->pluck('name', 'id');
         $centers = Center::orderBy('name')->pluck('name', 'id');
-        $cities = City::where('is_active', true)->orderBy('name')->pluck('name', 'id'); // Pour le TeacherProfile.city_id
-        $genders = User::getGenders(); // Pour User.gender
+        $cities = City::where('is_active', true)->orderBy('name')->pluck('name', 'id');
+        $genders = User::getGenders();
+        $statuses = User::getStatuses(); // Ajouté pour être cohérent avec _form
 
-        return view('admin.teachers.create', compact('academies', 'departments', 'centers', 'cities', 'genders'));
+        return view('admin.teachers.create', compact('academies', 'departments', 'centers', 'cities', 'genders', 'statuses'));
     }
 
     public function store(Request $request)
@@ -135,24 +136,24 @@ class TeacherController extends Controller
         $validatedData = $request->validate([
             // User fields
             'first_name' => ['required', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
+            'last_name' => ['nullable', 'string', 'max:255'], // Changé en nullable pour correspondre au formulaire
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
-            'phone_number' => ['nullable', 'string', 'max:20', Rule::unique('users', 'phone_number')->whereNull('deleted_at')],
+            'phone_number' => ['nullable', 'string', 'max:20', Rule::unique('users', 'phone_number')], // Modifié
             'gender' => ['required', Rule::in(array_keys(User::getGenders()))],
-            'address' => ['nullable', 'string', 'max:255'], // Adresse utilisateur
+            'address' => ['nullable', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Password::defaults()],
-            
+
             // Teacher profile fields
-            'matricule' => ['nullable', 'string', 'max:255', Rule::unique('teachers', 'matricule')->whereNull('deleted_at')],
+            'matricule' => ['nullable', 'string', 'max:255', Rule::unique('teachers', 'matricule')], // Modifié
             'salary' => ['nullable', 'numeric', 'min:0'],
-            'cni' => ['nullable', 'string', 'max:255', Rule::unique('teachers', 'cni')->whereNull('deleted_at')],
+            'cni' => ['nullable', 'string', 'max:255', Rule::unique('teachers', 'cni')], // Modifié
             'birthdate' => ['nullable', 'date', 'before_or_equal:today'],
             'birthplace' => ['nullable', 'string', 'max:255'],
             'profession' => ['nullable', 'string', 'max:255'],
             'academy_id' => ['nullable', 'exists:academies,id'],
             'department_id' => ['nullable', 'exists:departments,id'],
             'center_id' => ['nullable', 'exists:centers,id'],
-            'city_id' => ['nullable', 'exists:cities,id'], // city_id pour TeacherProfile
+            'city_id' => ['nullable', 'exists:cities,id'],
         ]);
 
         DB::beginTransaction();
@@ -163,10 +164,10 @@ class TeacherController extends Controller
                 'email' => $validatedData['email'],
                 'phone_number' => $validatedData['phone_number'],
                 'gender' => $validatedData['gender'],
-                'address' => $validatedData['address'] ?? 'N/A',
+                'address' => $validatedData['address'], // Pas besoin de ?? 'N/A' si nullable
                 'password' => Hash::make($validatedData['password']),
                 'account_type' => 'teacher',
-                'status' => User::STATUS_ACTIVE,
+                'status' => User::STATUS_ACTIVE, // Statut par défaut à la création
                 'email_verified_at' => now(),
                 'validated_by' => Auth::id(),
                 'validated_at' => now(),
@@ -182,7 +183,7 @@ class TeacherController extends Controller
                 'academy_id' => $validatedData['academy_id'],
                 'department_id' => $validatedData['department_id'],
                 'center_id' => $validatedData['center_id'],
-                'city_id' => $validatedData['city_id'], // Sauvegarde sur TeacherProfile
+                'city_id' => $validatedData['city_id'],
             ]);
 
             $teacherRole = Role::firstOrCreate(['name' => 'enseignant', 'guard_name' => 'web']);
@@ -193,7 +194,8 @@ class TeacherController extends Controller
                 ->with('success', 'Enseignant créé avec succès.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withInput()->with('error', 'Erreur lors de la création: ' . $e->getMessage());
+            \Log::error('Teacher Store Error: ' . $e->getMessage() . ' Stack: ' . $e->getTraceAsString()); // Log plus détaillé
+            return back()->withInput()->with('error', 'Erreur lors de la création de l\'enseignant. Veuillez vérifier les informations.');
         }
     }
 
@@ -203,7 +205,7 @@ class TeacherController extends Controller
             abort(404);
         }
         $teacherUser->load(['roles', 'teacherProfile.academy', 'teacherProfile.department', 'teacherProfile.center', 'teacherProfile.city', 'validator', 'finalizer']);
-        
+
         return view('admin.teachers.show', compact('teacherUser'));
     }
 
@@ -212,76 +214,81 @@ class TeacherController extends Controller
         if ($teacherUser->account_type !== 'teacher' || !$teacherUser->teacherProfile) {
             abort(404);
         }
-        $teacherUser->load('teacherProfile.city'); // Charger la ville du profil pour le formulaire
+        $teacherUser->load('teacherProfile.city', 'teacherProfile.academy', 'teacherProfile.department', 'teacherProfile.center');
 
         $academies = Academy::orderBy('name')->pluck('name', 'id');
         $departments = Department::orderBy('name')->pluck('name', 'id');
-        $cities = City::where('is_active', true)->orderBy('name')->pluck('name', 'id'); // Pour TeacherProfile.city_id
-        $genders = User::getGenders(); // Pour User.gender
-        $statuses = User::getStatuses(); // Pour User.status
+        $centers = Center::orderBy('name')->pluck('name', 'id'); // Ajouté pour le formulaire d'édition
+        $cities = City::where('is_active', true)->orderBy('name')->pluck('name', 'id');
+        $genders = User::getGenders();
+        $statuses = User::getStatuses();
 
-        return view('admin.teachers.edit', compact('teacherUser', 'academies', 'departments', 'statuses', 'genders', 'cities'));
-    }
-    
-   public function update(Request $request, $locale, User $teacherUser)
-{
-    if ($teacherUser->account_type !== 'teacher' || !$teacherUser->teacherProfile) {
-        abort(404);
+        return view('admin.teachers.edit', compact('teacherUser', 'academies', 'departments', 'centers', 'cities', 'genders', 'statuses'));
     }
 
-    $teacherProfile = $teacherUser->teacherProfile;
+    public function update(Request $request, $locale, User $teacherUser)
+    {
+        if ($teacherUser->account_type !== 'teacher' || !$teacherUser->teacherProfile) {
+            abort(404);
+        }
 
-    $validatedUserData = $request->validate([
-        'first_name' => ['required', 'string', 'max:255'],
-        'last_name' => ['nullable', 'string', 'max:255'],
-        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users', 'email')->ignore($teacherUser->id)],
-        'phone_number' => ['nullable', 'string', 'max:20', Rule::unique('users', 'phone_number')->ignore($teacherUser->id)->whereNull('deleted_at')],
-        'gender' => ['required', Rule::in(array_keys(User::getGenders()))],
-        'address' => ['nullable', 'string', 'max:255'],
-        'status' => ['required', Rule::in(array_keys(User::getStatuses()))],
-        // Suppression de la validation du mot de passe
-    ]);
-    
-    $validatedTeacherProfileData = $request->validate([
-        'salary' => ['nullable', 'numeric', 'min:0'],
-        'profession' => ['nullable', 'string', 'max:255'],
-        'academy_id' => ['nullable', 'exists:academies,id'],
-        'department_id' => ['nullable', 'exists:departments,id'],
-        'city_id' => ['nullable', 'exists:cities,id'],
-    ]);
+        $teacherProfile = $teacherUser->teacherProfile;
 
-    DB::beginTransaction();
-    try {
-        $userDataToUpdate = [
-            'first_name' => $validatedUserData['first_name'],
-            'last_name' => $validatedUserData['last_name'],
-            'email' => $validatedUserData['email'],
-            'phone_number' => $validatedUserData['phone_number'],
-            'gender' => $validatedUserData['gender'],
-            'address' => $validatedUserData['address'],
-            'status' => $validatedUserData['status'],
-        ];
-        
-        // Suppression de la gestion du mot de passe
-        $teacherUser->update($userDataToUpdate);
+        $validatedUserData = $request->validate([
+            'first_name' => ['required', 'string', 'max:255'],
+            'last_name' => ['nullable', 'string', 'max:255'], // Changé en nullable
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique('users', 'email')->ignore($teacherUser->id)],
+            'phone_number' => ['nullable', 'string', 'max:20', Rule::unique('users', 'phone_number')->ignore($teacherUser->id)], // Modifié
+            'gender' => ['required', Rule::in(array_keys(User::getGenders()))],
+            'address' => ['nullable', 'string', 'max:255'],
+            'status' => ['required', Rule::in(array_keys(User::getStatuses()))],
+            // Le mot de passe n'est pas validé ici car il ne sera pas mis à jour depuis ce formulaire
+        ]);
 
-        $teacherProfileDataToUpdate = [
-            'salary' => $validatedTeacherProfileData['salary'],
-            'profession' => $validatedTeacherProfileData['profession'],
-            'academy_id' => $validatedTeacherProfileData['academy_id'],
-            'department_id' => $validatedTeacherProfileData['department_id'],
-            'city_id' => $validatedTeacherProfileData['city_id'],
-        ];
-        $teacherProfile->update($teacherProfileDataToUpdate);
+        $validatedTeacherProfileData = $request->validate([
+            'salary' => ['nullable', 'numeric', 'min:0'],
+            'profession' => ['nullable', 'string', 'max:255'],
+            'academy_id' => ['nullable', 'exists:academies,id'],
+            'department_id' => ['nullable', 'exists:departments,id'],
+            'city_id' => ['nullable', 'exists:cities,id'],
+            // Les champs matricule, cni, birthdate, birthplace, center_id ne sont pas modifiables ici
+            // s'ils sont déjà définis, donc pas besoin de les valider s'ils ne sont pas soumis.
+            // Si vous permettez leur modification s'ils sont vides, ajoutez les règles ici.
+        ]);
 
-        DB::commit();
-        return redirect()->route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id])
-            ->with('success', 'Informations de l\'enseignant mises à jour.');
-    } catch (\Exception $e) {
-        DB::rollBack();
-        return back()->withInput()->with('error', 'Erreur lors de la mise à jour: ' . $e->getMessage());
+        DB::beginTransaction();
+        try {
+            $userDataToUpdate = [
+                'first_name' => $validatedUserData['first_name'],
+                'last_name' => $validatedUserData['last_name'],
+                'email' => $validatedUserData['email'],
+                'phone_number' => $validatedUserData['phone_number'],
+                'gender' => $validatedUserData['gender'],
+                'address' => $validatedUserData['address'],
+                'status' => $validatedUserData['status'],
+            ];
+            // Le mot de passe n'est pas mis à jour ici
+            $teacherUser->update($userDataToUpdate);
+
+            $teacherProfileDataToUpdate = [
+                'salary' => $validatedTeacherProfileData['salary'],
+                'profession' => $validatedTeacherProfileData['profession'],
+                'academy_id' => $validatedTeacherProfileData['academy_id'],
+                'department_id' => $validatedTeacherProfileData['department_id'],
+                'city_id' => $validatedTeacherProfileData['city_id'],
+            ];
+            // Mettre à jour les champs du profil qui sont modifiables
+            $teacherProfile->update($teacherProfileDataToUpdate);
+
+            DB::commit();
+            return redirect()->route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id])
+                ->with('success', 'Informations de l\'enseignant mises à jour.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            \Log::error('Teacher Update Error: ' . $e->getMessage() . ' Stack: ' . $e->getTraceAsString()); // Log plus détaillé
+            return back()->withInput()->with('error', 'Erreur lors de la mise à jour de l\'enseignant. Veuillez vérifier les informations.');
+        }
     }
-}
     public function destroy($locale, User $teacherUser)
     {
         if ($teacherUser->account_type !== 'teacher' || !$teacherUser->teacherProfile) {
