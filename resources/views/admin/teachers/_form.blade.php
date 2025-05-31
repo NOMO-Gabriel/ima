@@ -72,7 +72,7 @@
                         :class="{ 'bg-gray-700 border-gray-600 text-gray-200': darkMode, 'bg-gray-50 border-gray-300 text-gray-900': !darkMode }">
                     <option value="">-- Sélectionner --</option>
                     @foreach($genders ?? [] as $value => $label)
-                        <option value="{{ $value }}" {{ old('gender', $user->gender ?? '') == $value ? 'selected' : '' }}>{{ $label }}</option>
+                        <option value="{{ $value }}" {{ old('gender', $teacherUser->gender ?? ($user->gender ?? '')) == $value ? 'selected' : '' }}>{{ $label }}</option>
                     @endforeach
                 </select>
                 @error('gender') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror

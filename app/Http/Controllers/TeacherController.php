@@ -103,7 +103,7 @@ class TeacherController extends Controller
                                ->appends($request->query());
 
         $statuses = User::getStatuses();
-        $genders = User::getGenders();
+        $genders = User::getAllGenders();
         $cities = City::where('is_active', true)->orderBy('name')->pluck('name', 'id');
         $academies = Academy::orderBy('name')->pluck('name', 'id');
         $departments = Department::where('is_active', true)->orderBy('name')->pluck('name', 'id');
@@ -125,7 +125,7 @@ class TeacherController extends Controller
         $departments = Department::orderBy('name')->pluck('name', 'id');
         $centers = Center::orderBy('name')->pluck('name', 'id');
         $cities = City::where('is_active', true)->orderBy('name')->pluck('name', 'id');
-        $genders = User::getGenders();
+        $genders = User::getAllGenders();
         $statuses = User::getStatuses(); // Ajouté pour être cohérent avec _form
 
         return view('admin.teachers.create', compact('academies', 'departments', 'centers', 'cities', 'genders', 'statuses'));
@@ -223,7 +223,7 @@ class TeacherController extends Controller
         $departments = Department::orderBy('name')->pluck('name', 'id');
         $centers = Center::orderBy('name')->pluck('name', 'id'); // Ajouté pour le formulaire d'édition
         $cities = City::where('is_active', true)->orderBy('name')->pluck('name', 'id');
-        $genders = User::getGenders();
+        $genders = User::getAllGenders();
         $statuses = User::getStatuses();
 
         return view('admin.teachers.edit', compact('teacherUser', 'academies', 'departments', 'centers', 'cities', 'genders', 'statuses'));
@@ -253,10 +253,8 @@ class TeacherController extends Controller
             'profession' => ['nullable', 'string', 'max:255'],
             'academy_id' => ['nullable', 'exists:academies,id'],
             'department_id' => ['nullable', 'exists:departments,id'],
+            'center_id' => ['nullable', 'exists:centers,id'],
             'city_id' => ['nullable', 'exists:cities,id'],
-            // Les champs matricule, cni, birthdate, birthplace, center_id ne sont pas modifiables ici
-            // s'ils sont déjà définis, donc pas besoin de les valider s'ils ne sont pas soumis.
-            // Si vous permettez leur modification s'ils sont vides, ajoutez les règles ici.
         ]);
 
         DB::beginTransaction();
@@ -278,6 +276,7 @@ class TeacherController extends Controller
                 'profession' => $validatedTeacherProfileData['profession'],
                 'academy_id' => $validatedTeacherProfileData['academy_id'],
                 'department_id' => $validatedTeacherProfileData['department_id'],
+                'center_id' => $validatedTeacherProfileData['center_id'],
                 'city_id' => $validatedTeacherProfileData['city_id'],
             ];
             // Mettre à jour les champs du profil qui sont modifiables

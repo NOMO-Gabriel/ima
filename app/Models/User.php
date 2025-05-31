@@ -151,22 +151,42 @@ class User extends Authenticatable
 
     //les genres
 
-    const GENDER_UNSPECIFIED = 0; // Ou ce que vous avez comme défaut
-    const GENDER_MALE = 1;        // Adaptez les valeurs si nécessaire
+    const GENDER_UNSPECIFIED = 0;
+    const GENDER_MALE = 1;
     const GENDER_FEMALE = 2;
 
+    /**
+     * Récupère tous les genres disponibles (y compris non spécifié)
+     */
+    public static function getAllGenders()
+    {
+        return [
+            self::GENDER_UNSPECIFIED => 'Non spécifié',
+            self::GENDER_MALE => 'Masculin',
+            self::GENDER_FEMALE => 'Féminin',
+        ];
+    }
+
+    /**
+     * Récupère les genres pour les formulaires (sans non spécifié)
+     */
     public static function getGenders()
     {
         return [
             self::GENDER_MALE => 'Masculin',
             self::GENDER_FEMALE => 'Féminin',
-            // self::GENDER_UNSPECIFIED => 'Non spécifié', // Optionnel
         ];
     }
-    public function getGenderLabelAttribute(): ?string
+
+    /**
+     * Accessor pour le libellé du genre
+     */
+    public function getGenderLabelAttribute(): string
     {
-        return self::getGenders()[$this->gender] ?? null;
+        $allGenders = self::getAllGenders();
+        return $allGenders[$this->gender] ?? 'Non spécifié';
     }
+
     // public function city(): BelongsTo // <--- AJOUTÉ ICI
     // {
     //     return $this->belongsTo(City::class, 'city_id');

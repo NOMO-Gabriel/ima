@@ -409,15 +409,6 @@
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <div class="flex items-center space-x-2">
-                                            @can('gestion.department.read')
-                                                <a href="{{ route('admin.departments.show', ['locale' => app()->getLocale(), 'department' => $department]) }}"
-                                                   class="inline-flex items-center p-2 border border-transparent rounded-md text-sm leading-4 font-medium transition-all duration-200"
-                                                   :class="darkMode ? 'text-gray-400 hover:text-white hover:bg-gray-700' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'"
-                                                   title="Voir les détails">
-                                                    <i class="fas fa-eye"></i>
-                                                </a>
-                                            @endcan
-
                                             @can('gestion.department.update')
                                                 <a href="{{ route('admin.departments.edit', ['locale' => app()->getLocale(), 'department' => $department]) }}"
                                                    class="inline-flex items-center p-2 border border-transparent rounded-md text-sm leading-4 font-medium text-orange-600 hover:text-orange-900 hover:bg-orange-100 transition-all duration-200"

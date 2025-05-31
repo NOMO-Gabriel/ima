@@ -57,210 +57,268 @@
         </div>
     </div>
 @endsection
+
 @can('admin.teacher.read')
-@section('content')
-    <div x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }"
-         x-init="$watch('darkMode', val => localStorage.setItem('theme', val ? 'dark' : 'light'))"
-         class="space-y-8">
+    @section('content')
+        <div x-data="{ darkMode: localStorage.getItem('theme') === 'dark' }"
+             x-init="$watch('darkMode', val => localStorage.setItem('theme', val ? 'dark' : 'light'))"
+             class="space-y-8">
 
-        @if(session('success'))
-            <div class="mb-6 p-4 rounded-lg border-l-4 border-green-500 shadow-md"
-                 :class="{ 'bg-green-900/20 text-green-300': darkMode, 'bg-green-50 text-green-700': !darkMode }">
-                <div class="flex items-start">
-                    <i class="fas fa-check-circle h-5 w-5 mr-3 mt-0.5 text-green-500"></i>
-                    <div>
-                        <h3 class="font-medium">Succès</h3>
-                        <p class="text-sm">{{ session('success') }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
+            {{-- Flash Messages --}}
+            <x-flash-message />
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <!-- Colonne de Gauche: Informations de base et compte -->
-            <div class="lg:col-span-1 space-y-8">
-                <!-- Carte Profil Principal -->
-                <div class="rounded-xl shadow-lg border overflow-hidden transition-all duration-300 hover:shadow-2xl"
-                     :class="{ 'bg-gray-800 border-gray-700': darkMode, 'bg-white border-gray-200': !darkMode }">
-                    <div class="p-6 text-center">
-                        <div class="relative inline-block mb-4">
-                            <img src="{{ $teacherUser->profile_photo_url }}" alt="{{ $teacherUser->full_name }}"
-                                 class="w-32 h-32 rounded-full object-cover border-4 shadow-md"
-                                 :class="darkMode ? 'border-gray-600' : 'border-gray-200'">
-                            <div class="absolute bottom-1 right-1 w-6 h-6 rounded-full border-2 flex items-center justify-center"
-                                 :class="{
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Colonne de Gauche: Informations de base et compte -->
+                <div class="lg:col-span-1 space-y-8">
+                    <!-- Carte Profil Principal -->
+                    <div class="rounded-xl shadow-lg border overflow-hidden transition-all duration-300 hover:shadow-2xl"
+                         :class="{ 'bg-gray-800 border-gray-700': darkMode, 'bg-white border-gray-200': !darkMode }">
+                        <div class="p-6 text-center">
+                            <div class="relative inline-block mb-4">
+                                <img src="{{ $teacherUser->profile_photo_url }}" alt="{{ $teacherUser->full_name }}"
+                                     class="w-32 h-32 rounded-full object-cover border-4 shadow-md"
+                                     :class="darkMode ? 'border-gray-600' : 'border-gray-200'">
+                                <div class="absolute bottom-1 right-1 w-6 h-6 rounded-full border-2 flex items-center justify-center"
+                                     :class="{
                                  'bg-green-500 border-white dark:border-gray-800': '{{ $teacherUser->status }}' === 'active',
                                  'bg-red-500 border-white dark:border-gray-800': '{{ $teacherUser->status }}' === 'suspended',
                                  'bg-yellow-500 border-white dark:border-gray-800': '{{ $teacherUser->status }}' === 'pending_validation',
                                  'bg-gray-500 border-white dark:border-gray-800': '{{ $teacherUser->status }}' === 'inactive'
                              }">
-                                @if($teacherUser->status === 'active') <i class="fas fa-check text-xs text-white"></i> @endif
-                                @if($teacherUser->status === 'suspended') <i class="fas fa-ban text-xs text-white"></i> @endif
-                                @if($teacherUser->status === 'pending_validation') <i class="fas fa-hourglass-half text-xs text-white"></i> @endif
-                                @if($teacherUser->status === 'inactive') <i class="fas fa-minus-circle text-xs text-white"></i> @endif
+                                    @if($teacherUser->status === 'active') <i class="fas fa-check text-xs text-white"></i> @endif
+                                    @if($teacherUser->status === 'suspended') <i class="fas fa-ban text-xs text-white"></i> @endif
+                                    @if($teacherUser->status === 'pending_validation') <i class="fas fa-hourglass-half text-xs text-white"></i> @endif
+                                    @if($teacherUser->status === 'inactive') <i class="fas fa-minus-circle text-xs text-white"></i> @endif
+                                </div>
                             </div>
-                        </div>
-                        <h2 class="text-2xl font-bold" :class="darkMode ? 'text-white' : 'text-gray-900'">{{ $teacherUser->full_name }}</h2>
-                        <p class="text-sm mt-1" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">{{ $teacherUser->teacherProfile->profession ?? 'Profession non spécifiée' }}</p>
+                            <h2 class="text-2xl font-bold" :class="darkMode ? 'text-white' : 'text-gray-900'">{{ $teacherUser->full_name }}</h2>
+                            <p class="text-sm mt-1" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">
+                                {{ $teacherUser->teacherProfile->profession ?? 'Profession non spécifiée' }}
+                            </p>
 
-                        @php
-                            $statusConfig = \App\Models\User::getStatusConfig($teacherUser->status); // Assurez-vous que cette méthode existe
-                        @endphp
-                        <span class="mt-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold leading-4 {{ $statusConfig['text_color'] }} {{ $statusConfig['bg_color'] }}"
-                              :class="{ '{{ $statusConfig['dark_text_color'] }} {{ $statusConfig['dark_bg_color'] }}': darkMode }">
+                            @php
+                                $statusConfig = \App\Models\User::getStatusConfig($teacherUser->status);
+                            @endphp
+                            <span class="mt-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold leading-4 {{ $statusConfig['text_color'] }} {{ $statusConfig['bg_color'] }}"
+                                  :class="{ '{{ $statusConfig['dark_text_color'] }} {{ $statusConfig['dark_bg_color'] }}': darkMode }">
                         {{ $statusConfig['label'] }}
                     </span>
-                    </div>
-                    <div class="px-6 py-4 border-t text-center" :class="darkMode ? 'border-gray-700 bg-gray-750' : 'border-gray-200 bg-gray-50'">
-                        @forelse($teacherUser->roles as $role)
-                            <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full mr-1 mb-1"
-                                  :class="darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-700'">
+                        </div>
+                        <div class="px-6 py-4 border-t text-center" :class="darkMode ? 'border-gray-700 bg-gray-750' : 'border-gray-200 bg-gray-50'">
+                            @forelse($teacherUser->roles as $role)
+                                <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full mr-1 mb-1"
+                                      :class="darkMode ? 'bg-gray-600 text-gray-200' : 'bg-gray-200 text-gray-700'">
                             {{ ucfirst($role->name) }}
                         </span>
-                        @empty
-                            <span class="text-xs italic" :class="darkMode ? 'text-gray-500' : 'text-gray-400'">Aucun rôle assigné</span>
-                        @endforelse
-                    </div>
-                </div>
-
-                <!-- Carte Informations du Compte -->
-                <div class="rounded-xl shadow-lg border"
-                     :class="{ 'bg-gray-800 border-gray-700': darkMode, 'bg-white border-gray-200': !darkMode }">
-                    <div class="p-6 border-b" :class="{ 'border-gray-700': darkMode, 'border-gray-200': !darkMode }">
-                        <h3 class="text-lg font-semibold flex items-center" :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">
-                            <i class="fas fa-shield-alt mr-2 text-[#4CA3DD]"></i>Informations du Compte
-                        </h3>
-                    </div>
-                    <div class="p-6 space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Créé le:</span>
-                            <span :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->created_at->format('d/m/Y H:i') }}</span>
+                            @empty
+                                <span class="text-xs italic" :class="darkMode ? 'text-gray-500' : 'text-gray-400'">Aucun rôle assigné</span>
+                            @endforelse
                         </div>
-                        <div class="flex justify-between">
-                            <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Email vérifié:</span>
-                            @if($teacherUser->email_verified_at)
-                                <span class="text-green-600 dark:text-green-400 flex items-center">
+                    </div>
+
+                    <!-- Carte Informations du Compte -->
+                    <div class="rounded-xl shadow-lg border"
+                         :class="{ 'bg-gray-800 border-gray-700': darkMode, 'bg-white border-gray-200': !darkMode }">
+                        <div class="p-6 border-b" :class="{ 'border-gray-700': darkMode, 'border-gray-200': !darkMode }">
+                            <h3 class="text-lg font-semibold flex items-center" :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">
+                                <i class="fas fa-shield-alt mr-2 text-[#4CA3DD]"></i>Informations du Compte
+                            </h3>
+                        </div>
+                        <div class="p-6 space-y-3 text-sm">
+                            <div class="flex justify-between">
+                                <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Créé le:</span>
+                                <span :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Email vérifié:</span>
+                                @if($teacherUser->email_verified_at)
+                                    <span class="text-green-600 dark:text-green-400 flex items-center">
                                 <i class="fas fa-check-circle mr-1"></i> {{ $teacherUser->email_verified_at->format('d/m/Y H:i') }}
                             </span>
-                            @else
-                                <span class="text-yellow-600 dark:text-yellow-400 flex items-center">
+                                @else
+                                    <span class="text-yellow-600 dark:text-yellow-400 flex items-center">
                                 <i class="fas fa-exclamation-triangle mr-1"></i> Non vérifié
                             </span>
+                                @endif
+                            </div>
+                            @if($teacherUser->last_login_at)
+                                <div class="flex justify-between">
+                                    <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Dernière connexion:</span>
+                                    <span :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->last_login_at->format('d/m/Y H:i') }}</span>
+                                </div>
+                            @endif
+                            @if($teacherUser->validator)
+                                <div class="flex justify-between">
+                                    <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Validé par:</span>
+                                    <span :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->validator->full_name }} ({{ $teacherUser->validated_at->format('d/m/Y') }})</span>
+                                </div>
+                            @endif
+                            @if($teacherUser->finalizer)
+                                <div class="flex justify-between">
+                                    <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Finalisé par:</span>
+                                    <span :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->finalizer->full_name }} ({{ $teacherUser->finalized_at->format('d/m/Y') }})</span>
+                                </div>
                             @endif
                         </div>
-                        @if($teacherUser->last_login_at)
-                            <div class="flex justify-between">
-                                <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Dernière connexion:</span>
-                                <span :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->last_login_at->format('d/m/Y H:i') }}</span>
-                            </div>
-                        @endif
-                        @if($teacherUser->validator)
-                            <div class="flex justify-between">
-                                <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Validé par:</span>
-                                <span :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->validator->full_name }} ({{ $teacherUser->validated_at->format('d/m/Y') }})</span>
-                            </div>
-                        @endif
-                        @if($teacherUser->finalizer)
-                            <div class="flex justify-between">
-                                <span class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Finalisé par:</span>
-                                <span :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->finalizer->full_name }} ({{ $teacherUser->finalized_at->format('d/m/Y') }})</span>
-                            </div>
-                        @endif
                     </div>
                 </div>
-            </div>
 
-            <!-- Colonne de Droite: Détails de l'enseignant -->
-            <div class="lg:col-span-2">
-                <div class="rounded-xl shadow-lg border"
-                     :class="{ 'bg-gray-800 border-gray-700': darkMode, 'bg-white border-gray-200': !darkMode }">
-                    <div class="p-6 border-b" :class="{ 'border-gray-700': darkMode, 'border-gray-200': !darkMode }">
-                        <h3 class="text-lg font-semibold flex items-center" :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">
-                            <i class="fas fa-info-circle mr-2 text-[#4CA3DD]"></i>Détails de l'Enseignant
-                        </h3>
-                    </div>
-                    <div class="p-6">
-                        <!-- Informations Personnelles (Utilisateur) -->
-                        <div class="mb-6">
-                            <h4 class="text-md font-semibold mb-3 pb-2 border-b" :class="{ 'text-gray-300 border-gray-700': darkMode, 'text-gray-700 border-gray-200': !darkMode }">
-                                <i class="fas fa-id-card mr-2 text-gray-400"></i>Informations Personnelles
-                            </h4>
-                            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Email:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->email }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Téléphone:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->phone_number ?? 'N/A' }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Genre:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->gender_label ?? 'N/A' }}</dd>
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Adresse de résidence:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->address ?? 'N/A' }}</dd>
-                                </div>
-                            </dl>
+                <!-- Colonne de Droite: Détails de l'enseignant -->
+                <div class="lg:col-span-2">
+                    <div class="rounded-xl shadow-lg border"
+                         :class="{ 'bg-gray-800 border-gray-700': darkMode, 'bg-white border-gray-200': !darkMode }">
+                        <div class="p-6 border-b" :class="{ 'border-gray-700': darkMode, 'border-gray-200': !darkMode }">
+                            <h3 class="text-lg font-semibold flex items-center" :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">
+                                <i class="fas fa-info-circle mr-2 text-[#4CA3DD]"></i>Détails de l'Enseignant
+                            </h3>
                         </div>
+                        <div class="p-6">
+                            <!-- Informations Personnelles (Utilisateur) -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-semibold mb-3 pb-2 border-b" :class="{ 'text-gray-300 border-gray-700': darkMode, 'text-gray-700 border-gray-200': !darkMode }">
+                                    <i class="fas fa-id-card mr-2 text-gray-400"></i>Informations Personnelles
+                                </h4>
+                                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Email:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->email }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Téléphone:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->phone_number ?? 'N/A' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Genre:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->gender_label }}</dd>
+                                    </div>
+                                    <div class="sm:col-span-2">
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Adresse de résidence:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->address ?? 'N/A' }}</dd>
+                                    </div>
+                                </dl>
+                            </div>
 
-                        <!-- Informations Professionnelles (Profil Enseignant) -->
-                        <div>
-                            <h4 class="text-md font-semibold mb-3 pb-2 border-b" :class="{ 'text-gray-300 border-gray-700': darkMode, 'text-gray-700 border-gray-200': !darkMode }">
-                                <i class="fas fa-user-graduate mr-2 text-gray-400"></i>Informations Professionnelles
-                            </h4>
-                            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Matricule:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->matricule ?? 'N/A' }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">N° CNI:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->cni ?? 'N/A' }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Date de Naissance:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->birthdate ? ($teacherUser->teacherProfile->birthdate instanceof \Carbon\Carbon ? $teacherUser->teacherProfile->birthdate->format('d/m/Y') : \Carbon\Carbon::parse($teacherUser->teacherProfile->birthdate)->format('d/m/Y')) : 'N/A' }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Lieu de Naissance:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->birthplace ?? 'N/A' }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Salaire:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->salary ? number_format($teacherUser->teacherProfile->salary, 0, ',', ' ') . ' XAF' : 'N/A' }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Académie d'affectation:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->academy->name ?? 'N/A' }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Département d'affectation:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->department->name ?? 'N/A' }}</dd>
-                                </div>
-                                <div>
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Ville d'affectation (Profil):</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->city->name ?? 'N/A' }}</dd>
-                                </div>
-                                <div class="sm:col-span-2">
-                                    <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Centre Principal:</dt>
-                                    <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->center->name ?? 'N/A' }}</dd>
-                                </div>
-                            </dl>
+                            <!-- Informations Professionnelles (Profil Enseignant) -->
+                            <div>
+                                <h4 class="text-md font-semibold mb-3 pb-2 border-b" :class="{ 'text-gray-300 border-gray-700': darkMode, 'text-gray-700 border-gray-200': !darkMode }">
+                                    <i class="fas fa-user-graduate mr-2 text-gray-400"></i>Informations Professionnelles
+                                </h4>
+                                <dl class="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Matricule:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->matricule ?? 'N/A' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">N° CNI:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->cni ?? 'N/A' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Date de Naissance:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">
+                                            @if($teacherUser->teacherProfile && $teacherUser->teacherProfile->birthdate)
+                                                {{ \Carbon\Carbon::parse($teacherUser->teacherProfile->birthdate)->format('d/m/Y') }}
+                                            @else
+                                                N/A
+                                            @endif
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Lieu de Naissance:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">{{ $teacherUser->teacherProfile->birthplace ?? 'N/A' }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Salaire:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">
+                                            @if($teacherUser->teacherProfile && $teacherUser->teacherProfile->salary)
+                                                {{ number_format($teacherUser->teacherProfile->salary, 0, ',', ' ') }} XAF
+                                            @else
+                                                N/A
+                                            @endif
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Académie d'affectation:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">
+                                            @if($teacherUser->teacherProfile && $teacherUser->teacherProfile->academy_id)
+                                                @if(is_object($teacherUser->teacherProfile->academy))
+                                                    {{ $teacherUser->teacherProfile->academy->name }}
+                                                @else
+                                                    {{ \App\Models\Academy::find($teacherUser->teacherProfile->academy_id)->name ?? 'Académie introuvable' }}
+                                                @endif
+                                            @else
+                                                N/A
+                                            @endif
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Département d'affectation:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">
+                                            @if($teacherUser->teacherProfile && $teacherUser->teacherProfile->department_id)
+                                                @if(is_object($teacherUser->teacherProfile->department))
+                                                    {{ $teacherUser->teacherProfile->department->name }}
+                                                @else
+                                                    {{ \App\Models\Department::find($teacherUser->teacherProfile->department_id)->name ?? 'Département introuvable' }}
+                                                @endif
+                                            @else
+                                                N/A
+                                            @endif
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Centre d'affectation:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">
+                                            @if($teacherUser->teacherProfile && $teacherUser->teacherProfile->center_id)
+                                                @if(is_object($teacherUser->teacherProfile->center))
+                                                    {{ $teacherUser->teacherProfile->center->name }}
+                                                @else
+                                                    {{ \App\Models\Center::find($teacherUser->teacherProfile->center_id)->name ?? 'Centre introuvable' }}
+                                                @endif
+                                            @else
+                                                N/A
+                                            @endif
+                                        </dd>
+                                    </div>
+                                    <div>
+                                        <dt class="font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-600'">Ville d'affectation:</dt>
+                                        <dd :class="darkMode ? 'text-gray-300' : 'text-gray-800'">
+                                            @if($teacherUser->teacherProfile && $teacherUser->teacherProfile->city_id)
+                                                @if(is_object($teacherUser->teacherProfile->city))
+                                                    {{ $teacherUser->teacherProfile->city->name }}
+                                                @else
+                                                    {{ \App\Models\City::find($teacherUser->teacherProfile->city_id)->name ?? 'Ville introuvable' }}
+                                                @endif
+                                            @else
+                                                N/A
+                                            @endif
+                                        </dd>
+                                    </div>
+                                </dl>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    @endsection
+@else
+    <!-- Accès non autorisé -->
+    <div class="shadow-md rounded-xl p-8 text-center transition-colors duration-300"
+         :class="{ 'bg-gray-800': darkMode, 'bg-white': !darkMode }">
+        <i class="fas fa-lock h-16 w-16 mx-auto mb-4"
+           :class="{ 'text-gray-500': darkMode, 'text-gray-400': !darkMode }"></i>
+        <h3 class="text-lg font-medium mb-2"
+            :class="{ 'text-gray-200': darkMode, 'text-gray-800': !darkMode }">
+            Accès non autorisé
+        </h3>
+        <p :class="{ 'text-gray-400': darkMode, 'text-gray-600': !darkMode }">
+            Vous n'avez pas les permissions nécessaires pour voir ce profil enseignant.
+        </p>
     </div>
-@endsection
 @endcan
 
 @push('scripts')
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script>
-        // Scripts spécifiques à cette page si nécessaire
         document.addEventListener('DOMContentLoaded', function() {
             // Animation des cartes au chargement
             const cards = document.querySelectorAll('.rounded-xl.shadow-lg');
