@@ -40,7 +40,9 @@ class FormationController extends Controller
             'academy_id' => 'nullable|integer|exists:academies,id',
         ]);
 
-        Formation::create($validated);
+        $formation = Formation::create($validated);
+
+        log_history('created', $formation, ['before' => [], 'after' => $validated]);
 
         return redirect()->route('admin.formations.index', ['locale' => app()->getLocale()])
             ->with('success', 'Formation créée avec succès.');
@@ -80,6 +82,8 @@ class FormationController extends Controller
 
         $formation->update($validated);
 
+        log_history('updated', $formation, ['before' => $formation->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.formations.index', ['locale' => app()->getLocale()])
             ->with('success', 'Formation mise à jour avec succès.');
     }
@@ -90,6 +94,8 @@ class FormationController extends Controller
     public function destroy($locale, Formation $formation)
     {
         $formation->delete();
+
+        log_history('deleted', $formation, ['before' => $formation->toArray(), 'after' => []]);
 
         return redirect()->route('admin.formations.index', ['locale' => app()->getLocale()])
             ->with('success', 'Formation supprimée avec succès.');

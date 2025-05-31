@@ -21,19 +21,19 @@ class ProfilePhotoController extends Controller
         ]);
 
         $user = Auth::user();
-        
+
         // Supprimer l'ancienne photo si elle existe
         if ($user->profile_photo_path) {
             Storage::disk('public')->delete($user->profile_photo_path);
         }
-        
+
         // Stocker la nouvelle image
         $path = $request->file('profile_photo')->store('profile-photos', 'public');
-        
+
         // Mettre à jour le chemin de la photo dans la base de données
         $user->profile_photo_path = $path;
         $user->save();
-        
+
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -41,10 +41,10 @@ class ProfilePhotoController extends Controller
                 'photo_url' => $user->profile_photo_url
             ]);
         }
-        
+
         return redirect()->back()->with('success', 'Photo de profil mise à jour avec succès.');
     }
-    
+
     /**
      * Supprimer la photo de profil actuelle
      *
@@ -53,14 +53,14 @@ class ProfilePhotoController extends Controller
     public function destroy(Request $request)
     {
         $user = Auth::user();
-        
+
         if ($user->profile_photo_path) {
             Storage::disk('public')->delete($user->profile_photo_path);
-            
+
             $user->profile_photo_path = null;
             $user->save();
         }
-        
+
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -68,7 +68,7 @@ class ProfilePhotoController extends Controller
                 'photo_url' => $user->profile_photo_url
             ]);
         }
-        
+
         return redirect()->back()->with('success', 'Photo de profil supprimée avec succès.');
     }
 }

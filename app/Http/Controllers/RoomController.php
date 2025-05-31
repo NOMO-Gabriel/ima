@@ -92,7 +92,9 @@ class RoomController extends Controller
             'formation_id' => 'nullable|exists:formations,id',
         ]);
 
-        Room::create($validated);
+        $room = Room::create($validated);
+
+        log_history('created', $room, ['before' => [], 'after' => $validated]);
 
         return redirect()->route('admin.rooms.index', ['locale' => app()->getLocale()])
             ->with('success', 'Salle créée avec succès.');
@@ -123,6 +125,8 @@ class RoomController extends Controller
 
         $room->update($validated);
 
+        log_history('updated', $room, ['before' => $room->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.rooms.index', ['locale' => app()->getLocale()])
             ->with('success', 'Salle mise à jour avec succès.');
     }
@@ -134,6 +138,8 @@ class RoomController extends Controller
         // }
 
         $room->delete();
+
+        log_history('deleted', $room, ['before' => $room->toArray(), 'after' => []]);
 
         return redirect()->route('admin.rooms.index', ['locale' => app()->getLocale()])
             ->with('success', 'Salle supprimée avec succès.');

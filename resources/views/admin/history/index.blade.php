@@ -1,551 +1,248 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des Académies')
+@section('title', 'Historique des actions')
 
 @section('content')
     <!-- Fil d'Ariane -->
-    <nav class="flex mb-5 text-sm" aria-label="Breadcrumb">
+    <nav class="flex mb-5" aria-label="Breadcrumb">
         <ol class="inline-flex items-center space-x-1 md:space-x-3">
             <li class="inline-flex items-center">
-                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center text-gray-600 hover:text-[#4CA3DD]">
-                    <i class="fas fa-home mr-2"></i> Accueil
+                <a href="{{ route('dashboard', ['locale' => app()->getLocale()]) }}"
+                   class="inline-flex items-center text-sm font-medium transition-colors"
+                   :class="darkMode ? 'text-gray-400 hover:text-white' : 'text-gray-700 hover:text-[#4CA3DD]'">
+                    <svg class="w-3 h-3 mr-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+                    </svg>
+                    Tableau de bord
                 </a>
             </li>
             <li aria-current="page">
                 <div class="flex items-center">
-                    <i class="fas fa-chevron-right text-gray-400 mx-2 text-xs"></i>
-                    <span class="text-[#4CA3DD] font-medium">Académies</span>
+                    <svg class="w-3 h-3 mx-1 text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                    </svg>
+                    <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">Historique des actions</span>
                 </div>
             </li>
         </ol>
     </nav>
 
-    <!-- En-tête de page -->
-    <div class="mb-6">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
-            <h1 class="text-2xl font-bold text-gray-800 mb-3 md:mb-0">
-                <i class="fas fa-university text-[#4CA3DD] mr-2"></i>Gestion des Académies
+    <div class="shadow-md rounded-lg p-5 mb-8 transition-colors" :class="darkMode ? 'bg-[#1E293B] border border-[#2C3E50]' : 'bg-white'">
+        <!-- En-tête avec titre -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+            <h1 class="text-2xl font-bold flex items-center transition-colors" :class="darkMode ? 'text-gray-200' : 'text-gray-700'">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 mr-2 text-[#4CA3DD]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /> {/* Combined clock and list-alt for history */}
+                </svg>
+                Historique des actions
             </h1>
-            <div class="flex items-center space-x-2">
-                <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                   class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                    <i class="fas fa-plus mr-2"></i> Ajouter une académie
-                </a>
-            </div>
+            <span class="text-sm font-medium" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">{{ $histories->total() }} entrées au total</span>
         </div>
 
-        <p class="text-gray-600 mb-6">Gérez les académies, leurs informations et leurs paramètres.</p>
-    </div>
+        <!-- Messages d'alerte -->
+        <x-flash-message />
 
-    <!-- Section des statistiques -->
-    <div class="stats-container grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon primary bg-blue-100 text-[#4CA3DD] p-3 rounded-full">
-                    <i class="fas fa-university"></i>
-                </div>
-                <span class="text-sm text-gray-500">Total</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->total() ?? count($academies) }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies</p>
-            </div>
-            <div class="stats-trend mt-3">
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-[#4CA3DD]" style="width: 100%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon success bg-green-100 text-green-600 p-3 rounded-full">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <span class="text-sm text-gray-500">Actives</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('is_active', true)->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies actives</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $activePercentage = ($academies->total() > 0) ? ($academies->where('is_active', true)->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-green-500" style="width: {{ $activePercentage }}%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon warning bg-blue-100 text-blue-600 p-3 rounded-full">
-                    <i class="fas fa-language"></i>
-                </div>
-                <span class="text-sm text-gray-500">Françaises</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('lang', 'FR')->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies francophones</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $frPercentage = ($academies->total() > 0) ? ($academies->where('lang', 'FR')->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-blue-500" style="width: {{ $frPercentage }}%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="stats-card bg-white rounded-lg p-4 shadow border border-gray-200 flex flex-col">
-            <div class="flex items-center justify-between mb-3">
-                <div class="stats-icon info bg-red-100 text-red-600 p-3 rounded-full">
-                    <i class="fas fa-globe-americas"></i>
-                </div>
-                <span class="text-sm text-gray-500">Anglaises</span>
-            </div>
-            <div class="stats-content">
-                <h3 class="stats-value text-2xl font-bold text-gray-800">{{ $academies->where('lang', 'EN')->count() }}</h3>
-                <p class="stats-label text-sm text-gray-600">Académies anglophones</p>
-            </div>
-            <div class="stats-trend mt-3">
-                @php
-                    $enPercentage = ($academies->total() > 0) ? ($academies->where('lang', 'EN')->count() / $academies->total()) * 100 : 0;
-                @endphp
-                <div class="h-2 w-full bg-gray-200 rounded-full overflow-hidden">
-                    <div class="progress-bar h-full bg-red-500" style="width: {{ $enPercentage }}%"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Barre de recherche et filtres -->
-    <div class="mb-6 bg-white p-4 rounded-lg shadow">
-        <div class="flex flex-col md:flex-row md:items-end gap-4">
-            <div class="flex-grow">
-                <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Rechercher</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <i class="fas fa-search text-gray-400"></i>
+        <!-- Filtres -->
+        <div class="mb-6 p-4 rounded-lg" :class="darkMode ? 'bg-[#2C3E50] border border-[#475569]' : 'bg-gray-50 border border-gray-200'">
+            <form method="GET" action="{{ route('admin.history.index', ['locale' => app()->getLocale()]) }}">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                    <div>
+                        <label for="action" class="block mb-2 text-sm font-medium" :class="darkMode ? 'text-gray-300' : 'text-gray-700'">Action</label>
+                        <select name="action" id="action"
+                                class="w-full border text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5 transition-colors"
+                                :class="darkMode ? 'bg-[#334155] border-[#475569] text-gray-200 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'">
+                            <option value="">Toutes les actions</option>
+                            @foreach($actions as $actionValue)
+                                <option value="{{ $actionValue }}" {{ request('action') == $actionValue ? 'selected' : '' }}>
+                                    {{ ucfirst($actionValue) }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
-                    <input type="text" id="search" name="search"
-                           class="pl-10 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#4CA3DD] focus:border-[#4CA3DD]"
-                           placeholder="Rechercher une académie...">
-                </div>
-            </div>
-            <div>
-                <label for="language-filter" class="block text-sm font-medium text-gray-700 mb-1">Langue</label>
-                <select id="language-filter" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:ring-[#4CA3DD] focus:border-[#4CA3DD]">
-                    <option value="all">Toutes les langues</option>
-                    <option value="FR">Français</option>
-                    <option value="EN">Anglais</option>
-                </select>
-            </div>
-            <div>
-                <button type="button" id="reset-filters" class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                    <i class="fas fa-redo-alt mr-1"></i> Réinitialiser
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Messages de succès ou d'erreur -->
-    @if (session('success'))
-        <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-md shadow-sm flex items-start" role="alert">
-            <i class="fas fa-check-circle text-green-500 mt-0.5 mr-3 text-lg"></i>
-            <div>
-                <p class="font-medium">{{ session('success') }}</p>
-            </div>
-            <button class="ml-auto text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md shadow-sm flex items-start" role="alert">
-            <i class="fas fa-exclamation-circle text-red-500 mt-0.5 mr-3 text-lg"></i>
-            <div>
-                <p class="font-medium">{{ session('error') }}</p>
-            </div>
-            <button class="ml-auto text-gray-500 hover:text-gray-700">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    @endif
-
-    <!-- Liste des académies - Version desktop -->
-    <div class="bg-white rounded-lg shadow overflow-hidden hidden md:block">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-            <tr>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Nom de l'académie
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
+                    <div>
+                        <label for="subject_type" class="block mb-2 text-sm font-medium" :class="darkMode ? 'text-gray-300' : 'text-gray-700'">Type d'entité</label>
+                        <select name="subject_type" id="subject_type"
+                                class="w-full border text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5 transition-colors"
+                                :class="darkMode ? 'bg-[#334155] border-[#475569] text-gray-200 placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'">
+                            <option value="">Tous les types</option>
+                            @foreach($subjectTypes as $type)
+                                <option value="{{ $type }}" {{ request('subject_type') == $type ? 'selected' : '' }}>
+                                    {{ class_basename($type) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="date_from" class="block mb-2 text-sm font-medium" :class="darkMode ? 'text-gray-300' : 'text-gray-700'">Du</label>
+                        <input type="date" name="date_from" id="date_from" value="{{ request('date_from') }}"
+                               class="w-full border text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5 transition-colors"
+                               :class="darkMode ? 'bg-[#334155] border-[#475569] text-gray-200 placeholder-gray-400 appearance-none date-input-dark' : 'bg-white border-gray-300 text-gray-900'">
+                    </div>
+                    <div>
+                        <label for="date_to" class="block mb-2 text-sm font-medium" :class="darkMode ? 'text-gray-300' : 'text-gray-700'">Au</label>
+                        <input type="date" name="date_to" id="date_to" value="{{ request('date_to') }}"
+                               class="w-full border text-sm rounded-lg focus:ring-[#4CA3DD] focus:border-[#4CA3DD] p-2.5 transition-colors"
+                               :class="darkMode ? 'bg-[#334155] border-[#475569] text-gray-200 placeholder-gray-400 date-input-dark' : 'bg-white border-gray-300 text-gray-900'">
+                    </div>
+                    <div class="flex space-x-2">
+                        <button type="submit"
+                                class="w-full inline-flex items-center justify-center px-4 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                            </svg>
+                            Filtrer
                         </button>
+                        <a href="{{ route('admin.history.index', ['locale' => app()->getLocale()]) }}"
+                           class="w-full inline-flex items-center justify-center px-4 py-2.5 border font-medium rounded-lg transition-colors duration-200 shadow-sm hover:shadow-md"
+                           :class="darkMode ? 'border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-gray-500' : 'border-gray-300 text-gray-700 hover:bg-gray-100'">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m-15.357-2a8.001 8.001 0 0115.357-2m0 0H15" />
+                            </svg>
+                            Reset
+                        </a>
                     </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Description
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Langue
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
-                    </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <div class="flex items-center">
-                        Date de création
-                        <button class="ml-1 text-gray-400 hover:text-[#4CA3DD]">
-                            <i class="fas fa-sort"></i>
-                        </button>
-                    </div>
-                </th>
-                <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                </th>
-            </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-            @forelse ($academies as $academy)
-                <tr class="hover:bg-gray-50 transition duration-150">
-                    <td class="px-6 py-4">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-[#4CA3DD]/10 text-[#4CA3DD]">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">
-                                    {{ $academy->name }}
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    Code: {{ $academy->code ?? 'Non défini' }}
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        <div class="text-sm text-gray-500 max-w-xs overflow-hidden text-ellipsis">
-                            {{ Str::limit($academy->description, 50) ?? '—' }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4">
-                        @if($academy->lang === 'FR')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                    Français
-                                </span>
-                        @elseif($academy->lang === 'EN')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    Anglais
-                                </span>
-                        @else
-                            <span class="text-gray-500">—</span>
-                        @endif
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <div class="flex items-center">
-                            <i class="far fa-calendar-alt mr-2 text-gray-400"></i>
-                            {{ $academy->created_at->format('d/m/Y') }}
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div class="flex justify-end space-x-3">
-                            <a href="{{ route('admin.academies.show', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                               class="text-[#4CA3DD] hover:text-[#2A7AB8] bg-[#4CA3DD]/10 p-2 rounded-full" title="Voir">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{{ route('admin.academies.edit', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                               class="text-amber-600 hover:text-amber-800 bg-amber-100 p-2 rounded-full" title="Modifier">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <form action="{{ route('admin.academies.destroy', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                                  method="POST" class="inline-block">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-600 hover:text-red-800 bg-red-100 p-2 rounded-full" title="Supprimer"
-                                        onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette académie ?')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-8 whitespace-nowrap text-center text-gray-500">
-                        <div class="flex flex-col items-center justify-center">
-                            <div class="bg-gray-100 rounded-full p-4 mb-4">
-                                <i class="fas fa-university text-gray-400 text-5xl"></i>
-                            </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-1">Aucune académie</h3>
-                            <p class="text-gray-500 mb-4">Vous n'avez pas encore enregistré d'académie.</p>
-                            <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                               class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                                <i class="fas fa-plus mr-2"></i> Créer une académie
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            @endforelse
-            </tbody>
-        </table>
+                </div>
+            </form>
+        </div>
 
-        <!-- Pagination améliorée -->
-        @if($academies->hasPages())
-            <div class="flex flex-col sm:flex-row justify-between items-center mt-6 px-6 py-4 bg-white border-t border-gray-200">
-                <div class="pagination-info mb-4 sm:mb-0">
-                    Affichage de <span>{{ $academies->firstItem() ?? 0 }}</span> à <span>{{ $academies->lastItem() ?? 0 }}</span> sur <span>{{ $academies->total() }}</span> académies
-                </div>
-                <div class="pagination-controls">
-                    {{ $academies->links('vendor.pagination.tailwind') }}
-                </div>
-            </div>
-        @endif
-    </div>
-
-    <!-- Liste des académies - Version mobile -->
-    <div class="block md:hidden space-y-4">
-        @forelse ($academies as $academy)
-            <div class="bg-white rounded-lg shadow overflow-hidden">
-                <div class="p-4 border-b border-gray-200">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 flex items-center justify-center rounded-full bg-[#4CA3DD]/10 text-[#4CA3DD]">
-                                <i class="fas fa-university"></i>
-                            </div>
-                            <div class="ml-3">
-                                <h3 class="text-sm font-medium text-gray-900">{{ $academy->name }}</h3>
-                                <p class="text-xs text-gray-500">Code: {{ $academy->code ?? 'Non défini' }}</p>
-                            </div>
-                        </div>
-                        @if($academy->lang === 'FR')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                FR
-                            </span>
-                        @elseif($academy->lang === 'EN')
-                            <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                EN
-                            </span>
-                        @endif
-                    </div>
-                </div>
-                <div class="px-4 py-3 bg-gray-50 text-xs">
-                    <div class="grid grid-cols-1">
-                        <div class="mb-2">
-                            <span class="font-medium text-gray-500">Description:</span>
-                            <span class="ml-2 text-gray-900">{{ Str::limit($academy->description, 50) ?? '—' }}</span>
-                        </div>
-                        <div class="mb-2">
-                            <span class="font-medium text-gray-500">Date de création:</span>
-                            <span class="ml-2 text-gray-900">{{ $academy->created_at->format('d/m/Y') }}</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="px-4 py-3 border-t border-gray-200 flex justify-between">
-                    <a href="{{ route('admin.academies.show', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                       class="inline-flex items-center px-3 py-1 bg-[#4CA3DD]/10 text-[#4CA3DD] rounded-md">
-                        <i class="fas fa-eye mr-1 text-xs"></i> Voir
-                    </a>
-                    <a href="{{ route('admin.academies.edit', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                       class="inline-flex items-center px-3 py-1 bg-amber-100 text-amber-600 rounded-md">
-                        <i class="fas fa-edit mr-1 text-xs"></i> Modifier
-                    </a>
-                    <form action="{{ route('admin.academies.destroy', ['locale' => app()->getLocale(), 'academy' => $academy]) }}"
-                          method="POST" class="inline-block">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="inline-flex items-center px-3 py-1 bg-red-100 text-red-600 rounded-md"
-                                onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette académie ?')">
-                            <i class="fas fa-trash mr-1 text-xs"></i> Supprimer
-                        </button>
-                    </form>
-                </div>
-            </div>
-        @empty
-            <div class="bg-white rounded-lg shadow p-6 text-center">
+        <!-- Tableau des historiques -->
+        @if($histories->isEmpty())
+            <div class="p-8 text-center rounded-lg border transition-colors"
+                 :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-gray-300' : 'bg-gray-50 border-gray-200 text-gray-600'">
                 <div class="flex flex-col items-center justify-center">
-                    <div class="bg-gray-100 rounded-full p-4 mb-4">
-                        <i class="fas fa-university text-gray-400 text-4xl"></i>
-                    </div>
-                    <h3 class="text-lg font-medium text-gray-900 mb-1">Aucune académie</h3>
-                    <p class="text-gray-500 mb-4">Vous n'avez pas encore enregistré d'académie.</p>
-                    <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                       class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                        <i class="fas fa-plus mr-2"></i> Créer une académie
-                    </a>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mb-4" :class="darkMode ? 'text-gray-500' : 'text-gray-400'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /> <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                    </svg>
+                    <p class="text-xl font-medium mb-2" :class="darkMode ? 'text-white' : 'text-gray-800'">
+                        Aucun historique trouvé
+                    </p>
+                    <p>Aucun historique ne correspond aux filtres sélectionnés. Essayez d'ajuster vos critères de recherche.</p>
                 </div>
             </div>
-        @endforelse
+        @else
+            <div class="overflow-x-auto rounded-lg border transition-colors"
+                 :class="darkMode ? 'border-[#475569]' : 'border-gray-200'">
+                <table class="min-w-full divide-y transition-colors"
+                       :class="darkMode ? 'divide-[#475569]' : 'divide-gray-200'">
+                    <thead class="transition-colors" :class="darkMode ? 'bg-[#2C3E50]' : 'bg-gray-50'">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">Date</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">Utilisateur</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">Action</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">Entité</th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">Description</th>
+                        <th scope="col" class.="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">IP</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium uppercase tracking-wider" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody class="divide-y transition-colors"
+                           :class="darkMode ? 'bg-[#1E293B] divide-[#475569]' : 'bg-white divide-gray-200'">
+                    @foreach($histories as $history)
+                        <tr class="transition-colors duration-150" :class="darkMode ? 'hover:bg-[#2C3E50]' : 'hover:bg-gray-50'">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium" :class="darkMode ? 'text-gray-200' : 'text-gray-900'">
+                                    {{ $history->created_at->format('d/m/Y H:i:s') }}
+                                </div>
+                                <div class="text-xs" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">
+                                    {{ $history->created_at->diffForHumans() }}
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @if($history->user)
+                                    <div class="text-sm font-medium" :class="darkMode ? 'text-gray-200' : 'text-gray-900'">{{ $history->user->name }}</div>
+                                    <div class="text-xs" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">{{ $history->user->email }}</div>
+                                @else
+                                    <span class="text-sm" :class="darkMode ? 'text-gray-500' : 'text-gray-400'">Utilisateur supprimé</span>
+                                @endif
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                @php
+                                    $badgeClass = match(strtolower($history->action)) {
+                                        'created' => 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',
+                                        'updated' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
+                                        'deleted' => 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300',
+                                        'validated' => 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-300',
+                                        'suspended' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300',
+                                        'rejected' => 'bg-pink-100 text-pink-800 dark:bg-pink-900 dark:text-pink-300',
+                                        'archived' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300',
+                                        default => 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-300'
+                                    };
+                                @endphp
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {{ $badgeClass }}">
+                                    {{ ucfirst($history->action) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm font-medium" :class="darkMode ? 'text-gray-200' : 'text-gray-900'">{{ class_basename($history->subject_type) }}</div>
+                                <div class="text-xs" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">ID: {{ $history->subject_id }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-normal max-w-xs">
+                                <div class="text-sm" :class="darkMode ? 'text-gray-300' : 'text-gray-700'">
+                                    @if($history->description)
+                                        {{ Str::limit($history->description, 70) }}
+                                    @else
+                                        <span :class="darkMode ? 'text-gray-500' : 'text-gray-400'">Aucune description</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="text-sm" :class="darkMode ? 'text-gray-400' : 'text-gray-500'">{{ $history->ip_address }}</div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                                <a href="{{ route('admin.history.show', ['locale' => app()->getLocale(), 'history' => $history]) }}"
+                                   class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md shadow-sm transition-colors"
+                                   :class="darkMode ? 'text-[#4CA3DD] bg-transparent hover:bg-[#4CA3DD]/20 border-[#4CA3DD]/50' : 'text-[#2A7AB8] bg-transparent hover:bg-[#4CA3DD]/20 border-[#4CA3DD]/70'"
+                                   title="Voir les détails">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                    Détails
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
 
-        <!-- Pagination pour mobile -->
-        @if($academies->hasPages())
-            <div class="bg-white rounded-lg shadow p-4 my-4">
-                {{ $academies->links('vendor.pagination.tailwind') }}
+        <!-- Pagination -->
+        @if($histories->hasPages())
+            <div class="mt-6">
+                {{ $histories->appends(request()->query())->links() }}
             </div>
         @endif
     </div>
-
-    <!-- Styles pour la pagination -->
-    @push('styles')
-        <style>
-            /* Style pour l'info de pagination */
-            .pagination-info {
-                font-size: 0.875rem;
-                color: #64748B;
-            }
-
-            .pagination-info span {
-                font-weight: 600;
-                color: #1E293B;
-            }
-
-            /* Style pour les contrôles de pagination */
-            .pagination {
-                display: flex;
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
-
-            .pagination li {
-                margin: 0 2px;
-            }
-
-            .pagination li.disabled span,
-            .pagination li.disabled a {
-                opacity: 0.6;
-                cursor: not-allowed;
-            }
-
-            .pagination li a,
-            .pagination li span {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0.5rem 0.75rem;
-                border-radius: 0.375rem;
-                font-size: 0.875rem;
-                line-height: 1.25rem;
-                text-decoration: none;
-                transition: all 200ms;
-            }
-
-            .pagination li:not(.active) a {
-                background-color: #f3f4f6;
-                color: #374151;
-            }
-
-            .pagination li:not(.active) a:hover {
-                background-color: #e5e7eb;
-            }
-
-            .pagination li.active span {
-                background-color: #4CA3DD;
-                color: white;
-            }
-
-            /* Style pour les points de suspension */
-            .pagination li.dots span {
-                display: flex;
-                align-items: center;
-                color: #6b7280;
-                padding: 0 0.25rem;
-            }
-        </style>
-    @endpush
-
-    <!-- Script pour la fonctionnalité de recherche et tri -->
-    @push('scripts')
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Implémentation de la recherche en temps réel
-                const searchInput = document.getElementById('search');
-                const rows = document.querySelectorAll('tbody tr');
-                const cards = document.querySelectorAll('.block.md\\:hidden > div');
-
-                searchInput.addEventListener('keyup', function() {
-                    const searchText = this.value.toLowerCase();
-
-                    // Filtrer les lignes du tableau (desktop)
-                    rows.forEach(row => {
-                        const text = row.textContent.toLowerCase();
-                        if (text.includes(searchText)) {
-                            row.classList.remove('hidden');
-                        } else {
-                            row.classList.add('hidden');
-                        }
-                    });
-
-                    // Filtrer les cartes (mobile)
-                    cards.forEach(card => {
-                        const text = card.textContent.toLowerCase();
-                        if (text.includes(searchText)) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
-                });
-
-                // Réinitialisation des filtres
-                document.getElementById('reset-filters').addEventListener('click', function() {
-                    searchInput.value = '';
-                    document.getElementById('language-filter').value = 'all';
-
-                    // Réinitialiser l'affichage
-                    rows.forEach(row => row.classList.remove('hidden'));
-                    cards.forEach(card => card.classList.remove('hidden'));
-                });
-
-                // Filtrage par langue
-                document.getElementById('language-filter').addEventListener('change', function() {
-                    const lang = this.value;
-
-                    if (lang === 'all') {
-                        rows.forEach(row => row.classList.remove('hidden'));
-                        cards.forEach(card => card.classList.remove('hidden'));
-                        return;
-                    }
-
-                    // Filtrer les lignes du tableau (desktop)
-                    rows.forEach(row => {
-                        const hasLang = row.textContent.includes(lang === 'FR' ? 'Français' : 'Anglais');
-                        if (hasLang) {
-                            row.classList.remove('hidden');
-                        } else {
-                            row.classList.add('hidden');
-                        }
-                    });
-
-                    // Filtrer les cartes (mobile)
-                    cards.forEach(card => {
-                        const hasLang = card.textContent.includes(lang);
-                        if (hasLang) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
-                });
-
-                // Auto-dismiss pour les alertes
-                const alerts = document.querySelectorAll('[role="alert"]');
-                alerts.forEach(alert => {
-                    setTimeout(() => {
-                        alert.classList.add('opacity-0', 'transform', 'translate-y-[-10px]', 'transition-all', 'duration-500');
-                        setTimeout(() => {
-                            alert.remove();
-                        }, 500);
-                    }, 5000);
-                });
-            });
-        </script>
-    @endpush
 @endsection
+
+@push('styles')
+<style>
+    /* Style for dark mode date picker icon */
+    .date-input-dark::-webkit-calendar-picker-indicator {
+        filter: invert(0.8) brightness(0.8) sepia(0.3) saturate(5) hue-rotate(180deg);
+    }
+    /* Ensure pagination links match the theme */
+    .pagination { /* Assuming default Laravel pagination generates this class */
+        /* Add Tailwind styles if needed, or ensure Laravel is configured for Tailwind pagination views */
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Animation d'entrée pour les lignes du tableau (optional, but nice)
+        const tableRows = document.querySelectorAll('tbody tr');
+        tableRows.forEach((row, index) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateY(10px)';
+            setTimeout(() => {
+                row.style.transition = 'all 0.3s ease-out';
+                row.style.opacity = '1';
+                row.style.transform = 'translateY(0)';
+            }, index * 30); // Stagger animation
+        });
+    });
+</script>
+@endpush

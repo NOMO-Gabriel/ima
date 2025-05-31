@@ -145,10 +145,7 @@ class MaterialController extends Controller
 
         $material = Material::create($validated);
 
-        // Log de l'activité
-        if (function_exists('log_history')) {
-            log_history('created', $material, [], "Matériel '{$material->name}' ajouté au centre '{$center->name}'");
-        }
+        log_history('created', $material, ['before' => [], 'after' => $material->toArray()]);
 
         return redirect()
             ->route('admin.materials.index', ['locale' => app()->getLocale()])
@@ -213,10 +210,7 @@ class MaterialController extends Controller
 
         $material->update($validated);
 
-        // Log de l'activité
-        if (function_exists('log_history')) {
-            log_history('updated', $material, $changes, "Matériel '{$material->name}' modifié");
-        }
+        log_history('updated', $material, $changes);
 
         return redirect()
             ->route('admin.materials.index', ['locale' => app()->getLocale()])
@@ -235,12 +229,9 @@ class MaterialController extends Controller
         $materialName = $material->name;
         $centerName = $material->center->name ?? 'Centre inconnu';
 
-        // Log de l'activité avant suppression
-        if (function_exists('log_history')) {
-            log_history('deleted', $material, [], "Matériel '{$materialName}' supprimé du centre '{$centerName}'");
-        }
-
         $material->delete();
+
+        log_history('deleted', $material, ['before' => $material->toArray(), 'after' => []]);
 
         return redirect()
             ->route('admin.materials.index', ['locale' => app()->getLocale()])
@@ -277,12 +268,9 @@ class MaterialController extends Controller
                 $description .= " - Raison: {$validated['reason']}";
             }
 
-            log_history('stock_adjusted', $material, [
+            log_history('updated', $material, [
                 'before' => ['quantity' => $oldQuantity],
                 'after' => ['quantity' => $newQuantity],
-                'adjustment_type' => $validated['adjustment_type'],
-                'adjustment_quantity' => $validated['quantity'],
-                'reason' => $validated['reason']
             ], $description);
         }
 

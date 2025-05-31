@@ -186,6 +186,10 @@ Route::prefix('{locale}')
                     Route::put('/installments/{installment}', [InstallmentController::class, 'update'])->name('installments.update');
                     Route::delete('/installments/{installment}', [InstallmentController::class, 'destroy'])->name('installments.destroy');
 
+                    Route::prefix('history')->name('history.')->group(function () {
+                        Route::get('/', [HistoryController::class, 'index'])->name('index');
+                        Route::get('/{id}', [HistoryController::class, 'show'])->name('show');
+                    });
 
                     Route::prefix('students')->name('students.')->group(function () {
                         Route::get('/pending', [App\Http\Controllers\FinanceRegistrationController::class, 'pendingStudents'])->name('pending');

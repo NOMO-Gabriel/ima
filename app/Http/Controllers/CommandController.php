@@ -174,6 +174,8 @@ class CommandController extends Controller
                 // Material::where('id', $unit['material_id'])->decrement('quantity', $unit['quantity']);
             }
 
+            log_history('created', $command, ['before' => [], 'after' => $command->toArray()]);
+
             DB::commit();
 
             if (function_exists('log_history')) {

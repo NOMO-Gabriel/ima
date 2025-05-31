@@ -131,6 +131,8 @@ class AbsencesController extends Controller
             }
         }
 
+        log_history('updated', $slot, ['before' => $slot->toArray(), 'after' => $slot->toArray()]);
+
         return redirect()->route('admin.absences.show', $slot->id)
                          ->with('success', 'Présences enregistrées avec succès.');
     }
@@ -157,6 +159,8 @@ class AbsencesController extends Controller
 
         $absence->update($validated);
 
+        log_history('updated', $absence, ['before' => $absence->toArray(), 'after' => $validated]);
+
         return redirect()->route('absences.index')
             ->with('success', 'Absences mise à jour avec succès.');
     }
@@ -168,6 +172,8 @@ class AbsencesController extends Controller
         }
 
         $absence->delete();
+
+        log_history('deleted', $absence, ['before' => $absence->toArray(), 'after' => []]);
 
         return redirect()->route('absences.index')
             ->with('success', 'Absences supprimée avec succès.');

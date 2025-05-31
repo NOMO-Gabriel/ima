@@ -18,16 +18,18 @@ if (!function_exists('log_history')) {
     {
         $userId = Auth::user()->id;
 
-        return History::create([
+        $history = History::create([
             'user_id'      => $userId,
             'subject_type' => get_class($subject),
-            'subject_id'   => $subject->id,
+            'subject_id'   => $subject->id ?? null,
             'action'       => $action,
             'changes'      => $changes,
             'description'  => $description,
             'ip_address'   => request()->ip(),
             'user_agent'   => request()->userAgent(),
         ]);
+
+        return $history;
     }
 
 }

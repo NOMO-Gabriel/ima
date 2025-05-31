@@ -48,7 +48,9 @@ class CenterController extends Controller
 
         $data['created_by'] = $this->user->id;
 
-        Center::create($data);
+        $center = Center::create($data);
+
+        log_history('created', $center, ['before' => [], 'after' => $data]);
 
         return redirect()->route('admin.centers.index', app()->getLocale())
             ->with('success', 'Centre créé avec succès.');
@@ -93,6 +95,8 @@ class CenterController extends Controller
 
         $center->update($data);
 
+        log_history('updated', $center, ['before' => $center->toArray(), 'after' => $data]);
+
         return redirect()->route('admin.centers.index', app()->getLocale())
             ->with('success', 'Centre mis à jour avec succès.');
     }
@@ -101,6 +105,9 @@ class CenterController extends Controller
     public function destroy($locale, Center $center)
     {
         $center->delete();
+
+        log_history('deleted', $center, ['before' => $center->toArray(), 'after' => []]);
+
         return redirect()->route('admin.centers.index', app()->getLocale())
             ->with('success', 'Centre supprimé avec succès.');
     }

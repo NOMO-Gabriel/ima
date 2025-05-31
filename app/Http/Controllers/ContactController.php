@@ -38,6 +38,8 @@ class ContactController extends Controller
             logger('Failed to send contact form notification: ' . $e->getMessage());
         }
 
+        log_history('created', $contact, ['before' => [], 'after' => $validated]);
+
         // Redirect back with success message
         return back()->with('success', __('Votre message a été envoyé avec succès. Notre équipe vous contactera prochainement.'));
     }

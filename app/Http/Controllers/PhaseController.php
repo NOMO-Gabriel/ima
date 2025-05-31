@@ -25,7 +25,9 @@ class PhaseController extends Controller
             'end' => 'required|date|after_or_equal:start',
         ]);
 
-        Phase::create($validated);
+        $phase = Phase::create($validated);
+
+        log_history('created', $phase, ['before' => [], 'after' => $validated]);
 
         return redirect()->route('admin.phases.index', ['locale' => app()->getLocale()])
             ->with('success', 'Phase créée avec succès.');
@@ -50,6 +52,8 @@ class PhaseController extends Controller
 
         $phase->update($validated);
 
+        log_history('updated', $phase, ['before' => $phase->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.phases.index', ['locale' => app()->getLocale()])
             ->with('success', 'Phase mise à jour avec succès.');
     }
@@ -57,6 +61,8 @@ class PhaseController extends Controller
     public function destroy($locale, Phase $phase)
     {
         $phase->delete();
+
+        log_history('deleted', $phase, ['before' => $phase->toArray(), 'after' => []]);
 
         return redirect()->route('admin.phases.index', ['locale' => app()->getLocale()])
             ->with('success', 'Phase supprimée avec succès.');

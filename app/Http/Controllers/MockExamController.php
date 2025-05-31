@@ -47,6 +47,8 @@ class MockExamController extends Controller
             $mockExam->courses()->sync($validated['course_ids']);
         }
 
+        log_history('created', $mockExam, ['before' => [], 'after' => $validated]);
+
         return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Le concours blanc a été créé avec succès !');
     }
@@ -78,6 +80,8 @@ class MockExamController extends Controller
             $mockExam->courses()->sync($validated['course_ids']);
         }
 
+        log_history('updated', $mockExam, ['before' => $mockExam->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Concours blanc mis à jour avec succès.');
     }
@@ -85,6 +89,8 @@ class MockExamController extends Controller
     public function destroy($locale, MockExam $mockExam)
     {
         $mockExam->delete();
+
+        log_history('deleted', $mockExam, ['before' => $mockExam->toArray(), 'after' => []]);
 
         return redirect()->route('admin.mock-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Concours blanc supprimé avec succès.');

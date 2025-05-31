@@ -33,7 +33,9 @@ class DepartmentController extends Controller
             'head_id' => 'nullable|exists:users,id',
         ]);
 
-        Department::create($data);
+        $department = Department::create($data);
+
+        log_history('created', $department, ['before' => [], 'after' => $data]);
 
         return redirect()->route('admin.departments.index', app()->getLocale())
             ->with('success', 'Département créé avec succès.');
@@ -64,6 +66,8 @@ class DepartmentController extends Controller
 
         $department->update($data);
 
+        log_history('updated', $department, ['before' => $department->toArray(), 'after' => $data]);
+
         return redirect()->route('admin.departments.index', app()->getLocale())
             ->with('success', 'Département mis à jour avec succès.');
     }
@@ -71,6 +75,9 @@ class DepartmentController extends Controller
     public function destroy($locale, Department $department)
     {
         $department->delete();
+
+        log_history('deleted', $department, ['before' => $department->toArray(), 'after' => []]);
+        
         return redirect()->route('admin.departments.index', app()->getLocale())
             ->with('success', 'Département supprimé avec succès.');
     }
