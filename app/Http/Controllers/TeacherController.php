@@ -189,7 +189,10 @@ class TeacherController extends Controller
             $teacherRole = Role::firstOrCreate(['name' => 'enseignant', 'guard_name' => 'web']);
             $user->assignRole($teacherRole);
 
+            log_history('created', $user, ['before' => [], 'after' => $validatedData]);
+
             DB::commit();
+
             return redirect()->route('admin.teachers.index', ['locale' => app()->getLocale()])
                 ->with('success', 'Enseignant créé avec succès.');
         } catch (\Exception $e) {
@@ -280,7 +283,10 @@ class TeacherController extends Controller
             // Mettre à jour les champs du profil qui sont modifiables
             $teacherProfile->update($teacherProfileDataToUpdate);
 
+            log_history('updated', $teacherUser, ['before' => $teacherUser->getOriginal(), 'after' => $teacherUser->toArray()]);
+
             DB::commit();
+
             return redirect()->route('admin.teachers.show', ['locale' => app()->getLocale(), 'teacherUser' => $teacherUser->id])
                 ->with('success', 'Informations de l\'enseignant mises à jour.');
         } catch (\Exception $e) {
@@ -304,6 +310,9 @@ class TeacherController extends Controller
             // Sinon, il faut supprimer le profil manuellement avant.
             // $teacherUser->teacherProfile()->delete(); // Si pas de cascade configurée.
             $teacherUser->delete();
+
+            log_history('deleted', $teacherUser, ['before' => $teacherUser->toArray(), 'after' => []]);
+
             DB::commit();
 
             return redirect()->route('admin.teachers.index', ['locale' => app()->getLocale()])

@@ -57,6 +57,8 @@ class RegistrationController extends Controller
             ]);
         }
 
+        log_history('created', $registration, ['before' => [], 'after' => $validated]);
+
         return redirect()->route('admin.registrations.index', ['locale' => app()->getLocale()])
             ->with('success', 'Inscription créée avec succès.');
     }
@@ -93,15 +95,17 @@ class RegistrationController extends Controller
 
         $registration->update($validated);
 
+        log_history('updated', $registration, ['before' => $registration->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.registrations.index', ['locale' => app()->getLocale()])
             ->with('success', 'Inscription mise à jour avec succès.');
     }
 
     public function destroy($locale, Registration $registration)
     {
-
-
         $registration->delete();
+
+        log_history('deleted', $registration, ['before' => $registration->toArray(), 'after' => []]);
 
         return redirect()->route('admin.registrations.index', ['locale' => app()->getLocale()])
             ->with('success', 'Inscription supprimée avec succès.');

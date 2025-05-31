@@ -132,10 +132,7 @@ class AcademyController extends Controller
             ]);
         }
 
-        // Log de l'historique
-        if (function_exists('log_history')) {
-            log_history('created', $academy, [], 'Académie créée');
-        }
+        log_history('created', $academy, ['before' => [], 'after' => $validated]);
 
         return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie créée avec succès.');
@@ -235,14 +232,7 @@ class AcademyController extends Controller
             }
         }
 
-        // Log de l'historique
-        if (function_exists('log_history')) {
-            $changes = [
-                'before' => $oldValues,
-                'after' => $academy->fresh()->toArray()
-            ];
-            log_history('updated', $academy, $changes, 'Académie mise à jour');
-        }
+        log_history('updated', $academy, ['before' => $oldValues, 'after' => $validated]);
 
         return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie mise à jour avec succès.');
@@ -276,13 +266,10 @@ class AcademyController extends Controller
         // Sauvegarder les données pour l'historique
         $academyData = $academy->toArray();
 
-        // Log de l'historique avant suppression
-        if (function_exists('log_history')) {
-            log_history('deleted', $academy, ['deleted_data' => $academyData], 'Académie supprimée');
-        }
-
         // Supprimer l'académie (la table pivot sera automatiquement nettoyée grâce à onDelete('cascade'))
         $academy->delete();
+
+        log_history('deleted', $academy, ['before' => $academyData, 'after' => []]);
 
         return redirect()->route('admin.academies.index', ['locale' => app()->getLocale()])
             ->with('success', 'Académie supprimée avec succès.');

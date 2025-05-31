@@ -76,6 +76,8 @@ class UserController extends Controller
         // Assignation des rôles
         $user->syncRoles($request->roles);
 
+        log_history('created', $user, ['before' => [], 'after' => $user]);
+
         return redirect()->route('admin.users.index', ['locale' => app()->getLocale()])
             ->with('success', 'Utilisateur créé avec succès.');
     }
@@ -198,6 +200,8 @@ class UserController extends Controller
         $permissions = isset($validated['permissions']) ? $validated['permissions'] : [];
         $user->syncPermissions($permissions);
 
+        log_history('updated', $user, ['before' => $user->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.users.show', ['locale' => app()->getLocale(), 'user' => $user])
             ->with('success', 'Rôles et permissions mis à jour avec succès');
     }
@@ -218,6 +222,8 @@ class UserController extends Controller
         }
 
         $user->delete();
+
+        log_history('deleted', $user, ['before' => $user->toArray(), 'after' => []]);
 
         return redirect()->route('admin.users.index', ['locale' => app()->getLocale()])
             ->with('success', 'Utilisateur supprimé avec succès.');

@@ -76,6 +76,9 @@ class SlotController extends Controller
         }
 
         $slot = Slot::create($validated);
+
+        log_history('created', $slot, ['before' => [], 'after' => $validated]);
+
         $timetable = $slot->timetable;
 
         return redirect()->route('admin.planning.index', [
@@ -121,6 +124,8 @@ class SlotController extends Controller
 
         $slot->update($validated);
 
+        log_history('updated', $slot, ['before' => $slot->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.planning.index', [
             'locale' => app()->getLocale(),
             'center_id' => $slot->timetable->center_id,
@@ -140,6 +145,8 @@ class SlotController extends Controller
         $weekStartDate = $slot->timetable->week_start_date->toDateString();
 
         $slot->delete();
+
+        log_history('deleted', $slot, ['before' => $slot->toArray(), 'after' => []]);
 
         return redirect()->route('admin.planning.index', [
             'locale' => app()->getLocale(),

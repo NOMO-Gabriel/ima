@@ -37,7 +37,9 @@ class EntranceExamController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        EntranceExam::create($validated);
+        $entranceExam = EntranceExam::create($validated);
+
+        log_history('created', $entranceExam, ['before' => [], 'after' => $validated]);
 
         return redirect()->route('admin.entrance-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Le concours a été créé avec succès !');
@@ -66,6 +68,8 @@ class EntranceExamController extends Controller
 
         $entrance_exam->update($validated);
 
+        log_history('updated', $entrance_exam, ['before' => $entrance_exam->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.entrance-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Concours mis à jour avec succès.');
     }
@@ -77,6 +81,8 @@ class EntranceExamController extends Controller
         // }
 
         $entrance_exam->delete();
+
+        log_history('deleted', $entrance_exam, ['before' => $entrance_exam->toArray(), 'after' => []]);
 
         return redirect()->route('admin.entrance-exams.index', ['locale' => app()->getLocale()])
             ->with('success', 'Concours supprimé avec succès.');

@@ -141,6 +141,8 @@ class BookController extends Controller
             $book->formations()->sync($validated['formations']);
         }
 
+        log_history('created', $book, ['before' => [], 'after' => $book]);
+
         return redirect()->route('admin.books.index', ['locale' => app()->getLocale()])
             ->with('success', 'Livre ajouté avec succès au catalogue.');
     }
@@ -218,6 +220,8 @@ class BookController extends Controller
             $book->formations()->detach();
         }
 
+        log_history('updated', $book, ['before' => $book->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.books.index', ['locale' => app()->getLocale()])
             ->with('success', 'Livre mis à jour avec succès.');
     }
@@ -240,6 +244,8 @@ class BookController extends Controller
         $book->formations()->detach();
 
         $book->delete();
+
+        log_history('deleted', $book, ['before' => $book->toArray(), 'after' => []]);
 
         return redirect()->route('admin.books.index', ['locale' => app()->getLocale()])
             ->with('success', 'Livre supprimé avec succès du catalogue.');

@@ -43,13 +43,15 @@ class InstallmentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        Installment::create([
+        $installment = Installment::create([
             'amount' => $validated['amount'],
             'notes' => $validated['notes'] ?? null,
             'payment_method_id' => $validated['payment_method_id'],
             'registration_id' => $registration->id,
             'processed_by' => Auth::id(),
         ]);
+
+        log_history('created', $installment, ['before' => [], 'after' => $validated]);
 
         return redirect()->back()->with('success', 'Versement ajouté avec succès.');
     }

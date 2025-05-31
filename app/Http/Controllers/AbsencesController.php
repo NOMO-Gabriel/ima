@@ -2,116 +2,180 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Absence;
 use App\Models\Absences;
 use App\Models\Center;
-use App\Models\Room;
 use App\Models\Slot;
-use App\Models\Student;
-use App\Models\Formation;
+use App\Models\Timetable;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-
-use function Illuminate\Log\log;
 
 class AbsencesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $centers = Center::all();
-        $weekDays = [
-            'monday' => 'Lundi',
-            'tuesday' => 'Mardi',
-            'wednesday' => 'Mercredi',
-            'thursday' => 'Jeudi',
-            'friday' => 'Vendredi',
-            'saturday' => 'Samedi',
-            'sunday' => 'Dimanche'
-        ];
-        $timeSlots = [
-            '08:00:00' => '08h00',
-            '11:00:00' => '11h00',
-            '14:00:00' => '14h00'
-        ];
-        $rooms = Room::all();
+        $centerId = $request->query('center_id');
 
-        return view('admin.absences.index', compact('centers', 'weekDays', 'timeSlots', 'rooms'));
-    }
-
-    public function getRooms(Request $request)
-    {
-        $centerId = $request->get('center_id');
-
-        // Récupérer les salles via la relation center
-        $rooms = Room::where('center_id', $centerId)->get();
-
-        return response()->json($rooms);
-    }
-
-    public function getStudents(Request $request)
-    {
-        $request->validate([
-            'center_id' => 'required|exists:centers,id',
-            'week_day' => 'required|string',
-            'start_time' => 'required',
-            'room_id' => 'required|exists:rooms,id'
-        ]);
-
-        // Trouver le slot correspondant
-        $slot = Slot::where('week_day', $request->week_day)
-                   ->where('start_time', $request->start_time)
-                   ->where('room_id', $request->room_id)
-                   ->first();
-
-        if (!$slot) {
-            return response()->json(['students' => [], 'slot_id' => null]);
+        if (!$centerId) {
+            $centers = Center::all();
+            return view('admin.absences.select_center', compact('centers'));
         }
 
-        $students = $slot->formation->students();
+        $center = Center::findOrFail($centerId);
 
-        // Récupérer les absences existantes pour ce slot
-        $existingAbsences = Absences::where('slot_id', $slot->id)
-                                  ->pluck('student_id')
-                                  ->toArray();
+        // Find the start of week to display
+        if ($request->filled('week_start_date')) {
+            $weekStart = Carbon::parse($request->input('week_start_date'))->startOfWeek();
+        } else {
+            $weekStart = Carbon::now()->startOfWeek();
+        }
 
-        $studentsData = $students->map(function($student) use ($existingAbsences) {
-            return [
-                'id' => $student->id,
-                'user_id' => $student->user_id,
-                'name' => $student->user->last_name . ' ' . $student->user->first_name,
-                'email' => $student->user->email,
-                'is_absent' => in_array($student->id, $existingAbsences)
-            ];
+        $timetable = $center->timetables()
+            ->whereDate('week_start_date', $weekStart)
+            ->with('slots')
+            ->first();
+
+        if (!$timetable) {
+            $timetable = Timetable::createWithDefaultSlots($center, $weekStart);
+        }
+
+        // Navigation dates
+        $prevWeek = $weekStart->copy()->subWeek()->toDateString();
+        $nextWeek = $weekStart->copy()->addWeek()->toDateString();
+
+        return view('admin.absences.index', [
+            'timetable'     => $timetable,
+            'center'        => $center,
+            'weekStartDate' => $weekStart,
+            'prevWeek'      => $prevWeek,
+            'nextWeek'      => $nextWeek,
+        ]);
+    }
+
+    public function list($locale, Slot $slot)
+    {
+        app()->setLocale($locale);
+
+        $course = $slot->course;
+
+        $students = $course
+            ? $course->enrolledStudents
+            : collect();
+
+        $absentStudentIds = $slot->absences->pluck('student_id')->toArray();
+
+        return view('admin.absences.list', compact('slot', 'students', 'absentStudentIds'));
+    }
+
+    public function toggle(Request $request, $locale)
+    {
+        $slotId = $request->input('slot_id');
+        $studentId = $request->input('student_id');
+
+        $absence = Absences::where('slot_id', $slotId)
+            ->where('student_id', $studentId)
+            ->first();
+
+        if ($absence) {
+            $absence->delete(); // mark present
+        } else {
+            Absences::create([
+                'slot_id' => $slotId,
+                'student_id' => $studentId,
+            ]); // mark absent
+        }
+
+        return back();
+    }
+
+    public function show(Slot $slot)
+    {
+        // if (!$this->user || !$this->user->can('absences.view')) {
+        //     abort(403, 'Non autorisé');
+        // }
+
+        $course = $slot->course;
+        $students = $course->enrolledStudents;
+        $absences = Absences::where('slot_id', $slot->id);
+
+        $absentStudentIds = $absences->pluck('student_id')->toArray();
+
+        $students = $course->enrolledStudents()->map(function ($student) use ($absentStudentIds) {
+            $student->is_absent = in_array($student->id, $absentStudentIds);
+            return $student;
         });
 
-        return response()->json([
-            'students' => $studentsData,
-            'slot_id' => $slot->id,
-            'formation_name' => $slot->formation->name ?? 'Formation non définie'
-        ]);
+        return view('admin.absences.show', compact('students', 'slot'));
     }
 
-    public function store($locale, Request $request)
+    public function store(Request $request, Slot $slot)
     {
-        $request->validate([
-            'slot_id' => 'required|exists:slots,id',
-            'absent_students' => 'array',
-            'absent_students.*' => 'exists:students,id'
-        ]);
+        // Vérification d'autorisation si nécessaire
+        // if (!$this->user || !$this->user->can('absences.edit')) {
+        //     abort(403, 'Non autorisé');
+        // }
 
-        $slotId = $request->slot_id;
-        $absentStudentIds = $request->absent_students ?? [];
+        $statuses = $request->input('statuses', []);
 
-        // Supprimer toutes les absences existantes pour ce slot
-        Absences::where('slot_id', $slotId)->delete();
-
-        // Créer les nouvelles absences
-        foreach ($absentStudentIds as $studentId) {
-            Absences::create([
-                'student_id' => $studentId,
-                'slot_id' => $slotId
-            ]);
+        foreach ($statuses as $studentId => $status) {
+            if ($status === 'absent') {
+                // Crée une absence si elle n’existe pas encore
+                Absences::firstOrCreate([
+                    'slot_id' => $slot->id,
+                    'student_id' => $studentId,
+                ]);
+            } else {
+                // Supprime l'absence si l'élève est finalement présent
+                Absences::where('slot_id', $slot->id)
+                       ->where('student_id', $studentId)
+                       ->delete();
+            }
         }
 
-        return redirect()->back()->with('success', 'Absences enregistrées avec succès !');
+        log_history('updated', $slot, ['before' => $slot->toArray(), 'after' => $slot->toArray()]);
+
+        return redirect()->route('admin.absences.show', $slot->id)
+                         ->with('success', 'Présences enregistrées avec succès.');
+    }
+
+    public function edit(Absences $absence)
+    {
+        if (!$this->user || !$this->user->can('absences.edit')) {
+            abort(403, 'Non autorisé');
+        }
+
+        return view('absences.edit', compact('absence'));
+    }
+
+    public function update(Request $request, Absences $absence)
+    {
+        if (!$this->user || !$this->user->can('absences.edit')) {
+            abort(403, 'Non autorisé');
+        }
+
+        $validated = $request->validate([
+            'student_id' => ['required', 'integer', 'exists:users,id'],
+            'slot_id' => ['required', 'integer', 'exists:slots,id'],
+        ]);
+
+        $absence->update($validated);
+
+        log_history('updated', $absence, ['before' => $absence->toArray(), 'after' => $validated]);
+
+        return redirect()->route('absences.index')
+            ->with('success', 'Absences mise à jour avec succès.');
+    }
+
+    public function destroy(Absences $absence)
+    {
+        if (!$this->user || !$this->user->can('absences.delete')) {
+            abort(403, 'Non autorisé');
+        }
+
+        $absence->delete();
+
+        log_history('deleted', $absence, ['before' => $absence->toArray(), 'after' => []]);
+
+        return redirect()->route('absences.index')
+            ->with('success', 'Absences supprimée avec succès.');
     }
 }

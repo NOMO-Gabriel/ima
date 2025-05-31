@@ -45,6 +45,8 @@ class CourseController extends Controller
             $course->formations()->sync($validated['formations']);
         }
 
+        log_history('created', $course, ['before' => [], 'after' => $validated]);
+
         return redirect()->route('admin.courses.index', ['locale' => app()->getLocale()])
             ->with('success', 'Le cours a été créé avec succès !');
     }
@@ -81,6 +83,8 @@ class CourseController extends Controller
             $course->formations()->detach();
         }
 
+        log_history('updated', $course, ['before' => $course->toArray(), 'after' => $validated]);
+
         return redirect()->route('admin.courses.index', ['locale' => app()->getLocale()])
             ->with('success', 'Cours mis à jour avec succès.');
     }
@@ -89,6 +93,8 @@ class CourseController extends Controller
     {
 
         $course->delete();
+
+        log_history('deleted', $course, ['before' => $course->toArray(), 'after' => []]);
 
         return redirect()->route('admin.courses.index', ['locale' => app()->getLocale()])
             ->with('success', 'Cours supprimé avec succès.');

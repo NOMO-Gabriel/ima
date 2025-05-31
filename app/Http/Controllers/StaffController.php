@@ -133,6 +133,8 @@ class StaffController extends Controller
 
             $user->syncRoles($validatedUserData['roles']);
 
+            log_history('created', $user, ['before' => [], 'after' => $user->toArray()]);
+
             DB::commit();
 
             return redirect()->route('admin.staff.index', ['locale' => app()->getLocale()])
@@ -248,6 +250,8 @@ class StaffController extends Controller
             //     }
             // }
 
+            log_history('updated', $staffUser, ['before' => $staffUser->getOriginal(), 'after' => $staffUser->toArray()]);
+
             DB::commit();
 
             return redirect()->route('admin.staff.show', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id])
@@ -278,6 +282,8 @@ class StaffController extends Controller
         $permissions = $validated['permissions'] ?? [];
         $staffUser->syncPermissions($permissions);
 
+        log_history('updated', $staffUser, ['before' => $staffUser->getOriginal(), 'after' => $staffUser->toArray()]);
+
         return redirect()->route('admin.staff.show', ['locale' => app()->getLocale(), 'staffUser' => $staffUser->id])
             ->with('success', 'Permissions directes mises à jour.');
     }
@@ -300,6 +306,9 @@ class StaffController extends Controller
         DB::beginTransaction();
         try {
             $staffUser->delete(); // Cela déclenchera onDelete('cascade') pour la table 'staff'
+
+            log_history('deleted', $staffUser, ['before' => $staffUser->toArray()]);
+
             DB::commit();
 
             return redirect()->route('admin.staff.index', ['locale' => app()->getLocale()])

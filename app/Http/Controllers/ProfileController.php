@@ -68,6 +68,8 @@ class ProfileController extends Controller
 
         $user->save();
 
+        log_history('updated', $user, ['before' => $user->toArray(), 'after' => $user->toArray()]);
+
         return Redirect::route('profile.edit', ['locale' => app()->getLocale()] )->with('status', 'profile-updated');
     }
 
@@ -85,6 +87,8 @@ class ProfileController extends Controller
         Auth::logout();
 
         $user->delete();
+
+        log_history('deleted', $user, ['before' => $user->toArray(), 'after' => []]);
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

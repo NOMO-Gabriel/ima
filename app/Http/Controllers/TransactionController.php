@@ -95,6 +95,8 @@ class TransactionController extends Controller
 
         $transaction = Transaction::create($validated);
 
+        log_history('created', $transaction, ['before' => [], 'after' => $validated]);
+
         return redirect()->route('admin.transactions.index', app()->getLocale())
             ->with('success', 'Transaction créée avec succès.');
     }
@@ -136,6 +138,8 @@ class TransactionController extends Controller
 
         $transaction->update($validated);
 
+        log_history('updated', $transaction, ['before' => $transaction->getOriginal(), 'after' => $validated]);
+
         return redirect()->route('admin.transactions.show', $transaction)
             ->with('success', 'Transaction mise à jour avec succès.');
     }
@@ -146,6 +150,8 @@ class TransactionController extends Controller
     public function destroy(Transaction $transaction)
     {
         $transaction->delete();
+
+        log_history('deleted', $transaction, ['before' => $transaction->toArray(), 'after' => []]);
 
         return redirect()->route('admin.transactions.index', app()->getLocale())
             ->with('success', 'Transaction supprimée avec succès.');
