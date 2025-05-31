@@ -71,8 +71,7 @@ class StudentController extends Controller
         $studentUsers = $query->with([
                                 'student', // Profil Student
                                 'student.enrollments.center', // Inscriptions (Registration) avec leur Centre
-                                'student.enrollments.formation', // Inscription (Registration) avec sa Formation principale (BelongsTo)
-                                // Relation city() sur User
+                                // Relation city() sur User 
                                ])
                                ->paginate(15)
                                ->appends($request->query());

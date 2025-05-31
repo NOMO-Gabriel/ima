@@ -6,6 +6,8 @@ use App\Models\Transaction;
 use App\Models\TransactionReason;
 use App\Models\User;
 use App\Models\Center;
+use App\Models\Installment;
+use App\Models\Registration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -63,7 +65,26 @@ class TransactionController extends Controller
         $reasons = TransactionReason::orderBy('direction')->orderBy('label')->get();
         $centers = Center::orderBy('name')->get();
 
-        return view('admin.transactions.index', compact('transactions', 'reasons', 'centers', 'stats'));
+        // Substract OUT transactions from OUT transactions
+        $transactionsAmount = Transaction::whereHas('reason', function ($q) {
+            $q->where('direction', 'IN');
+        })->where('valid', true)->sum('amount');
+        $transactionsAmount = $transactionsAmount - Transaction::whereHas('reason', function ($q) {
+            $q->where('direction', 'OUT');
+        })->where('valid', true)->sum('amount');
+        
+        $registrationsAmount = Installment::sum('amount');
+        $balance = $registrationsAmount + $transactionsAmount;
+
+        return view('admin.transactions.index', compact(
+            'balance',
+            'transactionsAmount',
+            'registrationsAmount',
+            'transactions',
+            'reasons',
+            'centers',
+            'stats'
+        ));
     }
 
     /**

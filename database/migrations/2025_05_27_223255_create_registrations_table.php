@@ -16,7 +16,6 @@ return new class extends Migration
             $table->text('special_conditions')->nullable();
 
             $table->foreignId('student_id')->constrained('students')->onDelete('cascade');
-            $table->foreignId('formation_id')->constrained('formations')->onDelete('cascade');
             $table->foreignId('center_id')->constrained('centers')->onDelete('cascade');
 
             $table->timestamps();

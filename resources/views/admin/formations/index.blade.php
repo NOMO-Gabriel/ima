@@ -25,7 +25,6 @@
         </ol>
     </nav>
 
-    @canany(['gestion.formation.create', 'gestion.formation.update', 'gestion.formation.delete', 'gestion.formation.read'])
     <div class="bg-white shadow-md rounded-lg p-5 mb-8">
         <!-- En-tête avec titre et bouton d'ajout -->
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
@@ -35,14 +34,12 @@
                 </svg>
                 Gestion des Formations
             </h1>
-            @can('gestion.formation.create')
             <a href="{{ route('admin.formations.create', ['locale' => app()->getLocale()]) }}" class="inline-flex items-center justify-center px-5 py-2.5 bg-[#4CA3DD] hover:bg-[#2A7AB8] text-white font-medium rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
                 Ajouter une formation
             </a>
-            @endcan
         </div>
 
         <!-- Message de succès -->
@@ -320,7 +317,7 @@
             </div>
         @endif
     </div>
-    @else
+    {{-- @else
         <!-- Message d'accès refusé -->
         <div class="p-8 text-center rounded-lg border transition-colors"
              :class="darkMode ? 'bg-[#2C3E50] border-[#475569] text-white' : 'bg-white border-gray-200'">
@@ -348,7 +345,7 @@
                 </a>
             </div>
         </div>
-    @endcanany
+    @endcanany --}}
 @endsection
 
 @push('styles')

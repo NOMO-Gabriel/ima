@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Formation;
 use App\Models\Center;
+use App\Models\Installment;
 use App\Models\PaymentMethod;
 use App\Models\Registration;
 use Illuminate\Http\Request;
@@ -59,9 +60,8 @@ class FinanceRegistrationController extends Controller
             $query->latest();
         }
 
-        $pendingStudents = User::where('account_type', 'student')
-            ->whereHas('student', fn ($q) => $q->where('fully_registered', false))
-            ->with(['student.registration', 'roles'])
+        $pendingStudents = $query
+            ->with(['student.registration']) // ajout du eager loading manquant
             ->paginate(15);
 
         $centers = Center::where('is_active', true)
@@ -72,6 +72,8 @@ class FinanceRegistrationController extends Controller
             ->distinct()
             ->pluck('establishment')
             ->sort();
+
+        // Get all registrations
 
         // Statistiques
         $stats = [
@@ -88,6 +90,8 @@ class FinanceRegistrationController extends Controller
             'rejected_total' => User::where('account_type', 'student')
                 ->where('status', User::STATUS_REJECTED)
                 ->count(),
+            'total_registration_amount' => Installment::sum('amount'),
+            'today_registration_amount' => Installment::whereDate('created_at', today())->sum('amount'),
         ];
 
         return view('admin.finance.students.pending', compact(
@@ -97,6 +101,7 @@ class FinanceRegistrationController extends Controller
             'stats'
         ));
     }
+
 
     /**
      * Affiche les détails d'un élève en attente
@@ -129,7 +134,7 @@ class FinanceRegistrationController extends Controller
         $formations = Formation::with('phase')->orderBy('name')->get();
         $centers = Center::where('is_active', true)
             ->orderBy('name')
-            ->select('id', 'name', 'city') // Charger uniquement les champs nécessaires
+            ->select('id', 'name') // Charger uniquement les champs nécessaires
             ->get();
         $paymentMethods = PaymentMethod::orderBy('label')->get();
 
@@ -220,7 +225,6 @@ class FinanceRegistrationController extends Controller
                 'special_conditions' => $validated['special_conditions'],
 
                 'student_id' => $user->student->id,
-                'formation_id' => $validated['formations'][0], // Formation principale
                 'center_id' => $validated['center_id'],
             ]);
 
@@ -240,6 +244,8 @@ class FinanceRegistrationController extends Controller
             }
 
             DB::commit();
+
+            log_history('updated', $registration, ['before' => [], 'after' => $registration->toArray()]);
 
             // Rediriger vers la page de confirmation
             return redirect()

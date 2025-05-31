@@ -82,6 +82,35 @@
         </div>
     </div>
 
+    <!-- Statistiques -->
+    <div class="flex gap-4 justify-between">
+        <div class="stats-card w-full">
+            <div class="stats-icon warning">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-value">{{ $stats['total_registration_amount'] }} FCFA</h3>
+                <p class="stats-label">Inscriptions totales</p>
+            </div>
+            <div class="stats-trend">
+                <div class="progress-bar warning" style="width: 100%"></div>
+            </div>
+        </div>
+
+        <div class="stats-card w-full">
+            <div class="stats-icon info">
+                <i class="fas fa-money-bill-wave"></i>
+            </div>
+            <div class="stats-content">
+                <h3 class="stats-value">{{ $stats['today_registration_amount'] }} FCFA</h3>
+                <p class="stats-label">Inscriptions d'aujoud'hui</p>
+            </div>
+            <div class="stats-trend">
+                <div class="progress-bar info" style="width: 75%"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Filtres -->
     <div class="card filter-card">
         <div class="card-header">

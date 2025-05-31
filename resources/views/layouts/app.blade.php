@@ -1551,10 +1551,6 @@
                     <i class="fas fa-money-check-alt"></i>
                     <span>Transactions</span>
                 </a>
-                <a href="{{ route('admin.transactions-history.index', ['locale' => app()->getLocale()]) }}" class="menu-item {{ request()->routeIs('admin.transactions-history.*') ? 'active' : '' }}">
-                    <i class="fas fa-history"></i>
-                    <span>Historique</span>
-                </a>
             </div>
 
             <div class="menu-category" data-category="resources">

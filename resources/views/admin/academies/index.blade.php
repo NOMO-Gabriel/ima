@@ -27,12 +27,10 @@
                 <i class="fas fa-university text-[#4CA3DD] mr-2"></i>Gestion des Académies
             </h1>
             <div class="flex items-center space-x-2">
-                @can('academy.create')
-                    <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
-                       class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
-                        <i class="fas fa-plus mr-2"></i> Ajouter une académie
-                    </a>
-                @endcan
+                <a href="{{ route('admin.academies.create', ['locale' => app()->getLocale()]) }}"
+                    class="inline-flex items-center px-4 py-2 bg-[#4CA3DD] text-white rounded-md hover:bg-[#2A7AB8] transition-all shadow">
+                    <i class="fas fa-plus mr-2"></i> Ajouter une académie
+                </a>
             </div>
         </div>
 
