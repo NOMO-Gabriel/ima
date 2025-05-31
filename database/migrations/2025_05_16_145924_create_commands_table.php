@@ -15,11 +15,12 @@ return new class extends Migration
             $table->id();
 
             $table->integer('quantity')->default(0);
+            $table->enum('direction', ['in', 'out'])->default('in');
 
-            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
-
-            $table->enum('status', ['pending', 'processing', 'completed', 'cancelled'])
-                ->default('pending');
+            $table->foreignId('material_id')->constrained('materials')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('city_id')->nullable()->constrained('cities')->onDelete('set null');
+            $table->foreignId('center_id')->nullable()->constrained('centers')->onDelete('set null');
 
             $table->timestamps();
         });

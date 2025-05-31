@@ -22,8 +22,6 @@ class User extends Authenticatable
         'password',
         'phone_number',
         'parent_phone_number',
-        // 'city_id',
-        // 'city', // Pour la compatibilité
         'address',
         'account_type',
         'profile_photo_path',

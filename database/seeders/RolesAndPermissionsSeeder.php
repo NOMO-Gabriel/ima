@@ -134,10 +134,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'ressource.book.read' => 'Consulter les livres',
             'ressource.book.update' => 'Modifier les livres',
             'ressource.book.delete' => 'Supprimer des livres',
-            'ressource.booklets.create' => 'Créer des fascicules',
-            'ressource.booklets.read' => 'Consulter les fascicules',
-            'ressource.booklets.update' => 'Modifier les fascicules',
-            'ressource.booklets.delete' => 'Supprimer des fascicules',
             'ressource.material.create' => 'Créer du matériel',
             'ressource.material.read' => 'Consulter le matériel',
             'ressource.material.update' => 'Modifier le matériel',
@@ -209,7 +205,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.entrance-exam.read', 'plannification.planning.read',
             'plannification.slot.read', 'plannification.absence.read',
             'finance.registration.read', 'finance.transaction.read',
-            'finance.histrory.read', 'ressource.book.read', 'ressource.booklets.read',
             'ressource.material.read', 'profile.update', 'history.read'
         ]);
 
@@ -237,7 +232,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'finance.transaction.read', 'finance.transaction.update',
             'finance.histrory.read', 'finance.histrory.update',
             'ressource.book.read', 'ressource.book.update',
-            'ressource.booklets.read', 'ressource.booklets.update',
             'ressource.material.read', 'ressource.material.update',
             'profile.update', 'history.read'
         ]);
@@ -267,7 +261,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'plannification.slot.create', 'plannification.slot.read', 'plannification.slot.update',
             'plannification.absence.create', 'plannification.absence.read', 'plannification.absence.update',
             'ressource.book.create', 'ressource.book.read', 'ressource.book.update',
-            'ressource.booklets.create', 'ressource.booklets.read', 'ressource.booklets.update',
             'ressource.material.create', 'ressource.material.read', 'ressource.material.update',
             'profile.update', 'history.read'
         ]);
@@ -305,7 +298,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.formation.read', 'gestion.course.read', 'gestion.class.read',
             'gestion.exam.read', 'gestion.entrance-exam.read',
             'ressource.book.create', 'ressource.book.read', 'ressource.book.update', 'ressource.book.delete',
-            'ressource.booklets.create', 'ressource.booklets.read', 'ressource.booklets.update', 'ressource.booklets.delete',
             'ressource.material.create', 'ressource.material.read', 'ressource.material.update', 'ressource.material.delete',
             'profile.update', 'history.read'
         ]);
@@ -346,7 +338,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.formation.read', 'gestion.course.read', 'gestion.class.read',
             'gestion.exam.read', 'gestion.entrance-exam.read',
             'ressource.book.create', 'ressource.book.read', 'ressource.book.update', 'ressource.book.delete',
-            'ressource.booklets.create', 'ressource.booklets.read', 'ressource.booklets.update', 'ressource.booklets.delete',
             'ressource.material.create', 'ressource.material.read', 'ressource.material.update', 'ressource.material.delete',
             'profile.update', 'history.read'
         ]);
@@ -373,7 +364,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.entrance-exam.read', 'plannification.planning.read',
             'plannification.slot.read', 'plannification.absence.read',
             'finance.registration.read', 'finance.transaction.read',
-            'finance.histrory.read', 'ressource.book.read', 'ressource.booklets.read',
             'ressource.material.read', 'profile.update', 'history.read'
         ]);
 
@@ -393,7 +383,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.entrance-exam.read', 'plannification.planning.read',
             'plannification.slot.read', 'plannification.absence.read',
             'finance.registration.read', 'finance.transaction.read',
-            'finance.histrory.read', 'ressource.book.read', 'ressource.booklets.read',
             'ressource.material.read', 'profile.update', 'history.read'
         ]);
 
@@ -418,7 +407,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'finance.transaction.update', 'finance.transaction.delete',
             'finance.histrory.create', 'finance.histrory.update',
             'finance.histrory.read', 'finance.histrory.delete',
-            'ressource.book.read', 'ressource.booklets.read', 'ressource.material.read',
             'profile.update', 'history.read'
         ]);
 
@@ -436,7 +424,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.formation.read', 'gestion.course.read', 'gestion.class.read',
             'gestion.exam.read', 'gestion.entrance-exam.read',
             'ressource.book.create', 'ressource.book.read', 'ressource.book.update', 'ressource.book.delete',
-            'ressource.booklets.create', 'ressource.booklets.read', 'ressource.booklets.update', 'ressource.booklets.delete',
             'ressource.material.create', 'ressource.material.read', 'ressource.material.update', 'ressource.material.delete',
             'profile.update', 'history.read'
         ]);
@@ -456,7 +443,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.course.read', 'gestion.class.read', 'gestion.exam.read',
             'gestion.entrance-exam.read', 'finance.registration.read',
             'finance.transaction.read', 'finance.histrory.read',
-            'ressource.book.read', 'ressource.booklets.read', 'ressource.material.read',
             'profile.update', 'history.read'
         ]);
 
@@ -528,7 +514,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.class.read', 'gestion.exam.read', 'gestion.entrance-exam.read',
             'plannification.planning.read', 'plannification.slot.read',
             'plannification.absence.read', 'ressource.book.read',
-            'ressource.booklets.read', 'ressource.material.read',
             'profile.update', 'history.read'
         ]);
     }
@@ -555,7 +540,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'gestion.entrance-exam.read', 'plannification.planning.read',
             'plannification.slot.read', 'plannification.absence.read',
             'finance.registration.read', 'finance.transaction.read',
-            'finance.histrory.read', 'ressource.book.read', 'ressource.booklets.read',
             'ressource.material.read', 'profile.update', 'history.read'
         ]);
 
@@ -576,7 +560,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'plannification.planning.read', 'plannification.slot.read',
             'plannification.absence.read', 'finance.registration.read',
             'finance.transaction.read', 'finance.histrory.read',
-            'ressource.book.read', 'ressource.booklets.read', 'ressource.material.read',
             'profile.update', 'history.read'
         ]);
 
@@ -597,7 +580,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'plannification.planning.read', 'plannification.slot.read',
             'plannification.absence.read', 'finance.registration.read',
             'finance.transaction.read', 'finance.histrory.read',
-            'ressource.book.read', 'ressource.booklets.read', 'ressource.material.read',
             'profile.update', 'history.read'
         ]);
 
@@ -618,7 +600,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'plannification.planning.read', 'plannification.slot.read',
             'plannification.absence.read', 'finance.registration.read',
             'finance.transaction.read', 'finance.histrory.read',
-            'ressource.book.read', 'ressource.booklets.read', 'ressource.material.read',
             'profile.update', 'history.read'
         ]);
 
@@ -639,7 +620,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'plannification.planning.read', 'plannification.slot.read',
             'plannification.absence.read', 'finance.registration.read',
             'finance.transaction.read', 'finance.histrory.read',
-            'ressource.book.read', 'ressource.booklets.read', 'ressource.material.read',
             'profile.update', 'history.read'
         ]);
     }
@@ -660,7 +640,6 @@ class RolesAndPermissionsSeeder extends Seeder
         $eleve->givePermissionTo([
             'plannification.planning.read', 'plannification.slot.read',
             'plannification.absence.read', 'ressource.book.read',
-            'ressource.booklets.read', 'ressource.material.read',
             'profile.update', 'history.read'
         ]);
     }

@@ -22,7 +22,6 @@ return new class extends Migration
             $table->string('phone_number')->nullable()->unique();
             $table->string('profile_photo_path')->nullable();
             $table->integer('gender')->default(0);
-            // $table->string('city')->nullable();
             $table->string('address')->nullable()->default('cradat');
             $table->enum('account_type', ['staff', 'teacher', 'student'])->default('student');
             $table->enum('status', [

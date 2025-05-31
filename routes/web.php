@@ -85,6 +85,18 @@ Route::prefix('{locale}')
 
             // Protected by admin role
             Route::prefix('admin')->name('admin.')->middleware(['role:pca|dg-prepas|sg|da|df-national|dln'])->group(function () {
+                Route::prefix('materials')->name('materials.')->group(function () {
+                    Route::get('/', [MaterialController::class, 'index'])->name('index');
+                    Route::post('/', [MaterialController::class, 'store'])->name('store');
+                    Route::get('/{material}', [MaterialController::class, 'show'])->name('show');
+
+                    // Routes pour les commandes imbriquées
+                    Route::prefix('{material}/commands')->name('commands.')->group(function () {
+                        Route::get('/create/{direction}', [CommandController::class, 'create'])->name('create');
+                        Route::post('/', [CommandController::class, 'store'])->name('store');
+                    });
+                });
+
                 Route::get('planning', [TimetableController::class, 'index'])->name('planning.index');
                 Route::post('planning/change-formation', [TimetableController::class, 'changeFormation'])->name('planning.change-formation');
 
@@ -204,8 +216,6 @@ Route::prefix('{locale}')
 
                 // Ressources
                 Route::resource('books', BookController::class);
-                Route::resource('materials', MaterialController::class);
-                Route::resource('commands', CommandController::class);
 
                 // Compte
                 Route::resource('profile', ProfileController::class);

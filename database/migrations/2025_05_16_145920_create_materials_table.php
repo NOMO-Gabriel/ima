@@ -14,9 +14,11 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('unit', ['pcs', 'kg', 'g', 'm', 'cm', 'mm', 'l', 'ml', 'm2', 'm3', 'set', 'box', 'pack'])->default('pcs');
-            $table->integer('quantity')->default(0);
+            $table->integer('stock')->default(0);
+            $table->integer('price')->default(0);
+            $table->enum('type', ['booklet', 'mock_exam', 'sheet', 'other'])->default('other');
 
-            $table->foreignId('center_id')->constrained('centers')->onDelete('cascade');
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null'); // For location : national, city, center
 
             $table->timestamps();
         });

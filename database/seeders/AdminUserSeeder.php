@@ -352,7 +352,6 @@ class AdminUserSeeder extends Seeder
             'email' => $userData['email'],
             'password' => Hash::make('password123'),
             'phone_number' => $userData['phone_number'],
-            // 'city' => $userData['city'],
             'address' => 'Adresse administrateur',
             'account_type' => 'staff',
             'status' => User::STATUS_ACTIVE,

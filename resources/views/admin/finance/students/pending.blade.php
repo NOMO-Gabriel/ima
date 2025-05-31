@@ -112,23 +112,6 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="city">
-                            <i class="fas fa-map-marker-alt"></i>Ville
-                        </label>
-                        <div class="select-wrapper">
-                            <select id="city" name="city" class="form-control">
-                                <option value="">Toutes les villes</option>
-                                @foreach($cities as $city)
-                                    <option value="{{ $city }}" {{ request('city') == $city ? 'selected' : '' }}>
-                                        {{ $city }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            <i class="fas fa-chevron-down"></i>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
                         <label for="establishment">
                             <i class="fas fa-school"></i>Établissement
                         </label>
